@@ -1,4 +1,3 @@
-Copiez-collez ce code dans le fichier :
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -94,26 +93,52 @@ body{background:var(--creme);font-family:'Nunito',sans-serif;color:var(--texte);
 </div>
 </div>
 <script>
-let conversationHistory=[];
-let isSpeaking=false;
-let isListening=false;
-let recognition=null;
-function speakTextasync function speakText(t){var c=t.replace(/<br\s*\/?>/gi,'. ').replace(/[\u{1F300}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();document.getElementById('sofiaAvatar').classList.add('speaking');setStatus('Sofia vous parle... 🗣️');try{var r=await fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c})});var b=await r.blob();var a=new Audio(URL.createObjectURL(b));a.onended=function(){document.getElementById('sofiaAvatar').classList.remove('speaking');setStatus('Disponible pour vous')};a.onerror=function(){document.getElementById('sofiaAvatar').classList.remove('speaking');setStatus('Disponible pour vous')};a.play()}catch(e){document.getElementById('sofiaAvatar').classList.remove('speaking');setStatus('Disponible pour vous')}}
-function initVoice(){let S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){document.getElementById('micTexte').textContent='Écrire seulement';document.getElementById('micGrandBtn').style.opacity='0.5';return}recognition=new S();recognition.lang='fr-CA';recognition.continuous=false;recognition.interimResults=false;recognition.onresult=(e)=>{let t=e.results[0][0].transcript;stopListening();addMessage(t,'user');conversationHistory.push({role:'user',content:t});getSofiaReply()};recognition.onerror=recognition.onend=()=>stopListening()}
-function toggleVoice(){if(isSpeaking){speechSynthesis.cancel();isSpeaking=false;document.getElementById('sofiaAvatar').classList.remove('speaking')}if(isListening)stopListening();else startListening()}
-function startListening(){if(!recognition)return;isListening=true;document.getElementById('micGrandBtn').classList.add('listening');document.getElementById('micIcone').textContent='⏹️';document.getElementById('micTexte').textContent='Sofia vous écoute...';document.getElementById('sofiaAvatar').classList.add('listening');setStatus('Je vous écoute... 👂');try{recognition.start()}catch(e){}}
+var conversationHistory=[];
+var isSpeaking=false;
+var isListening=false;
+var recognition=null;
+
+async function speakText(t){
+  var c=t.replace(/<br\s*\/?>/gi,'. ').replace(/[\u{1F300}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();
+  document.getElementById('sofiaAvatar').classList.add('speaking');
+  setStatus('Sofia vous parle...');
+  try{
+    var r=await fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c})});
+    var b=await r.blob();
+    var a=new Audio(URL.createObjectURL(b));
+    a.onended=function(){document.getElementById('sofiaAvatar').classList.remove('speaking');setStatus('Disponible pour vous')};
+    a.onerror=function(){document.getElementById('sofiaAvatar').classList.remove('speaking');setStatus('Disponible pour vous')};
+    a.play();
+  }catch(e){
+    document.getElementById('sofiaAvatar').classList.remove('speaking');
+    setStatus('Disponible pour vous');
+  }
+}
+
+function initVoice(){var S=window.SpeechRecognition||window.webkitSpeechRecognition;if(!S){document.getElementById('micTexte').textContent='Écrire seulement';document.getElementById('micGrandBtn').style.opacity='0.5';return}recognition=new S();recognition.lang='fr-CA';recognition.continuous=false;recognition.interimResults=false;recognition.onresult=function(e){var t=e.results[0][0].transcript;stopListening();addMessage(t,'user');conversationHistory.push({role:'user',content:t});getSofiaReply()};recognition.onerror=recognition.onend=function(){stopListening()}}
+
+function toggleVoice(){if(isSpeaking){return}if(isListening){stopListening()}else{startListening()}}
+
+function startListening(){if(!recognition)return;isListening=true;document.getElementById('micGrandBtn').classList.add('listening');document.getElementById('micIcone').textContent='⏹️';document.getElementById('micTexte').textContent='Sofia vous écoute...';document.getElementById('sofiaAvatar').classList.add('listening');setStatus('Je vous écoute...');try{recognition.start()}catch(e){}}
+
 function stopListening(){isListening=false;document.getElementById('micGrandBtn').classList.remove('listening');document.getElementById('micIcone').textContent='🎙️';document.getElementById('micTexte').textContent='Appuyez pour parler';document.getElementById('sofiaAvatar').classList.remove('listening');setStatus('Disponible pour vous');try{recognition.stop()}catch(e){}}
+
 function setStatus(t){document.getElementById('sofiaStatus').textContent=t}
 function autoResize(e){e.style.height='auto';e.style.height=Math.min(e.scrollHeight,100)+'px'}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
 function sendSuggestion(t){document.getElementById('userInput').value=t;sendMessage()}
-function addMessage(t,w){let z=document.getElementById('messagesZone');let d=document.createElement('div');d.className='message '+w;let a=document.createElement('div');a.className='msg-av';a.textContent=w==='sofia'?'🌸':'👤';let b=document.createElement('div');b.className='msg-bubble';b.innerHTML=t.replace(/\n/g,'<br>');d.appendChild(a);d.appendChild(b);z.appendChild(d);z.scrollTop=z.scrollHeight}
-function showTyping(){let z=document.getElementById('messagesZone');let d=document.createElement('div');d.className='typing-indicator';d.id='typingDots';let a=document.createElement('div');a.className='msg-av';a.style.cssText='background:linear-gradient(135deg,#E8C49A,#C97B63);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;';a.textContent='🌸';let b=document.createElement('div');b.className='typing-bubble';b.innerHTML='<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';d.appendChild(a);d.appendChild(b);z.appendChild(d);z.scrollTop=z.scrollHeight}
-function hideTyping(){let t=document.getElementById('typingDots');if(t)t.remove()}
-function sendMessage(){let i=document.getElementById('userInput');let t=i.value.trim();if(!t)return;addMessage(t,'user');i.value='';i.style.height='auto';conversationHistory.push({role:'user',content:t});getSofiaReply()}
-async function getSofiaReply(){document.getElementById('sendBtn').disabled=true;setStatus('Sofia réfléchit... 💭');showTyping();try{let r=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:conversationHistory})});let d=await r.json();hideTyping();if(d.content&&d.content[0]){let reply=d.content[0].text;conversationHistory.push({role:'assistant',content:reply});addMessage(reply,'sofia');speakText(reply)}else{addMessage("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ? 😊",'sofia')}}catch(e){hideTyping();addMessage("Je suis désolée, je n'arrive pas à vous répondre. Réessayons ! 🌸",'sofia')}document.getElementById('sendBtn').disabled=false;setStatus('Disponible pour vous')}
+
+function addMessage(t,w){var z=document.getElementById('messagesZone');var d=document.createElement('div');d.className='message '+w;var a=document.createElement('div');a.className='msg-av';a.textContent=w==='sofia'?'🌸':'👤';var b=document.createElement('div');b.className='msg-bubble';b.innerHTML=t.replace(/\n/g,'<br>');d.appendChild(a);d.appendChild(b);z.appendChild(d);z.scrollTop=z.scrollHeight}
+
+function showTyping(){var z=document.getElementById('messagesZone');var d=document.createElement('div');d.className='typing-indicator';d.id='typingDots';var a=document.createElement('div');a.className='msg-av';a.style.cssText='background:linear-gradient(135deg,#E8C49A,#C97B63);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;';a.textContent='🌸';var b=document.createElement('div');b.className='typing-bubble';b.innerHTML='<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';d.appendChild(a);d.appendChild(b);z.appendChild(d);z.scrollTop=z.scrollHeight}
+
+function hideTyping(){var t=document.getElementById('typingDots');if(t)t.remove()}
+
+function sendMessage(){var i=document.getElementById('userInput');var t=i.value.trim();if(!t)return;addMessage(t,'user');i.value='';i.style.height='auto';conversationHistory.push({role:'user',content:t});getSofiaReply()}
+
+async function getSofiaReply(){document.getElementById('sendBtn').disabled=true;setStatus('Sofia réfléchit...');showTyping();try{var r=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:conversationHistory})});var d=await r.json();hideTyping();if(d.content&&d.content[0]){var reply=d.content[0].text;conversationHistory.push({role:'assistant',content:reply});addMessage(reply,'sofia');speakText(reply)}else{addMessage("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?",'sofia')}}catch(e){hideTyping();addMessage("Je suis désolée, je n'arrive pas à vous répondre. Réessayons !",'sofia')}document.getElementById('sendBtn').disabled=false;setStatus('Disponible pour vous')}
+
 initVoice();
 </script>
 </body>
 </html>
-Collez tout et cliquez sur "Commit changes..." ! 🌸
