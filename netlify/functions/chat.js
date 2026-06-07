@@ -15,7 +15,7 @@ exports.handler = async function(event) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 800,
         system: 'Tu es Sofia, une compagne bienveillante pour les personnes agees. Joyeuse, douce, patiente. Phrases courtes et simples. Tu vouvoies toujours. Tu parles en francais quebecois chaleureux. Jamais de psychologie ou medecine. Urgence: rappeler le 911.',
         messages: messages
