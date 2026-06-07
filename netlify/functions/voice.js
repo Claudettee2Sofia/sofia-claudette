@@ -4,7 +4,7 @@ exports.handler = async function(event) {
   }
   try {
     const { text } = JSON.parse(event.body);
-    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/WW0JfNPk5DgcQdM0d6X6', {
+    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/WeAAwKYcS06VmXw086yZ', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
