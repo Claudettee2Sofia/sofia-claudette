@@ -13,7 +13,7 @@ exports.handler = async function(event) {
       body: JSON.stringify({
         text: text,
         model_id: 'eleven_turbo_v2_5',
-        voice_settings: { stability: 0.6, similarity_boost: 0.8, speed: 0.85 }
+        voice_settings: { stability: 0.6, similarity_boost: 0.8, speed:1.0 }
       })
     });
     const audioBuffer = await response.arrayBuffer();
