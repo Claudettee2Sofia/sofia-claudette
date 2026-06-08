@@ -318,20 +318,19 @@ function initRecognition() {
   };
 
   recognition.onend = function() {
-    // Si écoute auto active et pas en train de parler — redémarrer
     if (isListening) {
       isListening = false;
       document.getElementById('soleil').classList.remove('listening');
       document.getElementById('soleilIcone').textContent = '🎙️';
       document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
     }
-    if (isEcouteActive && !isSpeaking) {
+    if (isEcouteActive && !isSpeaking && !isListening) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
         if (isEcouteActive && !isListening && !isSpeaking) {
           startListening();
         }
-      }, 400);
+      }, 1500);
     }
   };
 
