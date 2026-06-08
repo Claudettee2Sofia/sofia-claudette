@@ -333,12 +333,7 @@ async function speakText(t){
   setStatus(isEcouteActive?'Sofia vous écoute... 👂':'Appuyez sur Sofia pour parler 🌸');
   if(isEcouteActive)setTimeout(function(){startListening()},500);
 };
-      isSpeaking=false;
-      document.getElementById('soleil').classList.remove('speaking');
-      setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
-      if(isEcouteActive)setTimeout(function(){startWakeWord()},800);
-    };
-    a.onerror=function(){
+         a.onerror=function(){
       document.getElementById('soleil').classList.remove('speaking');
       setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
     };
