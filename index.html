@@ -37,95 +37,53 @@
   /* Bouton écoute permanente */
   .ecoute-btn {
     position: fixed;
-    top: 14px;
-    right: 14px;
+    top: 14px; right: 14px;
     z-index: 100;
     background: rgba(255,255,255,0.12);
     border: 1.5px solid rgba(255,255,255,0.25);
     border-radius: 22px;
     padding: 7px 13px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    display: flex; align-items: center; gap: 7px;
     cursor: pointer;
     font-family: 'Quicksand', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 12px; font-weight: 700;
     color: rgba(255,255,255,0.7);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
   }
-
   .ecoute-btn:active { transform: scale(0.95); }
-
   .ecoute-btn.active {
     background: rgba(129,199,132,0.25);
     border-color: rgba(129,199,132,0.6);
     color: #C8E6C9;
     box-shadow: 0 0 15px rgba(129,199,132,0.3);
   }
-
   .ecoute-dot {
-    width: 9px; height: 9px;
-    border-radius: 50%;
+    width: 9px; height: 9px; border-radius: 50%;
     background: rgba(255,255,255,0.4);
-    flex-shrink: 0;
-    transition: all 0.3s;
+    flex-shrink: 0; transition: all 0.3s;
   }
-
   .ecoute-btn.active .ecoute-dot {
     background: #81C784;
     animation: dotPulse 1.5s ease-in-out infinite;
     box-shadow: 0 0 6px rgba(129,199,132,0.8);
   }
-
-  @keyframes dotPulse {
-    0%,100%{transform:scale(1);opacity:1}
-    50%{transform:scale(1.3);opacity:0.7}
-  }
-
-  /* Indicateur de mot-clé entendu */
-  .wake-indicator {
-    position: fixed;
-    top: 14px;
-    left: 14px;
-    z-index: 100;
-    background: rgba(255,213,79,0.2);
-    border: 1.5px solid rgba(255,213,79,0.5);
-    border-radius: 22px;
-    padding: 7px 13px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #FFD54F;
-    display: none;
-    align-items: center;
-    gap: 6px;
-    backdrop-filter: blur(10px);
-    animation: wakeIn 0.3s ease;
-  }
-
-  @keyframes wakeIn { from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)} }
+  @keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7} }
 
   /* Zone principale */
   .main-zone {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1;
-    padding: 10px;
-    min-height: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 1;
+    padding: 10px; min-height: 0;
   }
 
   .orbit-container {
     position: relative;
     width: min(80vw, 80vh, 400px);
     height: min(80vw, 80vh, 400px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
 
@@ -136,7 +94,6 @@
   .sun-rays { position:absolute;width:55%;height:55%;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,213,79,0.15) 0%,transparent 70%);animation:rayPulse 3s ease-in-out infinite;pointer-events:none;z-index:4; }
   @keyframes rayPulse { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:0.6}50%{transform:translate(-50%,-50%)scale(1.15);opacity:1} }
 
-  /* Soleil Sofia */
   .soleil {
     width:38%;height:38%;
     min-width:120px;min-height:120px;
@@ -145,11 +102,10 @@
     background:radial-gradient(circle at 38% 38%,var(--soleil-centre),var(--soleil),var(--soleil-bord));
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     cursor:pointer;position:relative;z-index:10;
-    box-shadow:0 0 40px var(--soleil-glow),0 0 80px rgba(255,213,79,0.2),0 0 120px rgba(255,213,79,0.1);
+    box-shadow:0 0 40px var(--soleil-glow),0 0 80px rgba(255,213,79,0.2);
     transition:all 0.2s ease;border:none;font-family:'Quicksand',sans-serif;
   }
   .soleil:active { transform:scale(0.95); }
-
   .soleil.listening {
     background:radial-gradient(circle at 38% 38%,#FFCDD2,#E57373,#C62828);
     animation:soleilPulse 1.2s ease-in-out infinite;
@@ -159,36 +115,27 @@
     animation:soleilSpeak 0.8s ease-in-out infinite alternate;
     box-shadow:0 0 50px rgba(129,199,132,0.5),0 0 100px rgba(129,199,132,0.3);
   }
-  .soleil.wake-active {
-    background:radial-gradient(circle at 38% 38%,#FFF9C4,#FFD54F,#F9A825);
-    animation:wakeGlow 0.6s ease-in-out infinite alternate;
-  }
-
   @keyframes soleilPulse { 0%,100%{box-shadow:0 0 40px rgba(229,115,115,0.4)}50%{box-shadow:0 0 70px rgba(229,115,115,0.7),0 0 0 15px rgba(229,115,115,0.1)} }
   @keyframes soleilSpeak { from{box-shadow:0 0 40px rgba(129,199,132,0.4)}to{box-shadow:0 0 70px rgba(129,199,132,0.6),0 0 0 12px rgba(129,199,132,0.15)} }
-  @keyframes wakeGlow { from{box-shadow:0 0 40px rgba(255,213,79,0.5)}to{box-shadow:0 0 70px rgba(255,213,79,0.9),0 0 0 15px rgba(255,213,79,0.2)} }
 
   .soleil-nom { font-family:'Cormorant Garamond',serif;font-size:clamp(22px,5vw,30px);font-weight:600;color:#5D4037;line-height:1; }
   .soleil-icone { font-size:clamp(28px,7vw,40px);line-height:1;margin:2px 0; }
   .soleil-texte { font-size:clamp(9px,2vw,12px);font-weight:700;color:#795548;letter-spacing:1px;text-transform:uppercase; }
 
-  /* Planètes */
   .planete {
     position:absolute;
     width:clamp(50px,16%,68px);height:clamp(50px,16%,68px);
     border-radius:50%;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     cursor:pointer;
-    transition:transform 0.2s ease;
     border:2px solid rgba(255,255,255,0.25);
     z-index:5;
     animation:floatP 4s ease-in-out infinite;
     box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
   }
-  .planete:active { transform:translate(-50%,-50%) scale(0.9) !important; }
-
+  .planete:active { filter: brightness(1.2); }
   @keyframes floatP { 0%,100%{margin-top:0}50%{margin-top:-3px} }
-
   .planete-icone { font-size:clamp(18px,4vw,24px);line-height:1; }
   .planete-nom { font-size:clamp(7px,1.8vw,9px);font-weight:700;color:white;margin-top:1px;text-transform:uppercase;letter-spacing:0.3px;text-shadow:0 1px 2px rgba(0,0,0,0.3); }
 
@@ -199,39 +146,33 @@
   .p-activites { background:radial-gradient(circle at 35% 35%,#E1BEE7,#BA68C8); top:73%; left:12%; transform:translate(-50%,-50%); animation-delay:2s; }
   .p-urgence   { background:radial-gradient(circle at 35% 35%,#FFCDD2,#E57373); top:27%; left:12%; transform:translate(-50%,-50%); animation-delay:2.5s; box-shadow:0 0 15px rgba(229,115,115,0.4); }
 
-  /* Statut */
   .status-zone { margin-top:12px;text-align:center;min-height:22px;padding:0 20px; }
   .status-text { font-size:clamp(13px,3.5vw,16px);font-weight:600;color:rgba(255,255,255,0.85);text-shadow:0 1px 4px rgba(0,0,0,0.3); }
 
-  /* Réponse */
   .response-zone { width:100%;max-width:500px;margin-top:10px;max-height:25vh;overflow-y:auto;padding:0 16px;flex-shrink:1; }
   .response-zone::-webkit-scrollbar{width:3px}
   .response-zone::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.3);border-radius:3px}
 
   .response-bubble { background:rgba(255,255,255,0.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:18px;padding:12px 16px;font-size:clamp(14px,3.5vw,17px);line-height:1.6;color:white;text-shadow:0 1px 2px rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.15);animation:fadeIn 0.4s ease; }
   .user-bubble { background:rgba(255,255,255,0.07);text-align:right;font-style:italic;font-size:clamp(12px,3vw,14px);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:8px 14px;margin-bottom:8px;animation:fadeIn 0.3s ease; }
-
   @keyframes fadeIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
 
   .typing-dots { display:flex;gap:6px;padding:12px 18px;justify-content:center; }
   .td { width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);animation:tdB 1.2s ease-in-out infinite; }
-  .td:nth-child(2){animation-delay:0.2s}
-  .td:nth-child(3){animation-delay:0.4s}
+  .td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
   @keyframes tdB { 0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-8px);opacity:1} }
 
-  /* Zone texte */
   .text-zone { z-index:10;padding:8px 12px;display:flex;gap:8px;align-items:center;background:rgba(0,0,0,0.2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px); }
   .text-input { flex:1;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:22px;padding:8px 14px;font-size:14px;font-family:'Quicksand',sans-serif;color:white;resize:none;outline:none;max-height:40px;line-height:1.4; }
   .text-input::placeholder{color:rgba(255,255,255,0.4)}
   .text-input:focus{border-color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.18)}
-  .send-btn { width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;transition:all 0.2s;color:white; }
+  .send-btn { width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:white;transition:all 0.2s; }
   .send-btn:active{transform:scale(0.9)}
   .send-btn:disabled{opacity:0.3}
   .text-hint { font-size:10px;color:rgba(255,255,255,0.3);text-align:center;padding:3px 0 max(6px,env(safe-area-inset-bottom));background:rgba(0,0,0,0.2); }
 
   @media(min-width:768px){.orbit-container{width:min(55vh,420px);height:min(55vh,420px)}.response-zone{max-height:20vh}}
   @media(max-height:600px){.orbit-container{width:min(50vw,50vh,260px);height:min(50vw,50vh,260px)}.status-zone{margin-top:6px}.response-zone{max-height:18vh;margin-top:6px}}
-  @media(orientation:landscape)and(max-height:500px){.main-zone{flex-direction:row;gap:16px;padding:8px}.orbit-container{width:min(70vh,300px);height:min(70vh,300px)}.status-zone{display:none}.response-zone{max-height:60vh;margin-top:0}}
 </style>
 </head>
 <body>
@@ -239,16 +180,10 @@
 <div class="stars" id="stars"></div>
 <div class="clouds"></div>
 
-<!-- Bouton écoute permanente -->
 <button class="ecoute-btn" id="ecouteBtn" onclick="toggleEcoute()">
   <div class="ecoute-dot" id="ecouteDot"></div>
-  <span id="ecouteTexte">Écoute Sofia</span>
+  <span id="ecouteTexte">Écoute auto</span>
 </button>
-
-<!-- Indicateur mot-clé -->
-<div class="wake-indicator" id="wakeIndicator">
-  ✨ Sofia vous écoute !
-</div>
 
 <div class="main-zone">
   <div class="orbit-container">
@@ -292,7 +227,7 @@
   <textarea class="text-input" id="userInput" placeholder="Ou écrivez ici..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
-<div class="text-hint">Dites "Sofia" pour l'activer — ou appuyez sur le soleil ☀️</div>
+<div class="text-hint">Activez l'écoute auto — ou appuyez sur le soleil ☀️</div>
 
 <script>
 // Étoiles
@@ -302,231 +237,242 @@
     var d=document.createElement('div');d.className='star';
     var sz=Math.random()*2+0.5;
     d.style.width=sz+'px';d.style.height=sz+'px';
-    d.style.left=Math.random()*100+'%';d.style.top=Math.random()*55+'%';
+    d.style.left=Math.random()*100+'%';
+    d.style.top=Math.random()*55+'%';
     d.style.animationDelay=Math.random()*5+'s';
     d.style.animationDuration=(Math.random()*3+2)+'s';
     s.appendChild(d);
   }
 })();
 
-var conversationHistory=[];
-var isSpeaking=false;
-var isListening=false;
-var isEcouteActive=false;
-var recognition=null;
-var wakeRecognition=null;
-var wakeTimeout=null;
+var conversationHistory = [];
+var isSpeaking = false;
+var isListening = false;
+var isEcouteActive = false;
+var recognition = null;
+var autoRestartTimer = null;
 
 // === VOIX ELEVENLABS ===
-async function speakText(t){
-  var c=t.replace(/<br\s*\/?>/gi,'. ').replace(/[\u{1F300}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();
+async function speakText(t) {
+  var c = t.replace(/<br\s*\/?>/gi, '. ')
+            .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+            .replace(/\s+/g, ' ').trim();
+  isSpeaking = true;
   document.getElementById('soleil').classList.add('speaking');
   setStatus('Sofia vous parle...');
-  try{
-    var r=await fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c})});
-    if(!r.ok)throw new Error('Voice failed');
-    var b=await r.blob();
-    var a=new Audio(URL.createObjectURL(b));
-    a.onended=function(){
-      document.getElementById('soleil').classList.remove('speaking');
-      setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
-      if(isEcouteActive)startWakeWord();
-    };
-    a.onerror=function(){
-      document.getElementById('soleil').classList.remove('speaking');
-      setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
-    };
+  try {
+    var r = await fetch('/.netlify/functions/voice', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: c})
+    });
+    if (!r.ok) throw new Error('Voice failed');
+    var b = await r.blob();
+    var a = new Audio(URL.createObjectURL(b));
+    a.onended = function() { onSpeakEnd(); };
+    a.onerror = function() { onSpeakEnd(); };
     a.play();
-  }catch(e){
-    document.getElementById('soleil').classList.remove('speaking');
-    setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
+  } catch(e) {
+    onSpeakEnd();
   }
 }
 
-// === ÉCOUTE DU MOT-CLÉ "SOFIA" ===
-function startWakeWord(){
-  if(!isEcouteActive||isListening||isSpeaking)return;
-  var S=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!S)return;
-  try{
-    if(wakeRecognition){try{wakeRecognition.stop()}catch(e){}}
-    wakeRecognition=new S();
-    wakeRecognition.lang='fr-CA';
-    wakeRecognition.continuous=false;
-    wakeRecognition.interimResults=true;
-    wakeRecognition.onresult=function(e){
-      var texte='';
-      for(var i=0;i<e.results.length;i++){
-        texte+=e.results[i][0].transcript.toLowerCase();
+function onSpeakEnd() {
+  isSpeaking = false;
+  document.getElementById('soleil').classList.remove('speaking');
+  if (isEcouteActive) {
+    setStatus('Sofia vous écoute... 👂');
+    // Redémarrer écoute après que Sofia a fini de parler
+    clearTimeout(autoRestartTimer);
+    autoRestartTimer = setTimeout(function() {
+      if (isEcouteActive && !isListening) {
+        startListening();
       }
-      // Détecter "sofia" ou "sophie" (reconnaissance vocale peut varier)
-      if(texte.includes('sofia')||texte.includes('sophie')||texte.includes('sofi')){
-        wakeRecognition.stop();
-        wakeWordDetected();
-      }
-    };
-    wakeRecognition.onend=function(){
-      if(isEcouteActive&&!isListening&&!isSpeaking){
-        // Redémarrer l'écoute du mot-clé après un délai
-        setTimeout(function(){startWakeWord()},500);
-      }
-    };
-    wakeRecognition.onerror=function(){
-      if(isEcouteActive&&!isListening&&!isSpeaking){
-        setTimeout(function(){startWakeWord()},1000);
-      }
-    };
-    wakeRecognition.start();
-  }catch(e){}
-}
-
-function stopWakeWord(){
-  if(wakeRecognition){
-    try{wakeRecognition.stop()}catch(e){}
-    wakeRecognition=null;
+    }, 700);
+  } else {
+    setStatus('Appuyez sur Sofia pour parler 🌸');
   }
 }
 
-function wakeWordDetected(){
-  // Montrer l'indicateur
-  var wi=document.getElementById('wakeIndicator');
-  wi.style.display='flex';
-  document.getElementById('soleil').classList.add('wake-active');
-  // Démarrer l'écoute active après une courte pause
-  setTimeout(function(){
-    wi.style.display='none';
-    document.getElementById('soleil').classList.remove('wake-active');
-    startListening();
-  },600);
-}
+// === RECONNAISSANCE VOCALE ===
+function initRecognition() {
+  var S = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!S) {
+    document.getElementById('soleilTexte').textContent = 'Écrire';
+    return;
+  }
+  recognition = new S();
+  recognition.lang = 'fr-CA';
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-// === ÉCOUTE ACTIVE (après wake word ou bouton) ===
-function initRecognition(){
-  var S=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!S){document.getElementById('soleilTexte').textContent='Écrire';return}
-  recognition=new S();
-  recognition.lang='fr-CA';
-  recognition.continuous=false;
-  recognition.interimResults=false;
-  recognition.onresult=function(e){
-    var t=e.results[0][0].transcript;
-    stopListening();
+  recognition.onresult = function(e) {
+    var t = e.results[0][0].transcript;
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
+    document.getElementById('soleilIcone').textContent = '🎙️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
     showUserMessage(t);
-    conversationHistory.push({role:'user',content:t});
+    conversationHistory.push({role: 'user', content: t});
     getSofiaReply();
   };
-  recognition.onerror=function(){stopListening()};
-  recognition.onend=function(){
-    if(isListening)stopListening();
+
+  recognition.onend = function() {
+    // Si écoute auto active et pas en train de parler — redémarrer
+    if (isListening) {
+      isListening = false;
+      document.getElementById('soleil').classList.remove('listening');
+      document.getElementById('soleilIcone').textContent = '🎙️';
+      document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+    }
+    if (isEcouteActive && !isSpeaking) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer = setTimeout(function() {
+        if (isEcouteActive && !isListening && !isSpeaking) {
+          startListening();
+        }
+      }, 400);
+    }
+  };
+
+  recognition.onerror = function(e) {
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
+    document.getElementById('soleilIcone').textContent = '🎙️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+    if (isEcouteActive && !isSpeaking) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer = setTimeout(function() {
+        if (isEcouteActive && !isListening && !isSpeaking) {
+          startListening();
+        }
+      }, 1000);
+    }
   };
 }
 
-function toggleVoice(){
-  if(isSpeaking)return;
-  if(isListening){stopListening()}
-  else{
-    stopWakeWord();
+function startListening() {
+  if (!recognition || isListening || isSpeaking) return;
+  try {
+    isListening = true;
+    document.getElementById('soleil').classList.add('listening');
+    document.getElementById('soleilIcone').textContent = '⏹️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Parlez...';
+    setStatus('Sofia vous écoute... 👂');
+    recognition.start();
+  } catch(e) {
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
+  }
+}
+
+function stopListening() {
+  isListening = false;
+  clearTimeout(autoRestartTimer);
+  document.getElementById('soleil').classList.remove('listening');
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = 'Appuyez';
+  setStatus('Appuyez sur Sofia pour parler 🌸');
+  try { recognition.stop(); } catch(e) {}
+}
+
+// Bouton soleil — manuel
+function toggleVoice() {
+  if (isSpeaking) return;
+  if (isListening) {
+    // Si écoute auto, juste arrêter temporairement
+    if (isEcouteActive) {
+      try { recognition.stop(); } catch(e) {}
+    } else {
+      stopListening();
+    }
+  } else {
     startListening();
   }
 }
 
-function startListening(){
-  if(!recognition)return;
-  isListening=true;
-  document.getElementById('soleil').classList.add('listening');
-  document.getElementById('soleilIcone').textContent='⏹️';
-  document.getElementById('soleilTexte').textContent='Parlez...';
-  setStatus('Sofia vous écoute... 👂');
-  try{recognition.start()}catch(e){stopListening()}
-}
-
-function stopListening(){
-  isListening=false;
-  document.getElementById('soleil').classList.remove('listening');
-  document.getElementById('soleilIcone').textContent='🎙️';
-  document.getElementById('soleilTexte').textContent='Appuyez';
-  setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
-  try{recognition.stop()}catch(e){}
-}
-
-// === ACTIVATION ÉCOUTE PERMANENTE ===
-function toggleEcoute(){
-  isEcouteActive=!isEcouteActive;
-  var btn=document.getElementById('ecouteBtn');
-  var texte=document.getElementById('ecouteTexte');
-  if(isEcouteActive){
+// Bouton écoute auto
+function toggleEcoute() {
+  isEcouteActive = !isEcouteActive;
+  var btn = document.getElementById('ecouteBtn');
+  var texte = document.getElementById('ecouteTexte');
+  if (isEcouteActive) {
     btn.classList.add('active');
-    texte.textContent='Écoute active';
-    setStatus('Dites "Sofia" pour me parler 👂');
-    startWakeWord();
-  }else{
+    texte.textContent = 'Écoute active';
+    document.getElementById('soleilTexte').textContent = 'Auto';
+    setStatus('Sofia vous écoute... 👂');
+    startListening();
+  } else {
     btn.classList.remove('active');
-    texte.textContent='Écoute Sofia';
-    setStatus('Appuyez sur Sofia pour parler 🌸');
-    stopWakeWord();
+    texte.textContent = 'Écoute auto';
+    clearTimeout(autoRestartTimer);
     stopListening();
   }
 }
 
-function setStatus(t){document.getElementById('statusText').textContent=t}
-function autoResize(e){e.style.height='auto';e.style.height=Math.min(e.scrollHeight,40)+'px'}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}}
+function setStatus(t) { document.getElementById('statusText').textContent = t; }
+function autoResize(e) { e.style.height='auto'; e.style.height=Math.min(e.scrollHeight,40)+'px'; }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
 
-function sendSuggestion(t){
-  stopWakeWord();
+function sendSuggestion(t) {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
   showUserMessage(t);
-  conversationHistory.push({role:'user',content:t});
+  conversationHistory.push({role: 'user', content: t});
   getSofiaReply();
 }
 
-function showUserMessage(t){
-  var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="user-bubble">'+t+'</div>';
+function showUserMessage(t) {
+  var z = document.getElementById('responseZone');
+  z.innerHTML = '<div class="user-bubble">' + t + '</div>';
 }
 
-function showTyping(){
-  var z=document.getElementById('responseZone');
-  z.innerHTML+='<div class="typing-dots" id="typingDots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
+function showTyping() {
+  var z = document.getElementById('responseZone');
+  z.innerHTML += '<div class="typing-dots" id="typingDots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
 }
 
-function showResponse(t){
-  var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="response-bubble">'+t.replace(/\n/g,'<br>')+'</div>';
-  z.scrollTop=z.scrollHeight;
+function showResponse(t) {
+  var z = document.getElementById('responseZone');
+  z.innerHTML = '<div class="response-bubble">' + t.replace(/\n/g,'<br>') + '</div>';
+  z.scrollTop = z.scrollHeight;
 }
 
-function sendMessage(){
-  var i=document.getElementById('userInput');
-  var t=i.value.trim();
-  if(!t)return;
-  stopWakeWord();
+function sendMessage() {
+  var i = document.getElementById('userInput');
+  var t = i.value.trim();
+  if (!t) return;
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
   showUserMessage(t);
-  i.value='';i.style.height='auto';
-  conversationHistory.push({role:'user',content:t});
+  i.value = ''; i.style.height = 'auto';
+  conversationHistory.push({role: 'user', content: t});
   getSofiaReply();
 }
 
-async function getSofiaReply(){
-  document.getElementById('sendBtn').disabled=true;
+async function getSofiaReply() {
+  document.getElementById('sendBtn').disabled = true;
   setStatus('Sofia réfléchit...');
   showTyping();
-  try{
-    var r=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:conversationHistory})});
-    var d=await r.json();
-    if(d.content&&d.content[0]){
-      var reply=d.content[0].text;
-      conversationHistory.push({role:'assistant',content:reply});
+  try {
+    var r = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({messages: conversationHistory})
+    });
+    var d = await r.json();
+    if (d.content && d.content[0]) {
+      var reply = d.content[0].text;
+      conversationHistory.push({role: 'assistant', content: reply});
       showResponse(reply);
       speakText(reply);
-    }else{
+    } else {
       showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-      if(isEcouteActive)startWakeWord();
+      if (isEcouteActive) setTimeout(function(){startListening();}, 700);
     }
-  }catch(e){
+  } catch(e) {
     showResponse("Je suis désolée, réessayons !");
-    if(isEcouteActive)startWakeWord();
+    if (isEcouteActive) setTimeout(function(){startListening();}, 700);
   }
-  document.getElementById('sendBtn').disabled=false;
+  document.getElementById('sendBtn').disabled = false;
 }
 
 initRecognition();
