@@ -328,6 +328,11 @@ async function speakText(t){
     var b=await r.blob();
     var a=new Audio(URL.createObjectURL(b));
    a.onended=function(){
+  isSpeaking=false;
+  document.getElementById('soleil').classList.remove('speaking');
+  setStatus(isEcouteActive?'Sofia vous écoute... 👂':'Appuyez sur Sofia pour parler 🌸');
+  if(isEcouteActive)setTimeout(function(){startListening()},500);
+};
       isSpeaking=false;
       document.getElementById('soleil').classList.remove('speaking');
       setStatus(isEcouteActive?'Dites "Sofia" pour me parler 👂':'Appuyez sur Sofia pour parler 🌸');
@@ -388,7 +393,13 @@ function stopWakeWord(){
   }
 }
 
-function wakeWordDetected(){
+wakeRecognition.onend=function(){
+  if(isEcouteActive&&!isListening&&!isSpeaking){
+    setTimeout(function(){startListening()},300);
+  }
+};
+  startListening();
+}
   // Montrer l'indicateur
   var wi=document.getElementById('wakeIndicator');
   wi.style.display='flex';
