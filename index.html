@@ -327,7 +327,6 @@ async function speakText(t){
     if(!r.ok)throw new Error('Voice failed');
     var b=await r.blob();
     var a=new Audio(URL.createObjectURL(b));
-    a.onended=function(){
    a.onended=function(){
       isSpeaking=false;
       document.getElementById('soleil').classList.remove('speaking');
