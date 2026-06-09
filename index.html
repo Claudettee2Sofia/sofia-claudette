@@ -366,9 +366,9 @@ async function demanderNouvelles() {
         var a = d.articles[i];
         var src = a.source;
         if (src === 'RC Arts' || src === 'RC Culture' || src === 'La Presse Arts') {
-          if (culture.length < 5) culture.push(a);
+          if (culture.length < 8) culture.push(a);
         } else {
-          if (generales.length < 6) generales.push(a);
+          if (generales.length < 12) generales.push(a);
         }
       }
       var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes agees du Quebec. ';
