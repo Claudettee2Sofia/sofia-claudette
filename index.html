@@ -487,12 +487,12 @@ async function demanderNouvelles() {
       d.articles.slice(0, 4).forEach(function(a, i) {
         resume += (i+1) + '. ' + a.titre + '. ';
       });
-      const texte = d.articles.map(function(a, i) {
-  return (i+1) + '. [' + a.source + '] ' + a.titre;
-}).join(' ');
-conversationHistory.push({role: 'user', content: 'Tu es Sofia. Présente ces nouvelles du Québec à une personne âgée de façon chaleureuse, claire et organisée. Commence par les actualités générales, puis la culture et les arts. Lis environ 8 titres en les résumant simplement : ' + texte});
-Cliquez "Commit changes...", attendez 2 minutes et testez la planète 📰 ! 🌸
-      getSofiaReply();
+     let resume = 'Voici les nouvelles du jour au Québec ! ';
+d.articles.slice(0, 4).forEach(function(a, i) {
+  resume += (i+1) + '. ' + a.titre + '. ';
+});
+conversationHistory.push({role: 'user', content: 'Résume-moi ces nouvelles du Québec en français simple et chaleureux : ' + resume});
+getSofiaReply();
     }
   } catch(e) {
     showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
