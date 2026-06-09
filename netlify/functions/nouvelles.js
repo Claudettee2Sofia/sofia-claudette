@@ -4,7 +4,7 @@ exports.handler = async function(event) {
       { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada' },
       { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'Radio-Canada Arts' },
       { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'Radio-Canada Culture' },
-{ url: 'https://www.tvanouvelles.ca/rss', nom: 'TVA Nouvelles' }
+{ url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles' }
     ];
 
     const items = [];
