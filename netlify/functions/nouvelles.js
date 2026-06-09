@@ -1,10 +1,12 @@
 exports.handler = async function(event) {
   try {
     const sources = [
-      { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada' },
-      { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'Radio-Canada Arts' },
-      { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'Radio-Canada Culture' },
-{ url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles' }
+      { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada', max: 5 },
+      { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'RC Arts', max: 4 },
+      { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'RC Culture', max: 4 },
+      { url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles', max: 4 },
+      { url: 'https://www.lapresse.ca/actualites/rss', nom: 'La Presse', max: 4 },
+      { url: 'https://www.lapresse.ca/arts/rss', nom: 'La Presse Arts', max: 3 }
     ];
 
     const items = [];
@@ -21,26 +23,31 @@ exports.handler = async function(event) {
 
         let match;
         let count = 0;
-        while ((match = itemRegex.exec(xml)) !== null && count < 4) {
+        while ((match = itemRegex.exec(xml)) !== null && count < source.max) {
           const itemXml = match[1];
           const titleMatch = titleRegex.exec(itemXml);
           const descMatch = descRegex.exec(itemXml);
           if (titleMatch) {
-            items.push({
-              titre: (titleMatch[1] || titleMatch[2] || '').trim(),
-              description: (descMatch ? (descMatch[1] || descMatch[2] || '') : '').replace(/<[^>]*>/g, '').trim().substring(0, 150),
-              source: source.nom
-            });
-            count++;
+            const titre = (titleMatch[1] || titleMatch[2] || '').trim();
+            if (titre.length > 5) {
+              items.push({
+                titre: titre,
+                description: (descMatch ? (descMatch[1] || descMatch[2] || '') : '').replace(/<[^>]*>/g, '').trim().substring(0, 200),
+                source: source.nom
+              });
+              count++;
+            }
           }
         }
-      } catch(e) {}
+      } catch(e) {
+        console.log('Source failed:', source.nom, e.message);
+      }
     }
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ articles: items })
+      body: JSON.stringify({ articles: items, total: items.length })
     };
   } catch(error) {
     return {
