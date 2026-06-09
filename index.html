@@ -200,7 +200,7 @@
     <div class="planete p-meteo" onclick="sendSuggestion('Quelle est la météo aujourd\'hui ?')">
       <div class="planete-icone">☀️</div><div class="planete-nom">Météo</div>
     </div>
-    <div class="planete p-nouvelles" onclick="sendSuggestion('Quelles sont les nouvelles du jour ?')">
+    <div class="planete p-nouvelles" onclick="demanderNouvelles()">
       <div class="planete-icone">📰</div><div class="planete-nom">Nouvelles</div>
     </div>
     <div class="planete p-medic" onclick="sendSuggestion('Rappelle-moi mes médicaments.')">
@@ -474,7 +474,26 @@ async function getSofiaReply() {
   }
   document.getElementById('sendBtn').disabled = false;
 }
-
+async function demanderNouvelles() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  showUserMessage('Les nouvelles du jour 📰');
+  setStatus('Sofia cherche les nouvelles...');
+  showTyping();
+  try {
+    const r = await fetch('/.netlify/functions/nouvelles');
+    const d = await r.json();
+    if (d.articles && d.articles.length > 0) {
+      let resume = 'Voici les nouvelles du jour au Québec ! ';
+      d.articles.slice(0, 4).forEach(function(a, i) {
+        resume += (i+1) + '. ' + a.titre + '. ';
+      });
+      conversationHistory.push({role: 'user', content: 'Résume-moi ces nouvelles du Québec en français simple et chaleureux : ' + resume});
+      getSofiaReply();
+    }
+  } catch(e) {
+    showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
+  }
+}
 initRecognition();
 </script>
 </body>
