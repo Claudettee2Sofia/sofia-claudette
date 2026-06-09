@@ -4,7 +4,9 @@ exports.handler = async function(event) {
       { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada', max: 5 },
       { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'RC Arts', max: 4 },
       { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'RC Culture', max: 4 },
-      { url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles', max: 4 },
+     { url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles', max: 4 },
+{ url: 'https://www.france24.com/fr/rss', nom: 'France 24', max: 3 },
+{ url: 'https://fr.euronews.com/rss', nom: 'Euronews', max: 3 }Sonnet 4.6 Moyen
       { url: 'https://www.lapresse.ca/actualites/rss', nom: 'La Presse', max: 4 },
       { url: 'https://www.lapresse.ca/arts/rss', nom: 'La Presse Arts', max: 3 }
     ];
