@@ -140,7 +140,7 @@
 
 <button class="ecoute-btn" id="ecouteBtn" onclick="toggleEcoute()">
   <div class="ecoute-dot" id="ecouteDot"></div>
-  <span id="ecouteTexte">Écoute auto</span>
+  <span id="ecouteTexte">Ecoute auto</span>
 </button>
 
 <div class="main-zone">
@@ -185,7 +185,7 @@
   <textarea class="text-input" id="userInput" placeholder="Ou écrivez ici..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
-<div class="text-hint">Activez l'écoute auto — ou appuyez sur le soleil ☀️</div>
+<div class="text-hint">Activez l'ecoute auto — ou appuyez sur le soleil ☀️</div>
 
 <script>
 (function(){
@@ -209,7 +209,6 @@ var isEcouteActive = false;
 var recognition = null;
 var autoRestartTimer = null;
 
-// === VOIX ELEVENLABS ===
 async function speakText(t) {
   var c = t.replace(/<br\s*\/?>/gi, '. ')
             .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
@@ -245,22 +244,19 @@ function onSpeakEnd() {
   document.getElementById('soleilIcone').textContent = '🎙️';
   document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
   if (isEcouteActive) {
-    setStatus('Sofia vous écoute... 👂');
+    setStatus('Sofia vous ecoute... 👂');
     clearTimeout(autoRestartTimer);
     autoRestartTimer = setTimeout(function() {
-      if (isEcouteActive && !isListening && !isSpeaking) {
-        startListening();
-      }
+      if (isEcouteActive && !isListening && !isSpeaking) { startListening(); }
     }, 1000);
   } else {
     setStatus('Appuyez sur Sofia pour parler 🌸');
   }
 }
 
-// === RECONNAISSANCE VOCALE ===
 function initRecognition() {
   var S = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!S) { document.getElementById('soleilTexte').textContent = 'Écrire'; return; }
+  if (!S) { document.getElementById('soleilTexte').textContent = 'Ecrire'; return; }
   recognition = new S();
   recognition.lang = 'fr-CA';
   recognition.continuous = false;
@@ -313,7 +309,7 @@ function startListening() {
     document.getElementById('soleil').classList.add('listening');
     document.getElementById('soleilIcone').textContent = '⏹️';
     document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Parlez...';
-    setStatus('Sofia vous écoute... 👂');
+    setStatus('Sofia vous ecoute... 👂');
     recognition.start();
   } catch(e) {
     isListening = false;
@@ -343,19 +339,18 @@ function toggleEcoute() {
   var texte = document.getElementById('ecouteTexte');
   if (isEcouteActive) {
     btn.classList.add('active');
-    texte.textContent = 'Écoute active';
+    texte.textContent = 'Ecoute active';
     document.getElementById('soleilTexte').textContent = 'Auto';
-    setStatus('Sofia vous écoute... 👂');
+    setStatus('Sofia vous ecoute... 👂');
     startListening();
   } else {
     btn.classList.remove('active');
-    texte.textContent = 'Écoute auto';
+    texte.textContent = 'Ecoute auto';
     clearTimeout(autoRestartTimer);
     stopListening();
   }
 }
 
-// === NOUVELLES ===
 async function demanderNouvelles() {
   if (isListening) { try { recognition.stop(); } catch(e) {} }
   showUserMessage('Les nouvelles du jour 📰');
@@ -365,31 +360,43 @@ async function demanderNouvelles() {
     var r = await fetch('/.netlify/functions/nouvelles');
     var d = await r.json();
     if (d.articles && d.articles.length > 0) {
-      // Séparer actualités générales et culture/arts
-      var generales = d.articles.filter(function(a) {
-        return a.source === 'Radio-Canada' || a.source === 'TVA Nouvelles' || a.source === 'La Presse';
-      }).slice(0, 4);
-      var culture = d.articles.filter(function(a) {
-        return a.source === 'RC Arts' || a.source === 'RC Culture' || a.source === 'La Presse Arts';
-      }).slice(0, 3);
-
-      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes âgées. Présente ces nouvelles du Québec de façon simple, chaleureuse et bien organisée. Commence par dire bonjour et présente d\'abord les actualités générales, puis les nouvelles culturelles et artistiques. Sois concise et agréable.\n\nActualités générales:\n';
-      generales.forEach(function(a, i) {
-        prompt += (i+1) + '. ' + a.titre + '\n';
-      });
+      var generales = [];
+      var culture = [];
+      for (var i = 0; i < d.articles.length; i++) {
+        var a = d.articles[i];
+        var src = a.source;
+        if (src === 'RC Arts' || src === 'RC Culture' || src === 'La Presse Arts') {
+          if (culture.length < 5) culture.push(a);
+        } else {
+          if (generales.length < 6) generales.push(a);
+        }
+      }
+      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes agees du Quebec. ';
+      prompt += 'Presente ces nouvelles du Quebec de facon chaleureuse et bien organisee. ';
+      prompt += 'Commence par souhaiter bonjour. ';
+      prompt += 'Explique chaque nouvelle en 2 a 3 phrases simples et detaillees. ';
+      prompt += 'Presente dabord les actualites generales, puis les nouvelles culturelles et artistiques. ';
+      prompt += 'Prends ton temps, sois detaillee et agreable comme si tu parlais a une amie.\n\n';
+      prompt += 'Actualites generales:\n';
+      for (var j = 0; j < generales.length; j++) {
+        prompt += (j+1) + '. ' + generales[j].titre;
+        if (generales[j].description) prompt += ' — ' + generales[j].description;
+        prompt += '\n';
+      }
       prompt += '\nCulture et arts:\n';
-      culture.forEach(function(a, i) {
-        prompt += (i+1) + '. ' + a.titre + '\n';
-      });
-
+      for (var k = 0; k < culture.length; k++) {
+        prompt += (k+1) + '. ' + culture[k].titre;
+        if (culture[k].description) prompt += ' — ' + culture[k].description;
+        prompt += '\n';
+      }
       conversationHistory.push({role: 'user', content: prompt});
       getSofiaReply();
     } else {
-      showResponse("Je n'arrive pas à trouver les nouvelles en ce moment. Réessayons plus tard !");
+      showResponse("Je n'arrive pas a trouver les nouvelles en ce moment. Reessayons plus tard !");
       if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
     }
   } catch(e) {
-    showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
+    showResponse("Je n'arrive pas a trouver les nouvelles. Reessayons !");
     if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
   }
 }
@@ -434,7 +441,7 @@ function sendMessage() {
 
 async function getSofiaReply() {
   document.getElementById('sendBtn').disabled = true;
-  setStatus('Sofia réfléchit...');
+  setStatus('Sofia reflechit...');
   showTyping();
   try {
     var r = await fetch('/.netlify/functions/chat', {
@@ -449,11 +456,11 @@ async function getSofiaReply() {
       showResponse(reply);
       speakText(reply);
     } else {
-      showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+      showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous repeter ?");
       if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
     }
   } catch(e) {
-    showResponse("Je suis désolée, réessayons !");
+    showResponse("Je suis desolee, reessayons !");
     if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
   }
   document.getElementById('sendBtn').disabled = false;
