@@ -254,6 +254,8 @@ var autoRestartTimer = null;
 
 // === VOIX ELEVENLABS ===
 async function speakText(t) {
+  try { recognition.stop(); } catch(e) {}
+isListening = false;
   var c = t.replace(/<br\s*\/?>/gi, '. ')
             .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
             .replace(/\s+/g, ' ').trim();
