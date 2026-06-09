@@ -368,12 +368,12 @@ async function demanderNouvelles() {
       // Séparer actualités générales et culture/arts
       var generales = d.articles.filter(function(a) {
         return a.source === 'Radio-Canada' || a.source === 'TVA Nouvelles' || a.source === 'La Presse';
-      }).slice(0, 4);
+      }).slice(0, 6);
       var culture = d.articles.filter(function(a) {
         return a.source === 'RC Arts' || a.source === 'RC Culture' || a.source === 'La Presse Arts';
-      }).slice(0, 3);
+      }).slice(0, 5);
 
-      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes âgées. Présente ces nouvelles du Québec de façon simple, chaleureuse et bien organisée. Commence par dire bonjour et présente d\'abord les actualités générales, puis les nouvelles culturelles et artistiques. Sois concise et agréable.\n\nActualités générales:\n';
+      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes âgées. Présente ces nouvelles du Québec de façon simple, chaleureuse et bien organisée. Commence par souhaiter bonjour chaleureusement. Présente chaque nouvelle en 2 à 3 phrases simples et détaillées. D'abord les actualités générales, puis les nouvelles culturelles et artistiques. Prends ton temps, sois chaleureuse et détaillée comme si tu parlais à une amie.\n\nActualités générales:\n';
       generales.forEach(function(a, i) {
         prompt += (i+1) + '. ' + a.titre + '\n';
       });
