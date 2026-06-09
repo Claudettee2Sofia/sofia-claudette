@@ -282,13 +282,12 @@ function onSpeakEnd() {
   document.getElementById('soleil').classList.remove('speaking');
   if (isEcouteActive) {
     setStatus('Sofia vous écoute... 👂');
-    // Redémarrer écoute après que Sofia a fini de parler
     clearTimeout(autoRestartTimer);
     autoRestartTimer = setTimeout(function() {
       if (isEcouteActive && !isListening) {
         startListening();
       }
-    }, 700);
+    }, 2000);
   } else {
     setStatus('Appuyez sur Sofia pour parler 🌸');
   }
