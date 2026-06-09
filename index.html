@@ -34,57 +34,31 @@
   @keyframes twinkle { 0%,100%{opacity:0.2}50%{opacity:1} }
   .clouds { position: fixed; bottom:0;left:0;right:0;height:25%;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.08));pointer-events:none; }
 
-  /* Bouton écoute permanente */
   .ecoute-btn {
-    position: fixed;
-    top: 14px; right: 14px;
-    z-index: 100;
-    background: rgba(255,255,255,0.12);
-    border: 1.5px solid rgba(255,255,255,0.25);
-    border-radius: 22px;
-    padding: 7px 13px;
+    position: fixed; top: 14px; right: 14px; z-index: 100;
+    background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 22px; padding: 7px 13px;
     display: flex; align-items: center; gap: 7px;
-    cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 12px; font-weight: 700;
-    color: rgba(255,255,255,0.7);
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    cursor: pointer; font-family: 'Quicksand', sans-serif;
+    font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
+    transition: all 0.3s ease; backdrop-filter: blur(10px);
   }
   .ecoute-btn:active { transform: scale(0.95); }
-  .ecoute-btn.active {
-    background: rgba(129,199,132,0.25);
-    border-color: rgba(129,199,132,0.6);
-    color: #C8E6C9;
-    box-shadow: 0 0 15px rgba(129,199,132,0.3);
-  }
-  .ecoute-dot {
-    width: 9px; height: 9px; border-radius: 50%;
-    background: rgba(255,255,255,0.4);
-    flex-shrink: 0; transition: all 0.3s;
-  }
-  .ecoute-btn.active .ecoute-dot {
-    background: #81C784;
-    animation: dotPulse 1.5s ease-in-out infinite;
-    box-shadow: 0 0 6px rgba(129,199,132,0.8);
-  }
+  .ecoute-btn.active { background: rgba(129,199,132,0.25); border-color: rgba(129,199,132,0.6); color: #C8E6C9; box-shadow: 0 0 15px rgba(129,199,132,0.3); }
+  .ecoute-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.4); flex-shrink: 0; transition: all 0.3s; }
+  .ecoute-btn.active .ecoute-dot { background: #81C784; animation: dotPulse 1.5s ease-in-out infinite; box-shadow: 0 0 6px rgba(129,199,132,0.8); }
   @keyframes dotPulse { 0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7} }
 
-  /* Zone principale */
   .main-zone {
-    flex: 1;
-    display: flex; flex-direction: column;
+    flex: 1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    position: relative; z-index: 1;
-    padding: 10px; min-height: 0;
+    position: relative; z-index: 1; padding: 10px; min-height: 0;
   }
 
   .orbit-container {
     position: relative;
-    width: min(80vw, 80vh, 400px);
-    height: min(80vw, 80vh, 400px);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
+    width: min(80vw, 80vh, 400px); height: min(80vw, 80vh, 400px);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
 
   .orbit-ring { position:absolute;inset:0;border:1px solid rgba(255,255,255,0.08);border-radius:50%;animation:rotateOrbit 90s linear infinite; }
@@ -95,26 +69,16 @@
   @keyframes rayPulse { 0%,100%{transform:translate(-50%,-50%)scale(1);opacity:0.6}50%{transform:translate(-50%,-50%)scale(1.15);opacity:1} }
 
   .soleil {
-    width:38%;height:38%;
-    min-width:120px;min-height:120px;
-    max-width:170px;max-height:170px;
-    border-radius:50%;
-    background:radial-gradient(circle at 38% 38%,var(--soleil-centre),var(--soleil),var(--soleil-bord));
+    width:38%;height:38%;min-width:120px;min-height:120px;max-width:170px;max-height:170px;
+    border-radius:50%;background:radial-gradient(circle at 38% 38%,var(--soleil-centre),var(--soleil),var(--soleil-bord));
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     cursor:pointer;position:relative;z-index:10;
     box-shadow:0 0 40px var(--soleil-glow),0 0 80px rgba(255,213,79,0.2);
     transition:all 0.2s ease;border:none;font-family:'Quicksand',sans-serif;
   }
   .soleil:active { transform:scale(0.95); }
-  .soleil.listening {
-    background:radial-gradient(circle at 38% 38%,#FFCDD2,#E57373,#C62828);
-    animation:soleilPulse 1.2s ease-in-out infinite;
-    box-shadow:0 0 40px rgba(229,115,115,0.5),0 0 80px rgba(229,115,115,0.3);
-  }
-  .soleil.speaking {
-    animation:soleilSpeak 0.8s ease-in-out infinite alternate;
-    box-shadow:0 0 50px rgba(129,199,132,0.5),0 0 100px rgba(129,199,132,0.3);
-  }
+  .soleil.listening { background:radial-gradient(circle at 38% 38%,#FFCDD2,#E57373,#C62828);animation:soleilPulse 1.2s ease-in-out infinite;box-shadow:0 0 40px rgba(229,115,115,0.5),0 0 80px rgba(229,115,115,0.3); }
+  .soleil.speaking { animation:soleilSpeak 0.8s ease-in-out infinite alternate;box-shadow:0 0 50px rgba(129,199,132,0.5),0 0 100px rgba(129,199,132,0.3); }
   @keyframes soleilPulse { 0%,100%{box-shadow:0 0 40px rgba(229,115,115,0.4)}50%{box-shadow:0 0 70px rgba(229,115,115,0.7),0 0 0 15px rgba(229,115,115,0.1)} }
   @keyframes soleilSpeak { from{box-shadow:0 0 40px rgba(129,199,132,0.4)}to{box-shadow:0 0 70px rgba(129,199,132,0.6),0 0 0 12px rgba(129,199,132,0.15)} }
 
@@ -123,16 +87,10 @@
   .soleil-texte { font-size:clamp(9px,2vw,12px);font-weight:700;color:#795548;letter-spacing:1px;text-transform:uppercase; }
 
   .planete {
-    position:absolute;
-    width:clamp(50px,16%,68px);height:clamp(50px,16%,68px);
-    border-radius:50%;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    cursor:pointer;
-    border:2px solid rgba(255,255,255,0.25);
-    z-index:5;
-    animation:floatP 4s ease-in-out infinite;
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
+    position:absolute;width:clamp(50px,16%,68px);height:clamp(50px,16%,68px);
+    border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    cursor:pointer;border:2px solid rgba(255,255,255,0.25);z-index:5;
+    animation:floatP 4s ease-in-out infinite;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition: transform 0.2s;
   }
   .planete:active { filter: brightness(1.2); }
   @keyframes floatP { 0%,100%{margin-top:0}50%{margin-top:-3px} }
@@ -230,7 +188,6 @@
 <div class="text-hint">Activez l'écoute auto — ou appuyez sur le soleil ☀️</div>
 
 <script>
-// Étoiles
 (function(){
   var s=document.getElementById('stars');
   for(var i=0;i<60;i++){
@@ -254,13 +211,16 @@ var autoRestartTimer = null;
 
 // === VOIX ELEVENLABS ===
 async function speakText(t) {
-  try { recognition.stop(); } catch(e) {}
-isListening = false;
   var c = t.replace(/<br\s*\/?>/gi, '. ')
             .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
             .replace(/\s+/g, ' ').trim();
   isSpeaking = true;
+  try { recognition.stop(); } catch(e) {}
+  isListening = false;
+  document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleil').classList.add('speaking');
+  document.getElementById('soleilIcone').textContent = '🔊';
+  document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
   try {
     var r = await fetch('/.netlify/functions/voice', {
@@ -282,14 +242,16 @@ isListening = false;
 function onSpeakEnd() {
   isSpeaking = false;
   document.getElementById('soleil').classList.remove('speaking');
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
   if (isEcouteActive) {
     setStatus('Sofia vous écoute... 👂');
     clearTimeout(autoRestartTimer);
     autoRestartTimer = setTimeout(function() {
-      if (isEcouteActive && !isListening) {
+      if (isEcouteActive && !isListening && !isSpeaking) {
         startListening();
       }
-    }, 2000);
+    }, 1000);
   } else {
     setStatus('Appuyez sur Sofia pour parler 🌸');
   }
@@ -298,10 +260,7 @@ function onSpeakEnd() {
 // === RECONNAISSANCE VOCALE ===
 function initRecognition() {
   var S = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!S) {
-    document.getElementById('soleilTexte').textContent = 'Écrire';
-    return;
-  }
+  if (!S) { document.getElementById('soleilTexte').textContent = 'Écrire'; return; }
   recognition = new S();
   recognition.lang = 'fr-CA';
   recognition.continuous = false;
@@ -325,13 +284,11 @@ function initRecognition() {
       document.getElementById('soleilIcone').textContent = '🎙️';
       document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
     }
-    if (isEcouteActive && !isSpeaking && !isListening) {
+    if (isEcouteActive && !isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
-        if (isEcouteActive && !isListening && !isSpeaking) {
-          startListening();
-        }
-      }, 1500);
+        if (isEcouteActive && !isListening && !isSpeaking) { startListening(); }
+      }, 800);
     }
   };
 
@@ -343,10 +300,8 @@ function initRecognition() {
     if (isEcouteActive && !isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
-        if (isEcouteActive && !isListening && !isSpeaking) {
-          startListening();
-        }
-      }, 1000);
+        if (isEcouteActive && !isListening && !isSpeaking) { startListening(); }
+      }, 1500);
     }
   };
 }
@@ -376,22 +331,12 @@ function stopListening() {
   try { recognition.stop(); } catch(e) {}
 }
 
-// Bouton soleil — manuel
 function toggleVoice() {
   if (isSpeaking) return;
-  if (isListening) {
-    // Si écoute auto, juste arrêter temporairement
-    if (isEcouteActive) {
-      try { recognition.stop(); } catch(e) {}
-    } else {
-      stopListening();
-    }
-  } else {
-    startListening();
-  }
+  if (isListening) { stopListening(); }
+  else { startListening(); }
 }
 
-// Bouton écoute auto
 function toggleEcoute() {
   isEcouteActive = !isEcouteActive;
   var btn = document.getElementById('ecouteBtn');
@@ -407,6 +352,45 @@ function toggleEcoute() {
     texte.textContent = 'Écoute auto';
     clearTimeout(autoRestartTimer);
     stopListening();
+  }
+}
+
+// === NOUVELLES ===
+async function demanderNouvelles() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  showUserMessage('Les nouvelles du jour 📰');
+  setStatus('Sofia cherche les nouvelles...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/nouvelles');
+    var d = await r.json();
+    if (d.articles && d.articles.length > 0) {
+      // Séparer actualités générales et culture/arts
+      var generales = d.articles.filter(function(a) {
+        return a.source === 'Radio-Canada' || a.source === 'TVA Nouvelles' || a.source === 'La Presse';
+      }).slice(0, 4);
+      var culture = d.articles.filter(function(a) {
+        return a.source === 'RC Arts' || a.source === 'RC Culture' || a.source === 'La Presse Arts';
+      }).slice(0, 3);
+
+      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes âgées. Présente ces nouvelles du Québec de façon simple, chaleureuse et bien organisée. Commence par dire bonjour et présente d\'abord les actualités générales, puis les nouvelles culturelles et artistiques. Sois concise et agréable.\n\nActualités générales:\n';
+      generales.forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre + '\n';
+      });
+      prompt += '\nCulture et arts:\n';
+      culture.forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre + '\n';
+      });
+
+      conversationHistory.push({role: 'user', content: prompt});
+      getSofiaReply();
+    } else {
+      showResponse("Je n'arrive pas à trouver les nouvelles en ce moment. Réessayons plus tard !");
+      if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
+    }
+  } catch(e) {
+    showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
+    if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
   }
 }
 
@@ -466,38 +450,15 @@ async function getSofiaReply() {
       speakText(reply);
     } else {
       showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-      if (isEcouteActive) setTimeout(function(){startListening();}, 700);
+      if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
     }
   } catch(e) {
     showResponse("Je suis désolée, réessayons !");
-    if (isEcouteActive) setTimeout(function(){startListening();}, 700);
+    if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
   }
   document.getElementById('sendBtn').disabled = false;
 }
-async function demanderNouvelles() {
-  if (isListening) { try { recognition.stop(); } catch(e) {} }
-  showUserMessage('Les nouvelles du jour 📰');
-  setStatus('Sofia cherche les nouvelles...');
-  showTyping();
-  try {
-    const r = await fetch('/.netlify/functions/nouvelles');
-    const d = await r.json();
-    if (d.articles && d.articles.length > 0) {
-      let resume = 'Voici les nouvelles du jour au Québec ! ';
-      d.articles.slice(0, 4).forEach(function(a, i) {
-        resume += (i+1) + '. ' + a.titre + '. ';
-      });
-     let resume = 'Voici les nouvelles du jour au Québec ! ';
-d.articles.slice(0, 4).forEach(function(a, i) {
-  resume += (i+1) + '. ' + a.titre + '. ';
-});
-conversationHistory.push({role: 'user', content: 'Résume-moi ces nouvelles du Québec en français simple et chaleureux : ' + resume});
-getSofiaReply();
-    }
-  } catch(e) {
-    showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
-  }
-}
+
 initRecognition();
 </script>
 </body>
