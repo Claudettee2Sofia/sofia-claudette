@@ -1,17 +1,17 @@
 exports.handler = async function(event) {
   try {
     const sources = [
-      { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada', max: 5 },
-      { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'RC Arts', max: 4 },
-      { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'RC Culture', max: 4 },
-     { url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles', max: 4 },
-{ url: 'https://www.france24.com/fr/rss', nom: 'France 24', max: 3 },
-{ url: 'https://fr.euronews.com/rss', nom: 'Euronews', max: 3 },
-      { url: 'https://www.lapresse.ca/actualites/rss', nom: 'La Presse', max: 4 },
-      { url: 'https://www.lapresse.ca/arts/rss', nom: 'La Presse Arts', max: 3 }
+      { url: 'https://ici.radio-canada.ca/rss/4159', nom: 'Radio-Canada', categorie: 'quebec', max: 5 },
+      { url: 'https://www.tvanouvelles.ca/rss.xml', nom: 'TVA Nouvelles', categorie: 'quebec', max: 4 },
+      { url: 'https://www.lapresse.ca/actualites/rss', nom: 'La Presse', categorie: 'quebec', max: 4 },
+      { url: 'https://www.france24.com/fr/rss', nom: 'France 24', categorie: 'monde', max: 4 },
+      { url: 'https://fr.euronews.com/rss', nom: 'Euronews', categorie: 'monde', max: 4 },
+      { url: 'https://ici.radio-canada.ca/rss/6048', nom: 'RC Arts', categorie: 'culture', max: 4 },
+      { url: 'https://ici.radio-canada.ca/rss/4172', nom: 'RC Culture', categorie: 'culture', max: 3 },
+      { url: 'https://www.lapresse.ca/arts/rss', nom: 'La Presse Arts', categorie: 'culture', max: 3 }
     ];
 
-    const items = [];
+    const articles = { quebec: [], monde: [], culture: [] };
 
     for (const source of sources) {
       try {
@@ -32,9 +32,10 @@ exports.handler = async function(event) {
           if (titleMatch) {
             const titre = (titleMatch[1] || titleMatch[2] || '').trim();
             if (titre.length > 5) {
-              items.push({
+              articles[source.categorie].push({
                 titre: titre,
-                description: (descMatch ? (descMatch[1] || descMatch[2] || '') : '').replace(/<[^>]*>/g, '').trim().substring(0, 200),
+                description: (descMatch ? (descMatch[1] || descMatch[2] || '') : '')
+                  .replace(/<[^>]*>/g, '').trim().substring(0, 200),
                 source: source.nom
               });
               count++;
@@ -46,10 +47,18 @@ exports.handler = async function(event) {
       }
     }
 
+    const tous = [...articles.quebec, ...articles.monde, ...articles.culture];
+
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ articles: items, total: items.length })
+      body: JSON.stringify({
+        articles: tous,
+        quebec: articles.quebec,
+        monde: articles.monde,
+        culture: articles.culture,
+        total: tous.length
+      })
     };
   } catch(error) {
     return {
