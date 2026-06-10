@@ -268,7 +268,7 @@ function initRecognition() {
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
-    showUserMessage(t);
+   if (attenteVille) { obtenirMeteo(t); return; } showUserMessage(t);
     conversationHistory.push({role: 'user', content: t});
     getSofiaReply();
   };
