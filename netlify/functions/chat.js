@@ -14,7 +14,7 @@ exports.handler = async function(event) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
+        max_tokens: 2500,
         system: `Tu es Sofia, une compagne vocale chaleureuse pour les personnes agees du Quebec. 
 
 STYLE DE PAROLE:
