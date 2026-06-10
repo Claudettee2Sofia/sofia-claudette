@@ -487,6 +487,8 @@ async function demanderMeteo() {
 }
 
 async function obtenirMeteo(ville) {
+  if (!ville || ville.trim().length < 2) { attenteVille = true; return; }
+  attenteVille = false;
   attenteVille = false;
   showUserMessage(ville);
   setStatus('Sofia cherche la météo...');
