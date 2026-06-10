@@ -359,42 +359,52 @@ async function demanderNouvelles() {
   try {
     var r = await fetch('/.netlify/functions/nouvelles');
     var d = await r.json();
-    if (d.articles && d.articles.length > 0) {
-      var generales = [];
-      var culture = [];
-      for (var i = 0; i < d.articles.length; i++) {
-        var a = d.articles[i];
-        var src = a.source;
-        if (src === 'RC Arts' || src === 'RC Culture' || src === 'La Presse Arts') {
-          if (culture.length < 8) culture.push(a);
-        } else {
-          if (generales.length < 12) generales.push(a);
-        }
-      }
-      var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes agees du Quebec. ';
-      prompt += 'Presente ces nouvelles du Quebec de facon chaleureuse et bien organisee. ';
-      prompt += 'Commence par souhaiter bonjour. ';
-      prompt += 'Explique chaque nouvelle en 2 a 3 phrases simples et detaillees. ';
-      prompt += 'Presente dabord les actualites generales, puis les nouvelles culturelles et artistiques. ';
-      prompt += 'Prends ton temps, sois detaillee et agreable comme si tu parlais a une amie.\n\n';
-      prompt += 'Actualites generales:\n';
-      for (var j = 0; j < generales.length; j++) {
-        prompt += (j+1) + '. ' + generales[j].titre;
-        if (generales[j].description) prompt += ' — ' + generales[j].description;
-        prompt += '\n';
-      }
-      prompt += '\nCulture et arts:\n';
-      for (var k = 0; k < culture.length; k++) {
-        prompt += (k+1) + '. ' + culture[k].titre;
-        if (culture[k].description) prompt += ' — ' + culture[k].description;
-        prompt += '\n';
-      }
-      conversationHistory.push({role: 'user', content: prompt});
-      getSofiaReply();
-    } else {
+    var quebec = d.quebec || [];
+    var monde = d.monde || [];
+    var culture = d.culture || [];
+
+    if (quebec.length === 0 && monde.length === 0 && culture.length === 0) {
       showResponse("Je n'arrive pas a trouver les nouvelles en ce moment. Reessayons plus tard !");
       if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
+      return;
     }
+
+    var prompt = 'Tu es Sofia, une compagne chaleureuse pour les personnes agees du Quebec. ';
+    prompt += 'Presente cette revue de presse de facon naturelle et chaleureuse, comme si tu parlais a une amie. ';
+    prompt += 'Commence par souhaiter bonjour. ';
+    prompt += 'Explique chaque nouvelle en 2 a 3 phrases simples. ';
+    prompt += 'Presente dabord les nouvelles du Quebec et du Canada, ensuite les nouvelles du monde, puis les nouvelles culturelles et artistiques. ';
+    prompt += 'Sois detaillee, naturelle et agreable.\n\n';
+
+    if (quebec.length > 0) {
+      prompt += 'NOUVELLES DU QUEBEC ET DU CANADA:\n';
+      quebec.slice(0, 6).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+
+    if (monde.length > 0) {
+      prompt += '\nNOUVELLES DU MONDE:\n';
+      monde.slice(0, 5).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+
+    if (culture.length > 0) {
+      prompt += '\nCULTURE ET ARTS:\n';
+      culture.slice(0, 5).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
   } catch(e) {
     showResponse("Je n'arrive pas a trouver les nouvelles. Reessayons !");
     if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
