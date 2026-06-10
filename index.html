@@ -155,7 +155,7 @@
       <div class="soleil-texte" id="soleilTexte">Appuyez</div>
     </button>
 
-    <div class="planete p-meteo" onclick="sendSuggestion('Quelle est la météo aujourd\'hui ?')">
+    <div class="planete p-meteo" onclick="demanderMeteo()" ?')">
       <div class="planete-icone">☀️</div><div class="planete-nom">Météo</div>
     </div>
     <div class="planete p-nouvelles" onclick="demanderNouvelles()">
@@ -475,7 +475,42 @@ async function getSofiaReply() {
   }
   document.getElementById('sendBtn').disabled = false;
 }
+var attenteVille = false;
 
+async function demanderMeteo() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  attenteVille = true;
+  showUserMessage('Météo ☀️');
+  showResponse("Pour quelle ville voulez-vous la météo ? Dites-moi le nom de la ville !");
+  speakText("Pour quelle ville voulez-vous la météo ? Dites-moi le nom de la ville !");
+}
+
+async function obtenirMeteo(ville) {
+  attenteVille = false;
+  showUserMessage(ville);
+  setStatus('Sofia cherche la météo...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/meteo', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ville: ville})
+    });
+    var d = await r.json();
+    if (d.erreur) {
+      var msg = "Je n'ai pas trouve la météo pour " + ville + ". Pouvez-vous répéter le nom de la ville ?";
+      showResponse(msg);
+      speakText(msg);
+      attenteVille = true;
+      return;
+    }
+    var prompt = "Tu es Sofia. Presente la météo de " + d.ville + " en " + d.pays + " de facon chaleureuse. Actuellement il fait " + d.maintenant.temperature + " degrés avec " + d.maintenant.description + ". Vent de " + d.maintenant.vent + " km/h. Aujourd'hui max " + d.aujourd_hui.max + " min " + d.aujourd_hui.min + " degrés, " + d.aujourd_hui.description + ". Demain max " + d.demain.max + " min " + d.demain.min + " degrés, " + d.demain.description + ". Apres-demain max " + d.apres_demain.max + " min " + d.apres_demain.min + " degrés, " + d.apres_demain.description + ". Donne des conseils pratiques selon la météo.";
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
+  } catch(e) {
+    showResponse("Je n'arrive pas a trouver la météo. Reessayons !");
+  }
+}
 initRecognition();
 </script>
 </body>
