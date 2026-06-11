@@ -268,7 +268,13 @@ function initRecognition() {
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
-   if (attenteVille) { obtenirMeteo(t); return; }
+   if (attenteVille) { obtenirMeteo(t); return; }var tMin = t.toLowerCase();
+if (tMin.includes('météo') || tMin.includes('meteo') || tMin.includes('température') || tMin.includes('temps qu')) {
+  demanderMeteo(); return;
+}
+if (tMin.includes('nouvelle') || tMin.includes('actualité') || tMin.includes('journal')) {
+  demanderNouvelles(); return;
+}
 showUserMessage(t);
     conversationHistory.push({role: 'user', content: t});
     getSofiaReply();
