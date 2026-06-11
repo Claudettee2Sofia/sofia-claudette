@@ -1,71 +1,964 @@
-exports.handler = async function(event) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sofia</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --or-fonce: #2C1810;
+    --or-milieu: #5C3317;
+    --or-chaud: #8B4513;
+    --or-doux: #C47B3A;
+    --or-clair: #D4A053;
+    --or-lumineux: #F0C060;
+    --or-pale: #FAE8C0;
+    --creme: #FDF6E8;
+    --rose-poudre: #E8C4A8;
+    --texte-fonce: #2C1810;
+    --texte-clair: #FDF6E8;
+    --glow-or: rgba(212,160,83,0.4);
+    --glow-or-fort: rgba(240,192,96,0.6);
   }
-  try {
-    const { messages, profil } = JSON.parse(event.body);
-    const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    // Construire le contexte du profil
-    let profilContexte = '';
-    if (profil && profil.prenom) {
-      profilContexte = `\n\nPROFIL DE L'UTILISATEUR:\n`;
-      if (profil.prenom) profilContexte += `- Prénom: ${profil.prenom}\n`;
-      if (profil.statut) profilContexte += `- Statut: ${profil.statut}\n`;
-      if (profil.enfants) profilContexte += `- Enfants: ${profil.enfants}\n`;
-      if (profil.ville) profilContexte += `- Ville: ${profil.ville}\n`;
-      if (profil.interets) profilContexte += `- Intérêts: ${profil.interets}\n`;
-      if (profil.voyages) profilContexte += `- Voyages aimés: ${profil.voyages}\n`;
-      if (profil.famille) profilContexte += `- Famille: ${profil.famille}\n`;
-      profilContexte += `Utilise ces informations pour personnaliser tes réponses. Appelle la personne par son prénom avec chaleur.`;
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; touch-action: manipulation; }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: radial-gradient(ellipse at 50% 30%, var(--or-milieu) 0%, var(--or-fonce) 50%, #1A0C08 100%);
+    color: var(--texte-clair);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-height: 100%;
+  }
+
+  /* Particules dorées */
+  .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--or-lumineux), transparent);
+    animation: floatParticle linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* Étoiles dorées */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star { position: absolute; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0.15}50%{opacity:0.8} }
+
+  /* Bouton écoute */
+  .ecoute-btn {
+    position: fixed; top: 14px; right: 14px; z-index: 100;
+    background: rgba(212,160,83,0.15);
+    border: 1.5px solid rgba(212,160,83,0.35);
+    border-radius: 22px; padding: 7px 13px;
+    display: flex; align-items: center; gap: 7px;
+    cursor: pointer; font-family: 'Quicksand', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: rgba(250,232,192,0.7);
+    transition: all 0.3s ease; backdrop-filter: blur(10px);
+  }
+  .ecoute-btn:active { transform: scale(0.95); }
+  .ecoute-btn.active {
+    background: rgba(212,160,83,0.3);
+    border-color: rgba(240,192,96,0.7);
+    color: var(--or-pale);
+    box-shadow: 0 0 15px rgba(212,160,83,0.4);
+  }
+  .ecoute-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(250,232,192,0.4);
+    flex-shrink: 0; transition: all 0.3s;
+  }
+  .ecoute-btn.active .ecoute-dot {
+    background: var(--or-lumineux);
+    animation: dotPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--or-lumineux);
+  }
+  @keyframes dotPulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.4)} }
+
+  /* Zone principale */
+  .main-zone {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; z-index: 1; padding: 10px; min-height: 0;
+  }
+
+  /* Orbite */
+  .orbit-container {
+    position: relative;
+    width: min(82vw, 82vh, 420px);
+    height: min(82vw, 82vh, 420px);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .orbit-ring {
+    position: absolute; inset: 0;
+    border: 1px solid rgba(212,160,83,0.15);
+    border-radius: 50%;
+    animation: rotateOrbit 90s linear infinite;
+    box-shadow: 0 0 20px rgba(212,160,83,0.05) inset;
+  }
+  .orbit-ring-2 {
+    position: absolute; inset: 12%;
+    border: 1px dashed rgba(212,160,83,0.08);
+    border-radius: 50%;
+    animation: rotateOrbit 60s linear infinite reverse;
+  }
+  @keyframes rotateOrbit { from{transform:rotate(0deg)}to{transform:rotate(360deg)} }
+
+  /* Rayons du soleil */
+  .sun-rays {
+    position: absolute; width: 60%; height: 60%;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(240,192,96,0.2) 0%, rgba(212,160,83,0.1) 40%, transparent 70%);
+    animation: rayPulse 3s ease-in-out infinite;
+    pointer-events: none; z-index: 4;
+  }
+  .sun-rays-2 {
+    position: absolute; width: 75%; height: 75%;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, transparent 30%, rgba(212,160,83,0.05) 60%, transparent 70%);
+    animation: rayPulse 4s ease-in-out infinite reverse;
+    pointer-events: none; z-index: 3;
+  }
+  @keyframes rayPulse {
+    0%,100%{transform:translate(-50%,-50%)scale(1);opacity:0.7}
+    50%{transform:translate(-50%,-50%)scale(1.1);opacity:1}
+  }
+
+  /* Le Soleil Sofia */
+  .soleil {
+    width: 38%; height: 38%;
+    min-width: 130px; min-height: 130px;
+    max-width: 175px; max-height: 175px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+      #FFFAED 0%,
+      #F9E070 15%,
+      var(--or-lumineux) 35%,
+      var(--or-clair) 60%,
+      var(--or-doux) 80%,
+      #A0520D 100%
+    );
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; z-index: 10;
+    box-shadow:
+      0 0 30px var(--glow-or),
+      0 0 60px rgba(212,160,83,0.25),
+      0 0 100px rgba(212,160,83,0.1),
+      inset 0 0 20px rgba(255,250,237,0.3);
+    transition: all 0.2s ease; border: none;
+    font-family: 'Quicksand', sans-serif;
+  }
+  .soleil:active { transform: scale(0.95); }
+
+  .soleil.listening {
+    background: radial-gradient(circle at 35% 35%, #FFEBEE, #EF9A9A, #C62828);
+    animation: soleilPulse 1.2s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(229,115,115,0.6), 0 0 80px rgba(229,115,115,0.3);
+  }
+  .soleil.speaking {
+    background: radial-gradient(circle at 35% 35%, #F1F8E9, #AED581, #558B2F);
+    animation: soleilSpeak 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 50px rgba(129,199,132,0.6), 0 0 100px rgba(129,199,132,0.3);
+  }
+
+  @keyframes soleilPulse {
+    0%,100%{box-shadow:0 0 40px rgba(229,115,115,0.5)}
+    50%{box-shadow:0 0 70px rgba(229,115,115,0.8),0 0 0 15px rgba(229,115,115,0.15)}
+  }
+  @keyframes soleilSpeak {
+    from{box-shadow:0 0 40px rgba(129,199,132,0.5)}
+    to{box-shadow:0 0 70px rgba(129,199,132,0.7),0 0 0 12px rgba(129,199,132,0.2)}
+  }
+
+  .soleil-nom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 5.5vw, 34px);
+    font-weight: 600;
+    color: var(--or-fonce);
+    line-height: 1;
+    text-shadow: 0 1px 3px rgba(255,250,237,0.5);
+    letter-spacing: 1px;
+  }
+  .soleil-icone { font-size: clamp(28px, 7vw, 42px); line-height: 1; margin: 2px 0; }
+  .soleil-texte {
+    font-size: clamp(8px, 1.8vw, 11px);
+    font-weight: 800;
+    color: var(--or-milieu);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* Planètes */
+  .planete {
+    position: absolute;
+    width: clamp(48px, 15%, 65px);
+    height: clamp(48px, 15%, 65px);
+    border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer;
+    border: 1.5px solid rgba(212,160,83,0.3);
+    z-index: 5;
+    animation: floatP 4s ease-in-out infinite;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4), inset 0 0 10px rgba(255,255,255,0.1);
+    transition: transform 0.2s;
+    backdrop-filter: blur(5px);
+  }
+  .planete:active { filter: brightness(1.3); transform: translate(-50%,-50%) scale(0.92) !important; }
+  @keyframes floatP { 0%,100%{margin-top:0}50%{margin-top:-4px} }
+
+  .planete-icone { font-size: clamp(17px, 3.8vw, 23px); line-height: 1; }
+  .planete-nom {
+    font-size: clamp(6px, 1.6vw, 8px);
+    font-weight: 800;
+    color: rgba(255,255,255,0.9);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* Positions planètes — 8 planètes espacées à 45° */
+  .p-meteo     { background: radial-gradient(circle at 35% 35%, #E3F2FD, #42A5F5, #1565C0); top:3%;   left:50%; transform:translate(-50%,-50%); animation-delay:0s; }
+  .p-nouvelles { background: radial-gradient(circle at 35% 35%, #FFF3E0, #FFA726, #E65100); top:18%;  left:85%; transform:translate(-50%,-50%); animation-delay:0.4s; }
+  .p-medic     { background: radial-gradient(circle at 35% 35%, #E8F5E9, #66BB6A, #2E7D32); top:60%;  left:97%; transform:translate(-50%,-50%); animation-delay:0.8s; }
+  .p-epicerie  { background: radial-gradient(circle at 35% 35%, #FFF8E1, #FFCA28, #F57F17); top:97%;  left:75%; transform:translate(-50%,-50%); animation-delay:1.2s; }
+  .p-voyage    { background: radial-gradient(circle at 35% 35%, #E8EAF6, #7986CB, #283593); top:97%;  left:25%; transform:translate(-50%,-50%); animation-delay:1.6s; }
+  .p-ancetres  { background: radial-gradient(circle at 35% 35%, #FCE4EC, #EC407A, #880E4F); top:60%;  left:3%;  transform:translate(-50%,-50%); animation-delay:2s; }
+  .p-activites { background: radial-gradient(circle at 35% 35%, #F3E5F5, #AB47BC, #4A148C); top:18%;  left:15%; transform:translate(-50%,-50%); animation-delay:2.4s; }
+  .p-urgence   { background: radial-gradient(circle at 35% 35%, #FFEBEE, #EF5350, #B71C1C); top:3%;   left:50%; transform:translate(-50%,-50%); animation-delay:2.8s;
+    /* Urgence cachée derrière météo — on va la repositionner */
+  }
+
+  /* Correction urgence — on la met différemment */
+  .p-meteo     { top:2%;   left:50%; }
+  .p-nouvelles { top:16%;  right:3%; left:auto; transform:translate(50%,-50%); }
+  .p-medic     { top:58%;  right:3%; left:auto; transform:translate(50%,-50%); }
+  .p-epicerie  { top:96%;  left:72%; }
+  .p-voyage    { top:96%;  left:28%; }
+  .p-ancetres  { top:58%;  left:3%; }
+  .p-activites { top:16%;  left:3%; }
+  .p-urgence   { display:none; } /* On le met dans le bas */
+
+  /* Statut */
+  .status-zone { margin-top:10px; text-align:center; min-height:20px; padding:0 20px; }
+  .status-text {
+    font-size: clamp(12px, 3vw, 15px);
+    font-weight: 600;
+    color: var(--or-pale);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    opacity: 0.85;
+  }
+
+  /* Réponse */
+  .response-zone {
+    width: 100%; max-width: 500px;
+    margin-top: 8px; max-height: 22vh;
+    overflow-y: auto; padding: 0 16px; flex-shrink: 1;
+  }
+  .response-zone::-webkit-scrollbar{width:3px}
+  .response-zone::-webkit-scrollbar-thumb{background:rgba(212,160,83,0.4);border-radius:3px}
+
+  .response-bubble {
+    background: rgba(212,160,83,0.12);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-radius: 18px; padding: 12px 16px;
+    font-size: clamp(14px, 3.5vw, 16px); line-height: 1.7;
+    color: var(--or-pale);
+    border: 1px solid rgba(212,160,83,0.25);
+    animation: fadeIn 0.4s ease;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(15px, 3.8vw, 18px);
+  }
+  .user-bubble {
+    background: rgba(212,160,83,0.08);
+    text-align: right; font-style: italic;
+    font-size: clamp(12px, 3vw, 14px);
+    color: rgba(250,232,192,0.6);
+    border: 1px solid rgba(212,160,83,0.15);
+    border-radius: 18px; padding: 8px 14px;
+    margin-bottom: 8px; animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+
+  .typing-dots { display:flex; gap:6px; padding:12px 18px; justify-content:center; }
+  .td {
+    width:10px; height:10px; border-radius:50%;
+    background: var(--or-clair);
+    animation: tdB 1.2s ease-in-out infinite;
+  }
+  .td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
+  @keyframes tdB { 0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-8px);opacity:1} }
+
+  /* Barre urgence + texte */
+  .bottom-bar {
+    z-index: 10;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(212,160,83,0.15);
+    padding: 8px 12px;
+    display: flex; gap: 8px; align-items: center;
+  }
+
+  .urgence-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #FFEBEE, #EF5350, #B71C1C);
+    border: 1.5px solid rgba(239,83,80,0.5);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(239,83,80,0.4);
+    transition: all 0.2s;
+  }
+  .urgence-btn:active { transform: scale(0.9); }
+
+  .text-input {
+    flex: 1;
+    background: rgba(212,160,83,0.1);
+    border: 1px solid rgba(212,160,83,0.2);
+    border-radius: 22px; padding: 8px 14px;
+    font-size: 14px; font-family: 'Quicksand', sans-serif;
+    color: var(--or-pale); resize: none; outline: none;
+    max-height: 40px; line-height: 1.4;
+  }
+  .text-input::placeholder{color:rgba(212,160,83,0.4)}
+  .text-input:focus{border-color:rgba(212,160,83,0.5);background:rgba(212,160,83,0.15)}
+
+  .send-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--or-pale), var(--or-clair), var(--or-doux));
+    border: 1px solid rgba(212,160,83,0.4);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0; color: var(--or-fonce);
+    box-shadow: 0 3px 10px rgba(212,160,83,0.3);
+    transition: all 0.2s;
+  }
+  .send-btn:active{transform:scale(0.9)}
+  .send-btn:disabled{opacity:0.3}
+
+  .text-hint {
+    font-size: 9px; color: rgba(212,160,83,0.3);
+    text-align: center;
+    padding: 2px 0 max(5px,env(safe-area-inset-bottom));
+    background: rgba(0,0,0,0.2);
+    font-style: italic;
+  }
+
+  /* Modal profil */
+  .profil-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.5s ease;
+  }
+  .profil-modal {
+    background: linear-gradient(135deg, var(--or-milieu), var(--or-fonce));
+    border: 1px solid rgba(212,160,83,0.3);
+    border-radius: 24px; padding: 30px 24px;
+    width: min(90vw, 380px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(212,160,83,0.15);
+    text-align: center;
+  }
+  .profil-titre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600;
+    color: var(--or-lumineux);
+    margin-bottom: 8px;
+  }
+  .profil-sous-titre {
+    font-size: 14px; color: var(--or-pale);
+    opacity: 0.8; margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .profil-question {
+    font-size: 16px; color: var(--or-pale);
+    margin-bottom: 16px; font-weight: 600;
+  }
+  .profil-input {
+    width: 100%;
+    background: rgba(212,160,83,0.15);
+    border: 1px solid rgba(212,160,83,0.35);
+    border-radius: 12px; padding: 12px 16px;
+    font-size: 16px; font-family: 'Quicksand', sans-serif;
+    color: var(--or-pale); outline: none; text-align: center;
+    margin-bottom: 16px;
+  }
+  .profil-input::placeholder{color:rgba(250,232,192,0.4)}
+  .profil-input:focus{border-color:rgba(212,160,83,0.7)}
+  .profil-btn {
+    background: radial-gradient(circle, var(--or-lumineux), var(--or-clair));
+    border: none; border-radius: 12px;
+    padding: 12px 32px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--or-fonce); cursor: pointer;
+    box-shadow: 0 4px 15px rgba(212,160,83,0.4);
+    transition: all 0.2s;
+  }
+  .profil-btn:active{transform:scale(0.97)}
+
+  @media(min-width:768px){.orbit-container{width:min(58vh,430px);height:min(58vh,430px)}}
+  @media(max-height:600px){.orbit-container{width:min(52vw,52vh,270px);height:min(52vw,52vh,270px)}.status-zone{margin-top:4px}.response-zone{max-height:16vh}}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+<div class="stars" id="stars"></div>
+
+<!-- Bouton écoute auto -->
+<button class="ecoute-btn" id="ecouteBtn" onclick="toggleEcoute()">
+  <div class="ecoute-dot"></div>
+  <span id="ecouteTexte">Écoute auto</span>
+</button>
+
+<!-- Modal profil première visite -->
+<div class="profil-overlay" id="profilOverlay" style="display:none">
+  <div class="profil-modal">
+    <div class="profil-titre">✨ Bonjour !</div>
+    <div class="profil-sous-titre">Je suis Sofia, votre compagne. Pour mieux vous connaître, j'ai quelques petites questions !</div>
+    <div class="profil-question" id="profilQuestion">Comment vous appelez-vous ?</div>
+    <input class="profil-input" id="profilInput" type="text" placeholder="Votre réponse..." onkeydown="if(event.key==='Enter')profilSuivant()">
+    <br><br>
+    <button class="profil-btn" onclick="profilSuivant()">Continuer →</button>
+  </div>
+</div>
+
+<!-- Zone principale -->
+<div class="main-zone">
+  <div class="orbit-container">
+    <div class="orbit-ring"></div>
+    <div class="orbit-ring-2"></div>
+    <div class="sun-rays"></div>
+    <div class="sun-rays-2"></div>
+
+    <!-- Soleil Sofia -->
+    <button class="soleil" id="soleil" onclick="toggleVoice()">
+      <div class="soleil-nom">Sofia</div>
+      <div class="soleil-icone" id="soleilIcone">🎙️</div>
+      <div class="soleil-texte" id="soleilTexte">Appuyez</div>
+    </button>
+
+    <!-- 7 Planètes visibles -->
+    <div class="planete p-meteo" onclick="demanderMeteo()">
+      <div class="planete-icone">🌤️</div><div class="planete-nom">Météo</div>
+    </div>
+    <div class="planete p-nouvelles" onclick="demanderNouvelles()">
+      <div class="planete-icone">📰</div><div class="planete-nom">Nouvelles</div>
+    </div>
+    <div class="planete p-medic" onclick="sendSuggestion('Rappelle-moi mes médicaments.')">
+      <div class="planete-icone">💊</div><div class="planete-nom">Médic.</div>
+    </div>
+    <div class="planete p-epicerie" onclick="sendSuggestion('Montre-moi ma liste épicerie.')">
+      <div class="planete-icone">🛒</div><div class="planete-nom">Épicerie</div>
+    </div>
+    <div class="planete p-voyage" onclick="demanderVoyage()">
+      <div class="planete-icone">✈️</div><div class="planete-nom">Voyage</div>
+    </div>
+    <div class="planete p-ancetres" onclick="demanderAncetres()">
+      <div class="planete-icone">🔍</div><div class="planete-nom">Ancêtres</div>
+    </div>
+    <div class="planete p-activites" onclick="sendSuggestion('Quelles activités culturelles me conseilles-tu ?')">
+      <div class="planete-icone">🎭</div><div class="planete-nom">Activités</div>
+    </div>
+  </div>
+
+  <div class="status-zone">
+    <div class="status-text" id="statusText">Appuyez sur Sofia pour parler 🌸</div>
+  </div>
+  <div class="response-zone" id="responseZone"></div>
+</div>
+
+<!-- Barre du bas -->
+<div class="bottom-bar">
+  <button class="urgence-btn" onclick="sendSuggestion('Urgence, appelle ma famille !')" title="Urgence">🚨</button>
+  <textarea class="text-input" id="userInput" placeholder="Ou écrivez à Sofia..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+  <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+</div>
+<div class="text-hint">Dites "météo", "nouvelles", "voyage" ou "ancêtres" — ou appuyez sur le soleil ☀️</div>
+
+<script>
+// === PARTICULES ET ÉTOILES ===
+(function(){
+  var p=document.getElementById('particles');
+  for(var i=0;i<15;i++){
+    var d=document.createElement('div');d.className='particle';
+    var sz=Math.random()*4+2;
+    d.style.width=sz+'px';d.style.height=sz+'px';
+    d.style.left=Math.random()*100+'%';
+    d.style.animationDuration=(Math.random()*15+10)+'s';
+    d.style.animationDelay=Math.random()*10+'s';
+    p.appendChild(d);
+  }
+  var s=document.getElementById('stars');
+  for(var j=0;j<50;j++){
+    var st=document.createElement('div');st.className='star';
+    var ssz=Math.random()*2+0.5;
+    var color=Math.random()>0.5?'rgba(240,192,96,':'rgba(250,232,192,';
+    st.style.width=ssz+'px';st.style.height=ssz+'px';
+    st.style.left=Math.random()*100+'%';
+    st.style.top=Math.random()*60+'%';
+    st.style.background=color+(Math.random()*0.4+0.3)+')';
+    st.style.borderRadius='50%';
+    st.style.animationDelay=Math.random()*5+'s';
+    st.style.animationDuration=(Math.random()*3+2)+'s';
+    s.appendChild(st);
+  }
+})();
+
+// === PROFIL UTILISATEUR ===
+var profil = JSON.parse(localStorage.getItem('sofia_profil') || '{}');
+var profilEtapes = [
+  { champ: 'prenom', question: 'Comment vous appelez-vous ?' },
+  { champ: 'ville', question: 'Dans quelle ville habitez-vous ?' },
+  { champ: 'statut', question: 'Êtes-vous marié(e), veuf/veuve, célibataire ?' },
+  { champ: 'enfants', question: 'Avez-vous des enfants ou petits-enfants ?' },
+  { champ: 'interets', question: 'Quels sont vos passe-temps ou intérêts ?' },
+  { champ: 'voyages', question: 'Quelles destinations de voyage aimez-vous ?' }
+];
+var profilEtapeActuelle = 0;
+
+function verifierProfil() {
+  if (!profil.prenom) {
+    document.getElementById('profilOverlay').style.display = 'flex';
+    afficherEtapeProfil();
+  }
+}
+
+function afficherEtapeProfil() {
+  if (profilEtapeActuelle < profilEtapes.length) {
+    document.getElementById('profilQuestion').textContent = profilEtapes[profilEtapeActuelle].question;
+    document.getElementById('profilInput').value = '';
+    document.getElementById('profilInput').focus();
+  }
+}
+
+function profilSuivant() {
+  var valeur = document.getElementById('profilInput').value.trim();
+  if (!valeur) return;
+  var champ = profilEtapes[profilEtapeActuelle].champ;
+  profil[champ] = valeur;
+  localStorage.setItem('sofia_profil', JSON.stringify(profil));
+  profilEtapeActuelle++;
+  if (profilEtapeActuelle < profilEtapes.length) {
+    afficherEtapeProfil();
+  } else {
+    document.getElementById('profilOverlay').style.display = 'none';
+    var msg = 'Bonjour ' + profil.prenom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
+    showResponse(msg);
+    speakText(msg);
+  }
+}
+
+// === ÉTAT ===
+var conversationHistory = [];
+var isSpeaking = false;
+var isListening = false;
+var isEcouteActive = false;
+var recognition = null;
+var autoRestartTimer = null;
+var attenteVille = false;
+var attenteVoyage = false;
+var attenteAncetre = false;
+
+// === VOIX ELEVENLABS ===
+async function speakText(t) {
+  var c = t.replace(/<br\s*\/?>/gi, '. ')
+            .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+            .replace(/\s+/g, ' ').trim();
+  isSpeaking = true;
+  try { if(recognition) recognition.stop(); } catch(e) {}
+  isListening = false;
+  document.getElementById('soleil').classList.remove('listening');
+  document.getElementById('soleil').classList.add('speaking');
+  document.getElementById('soleilIcone').textContent = '🔊';
+  document.getElementById('soleilTexte').textContent = 'Parle...';
+  setStatus('Sofia vous parle...');
+  try {
+    var r = await fetch('/.netlify/functions/voice', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: c})
+    });
+    if (!r.ok) throw new Error('Voice failed');
+    var b = await r.blob();
+    var a = new Audio(URL.createObjectURL(b));
+    a.onended = function() {
+      if (attenteVille || attenteVoyage || attenteAncetre) return;
+      onSpeakEnd();
+    };
+    a.onerror = function() { onSpeakEnd(); };
+    a.play();
+  } catch(e) { onSpeakEnd(); }
+}
+
+function onSpeakEnd() {
+  isSpeaking = false;
+  document.getElementById('soleil').classList.remove('speaking');
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+  if (isEcouteActive) {
+    setStatus('Sofia vous écoute... 👂');
+    clearTimeout(autoRestartTimer);
+    autoRestartTimer = setTimeout(function() {
+      if (isEcouteActive && !isListening && !isSpeaking) startListening();
+    }, 1000);
+  } else {
+    setStatus('Appuyez sur Sofia pour parler 🌸');
+  }
+}
+
+// === RECONNAISSANCE VOCALE ===
+function initRecognition() {
+  var S = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!S) { document.getElementById('soleilTexte').textContent = 'Écrire'; return; }
+  recognition = new S();
+  recognition.lang = 'fr-CA';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = function(e) {
+    var t = e.results[0][0].transcript;
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
+    document.getElementById('soleilIcone').textContent = '🎙️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+
+    // Attentes spéciales
+    if (attenteVille) { obtenirMeteo(t); return; }
+    if (attenteVoyage) { obtenirVoyage(t); return; }
+    if (attenteAncetre) { obtenirAncetres(t); return; }
+
+    // Mots-clés vocaux
+    var tMin = t.toLowerCase();
+    if (tMin.includes('météo') || tMin.includes('meteo') || tMin.includes('température') || tMin.includes('temps qu')) {
+      demanderMeteo(); return;
+    }
+    if (tMin.includes('nouvelle') || tMin.includes('actualité') || tMin.includes('journal') || tMin.includes('nouvelles')) {
+      demanderNouvelles(); return;
+    }
+    if (tMin.includes('voyage') || tMin.includes('destination') || tMin.includes('voyager')) {
+      demanderVoyage(); return;
+    }
+    if (tMin.includes('ancêtre') || tMin.includes('ancetre') || tMin.includes('généalogie') || tMin.includes('genealogie') || tMin.includes('famille')) {
+      demanderAncetres(); return;
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2500,
-        system: `Tu es Sofia, une compagne vocale chaleureuse pour les personnes agees du Quebec.
+    showUserMessage(t);
+    conversationHistory.push({role: 'user', content: t});
+    getSofiaReply();
+  };
 
-STYLE DE PAROLE:
-- Tu parles comme dans une vraie conversation, pas comme un texte ecrit
-- Phrases courtes et naturelles, comme si tu parlais a une amie
-- Tu vouvoies toujours avec douceur
-- Tu utilises des expressions quebecoises chaleureuses
-- Jamais de Markdown, hashtags, asterisques, tirets ou mise en forme
-- Seulement du texte naturel et fluide a ecouter a voix haute
+  recognition.onend = function() {
+    if (isListening) {
+      isListening = false;
+      document.getElementById('soleil').classList.remove('listening');
+      document.getElementById('soleilIcone').textContent = '🎙️';
+      document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+    }
+    if (isEcouteActive && !isSpeaking && !attenteVille && !attenteVoyage && !attenteAncetre) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer = setTimeout(function() {
+        if (isEcouteActive && !isListening && !isSpeaking) startListening();
+      }, 800);
+    }
+  };
 
-PERSONNALITE:
-- Joyeuse, douce, patiente et empathique
-- Tu poses des questions pour maintenir la conversation
-- Tu t'interesses genuinement a la personne
-- Tu as de l'humour doux et bienveillant
-- Tu prends des initiatives — racontes une anecdote, poses une question
+  recognition.onerror = function() {
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
+    document.getElementById('soleilIcone').textContent = '🎙️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+    if (isEcouteActive && !isSpeaking) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer = setTimeout(function() {
+        if (isEcouteActive && !isListening && !isSpeaking) startListening();
+      }, 1500);
+    }
+  };
+}
 
-LIMITES:
-- Jamais de conseils medicaux ou psychologiques
-- Urgence — toujours rappeler le 911 ou la famille
-- Si tu ne sais pas quelque chose, dis-le simplement
-
-LONGUEUR:
-- Conversations normales — 2 a 4 phrases maximum
-- Revue de presse ou voyage — tu peux parler plus longtemps
-- Toujours terminer par quelque chose qui invite a continuer${profilContexte}`,
-        messages: messages
-      })
-    });
-    const data = await response.json();
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    };
-  } catch (error) {
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+function startListening() {
+  if (!recognition || isListening || isSpeaking) return;
+  try {
+    isListening = true;
+    document.getElementById('soleil').classList.add('listening');
+    document.getElementById('soleilIcone').textContent = '⏹️';
+    document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Parlez...';
+    setStatus('Sofia vous écoute... 👂');
+    recognition.start();
+  } catch(e) {
+    isListening = false;
+    document.getElementById('soleil').classList.remove('listening');
   }
-};
+}
+
+function stopListening() {
+  isListening = false;
+  attenteVille = false; attenteVoyage = false; attenteAncetre = false;
+  clearTimeout(autoRestartTimer);
+  document.getElementById('soleil').classList.remove('listening');
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = 'Appuyez';
+  setStatus('Appuyez sur Sofia pour parler 🌸');
+  try { recognition.stop(); } catch(e) {}
+}
+
+function toggleVoice() {
+  if (isSpeaking) return;
+  if (isListening) { stopListening(); }
+  else { startListening(); }
+}
+
+function toggleEcoute() {
+  isEcouteActive = !isEcouteActive;
+  var btn = document.getElementById('ecouteBtn');
+  var texte = document.getElementById('ecouteTexte');
+  if (isEcouteActive) {
+    btn.classList.add('active');
+    texte.textContent = 'Écoute active';
+    document.getElementById('soleilTexte').textContent = 'Auto';
+    setStatus('Sofia vous écoute... 👂');
+    startListening();
+  } else {
+    btn.classList.remove('active');
+    texte.textContent = 'Écoute auto';
+    clearTimeout(autoRestartTimer);
+    stopListening();
+  }
+}
+
+// === MÉTÉO ===
+async function demanderMeteo() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  attenteVille = true;
+  showUserMessage('Météo 🌤️');
+  var msg = 'Pour quelle ville voulez-vous la météo ?';
+  showResponse(msg);
+  await speakText(msg);
+  setTimeout(function() { if (attenteVille) startListening(); }, 1500);
+}
+
+async function obtenirMeteo(ville) {
+  if (!ville || ville.trim().length < 2) { attenteVille = true; return; }
+  attenteVille = false;
+  showUserMessage(ville);
+  setStatus('Sofia cherche la météo...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/meteo', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ville: ville})
+    });
+    var d = await r.json();
+    if (d.erreur) {
+      var msg = "Je n'ai pas trouvé la météo pour " + ville + ". Pouvez-vous répéter ?";
+      showResponse(msg); speakText(msg); attenteVille = true; return;
+    }
+    var prompt = "Tu es Sofia. Presente la météo de " + d.ville + " en " + d.pays + " chaleureusement. Il fait actuellement " + d.maintenant.temperature + " degrés avec " + d.maintenant.description + ", vent " + d.maintenant.vent + " km/h. Aujourd'hui max " + d.aujourd_hui.max + " min " + d.aujourd_hui.min + " degrés, " + d.aujourd_hui.description + ". Demain max " + d.demain.max + " min " + d.demain.min + ", " + d.demain.description + ". Après-demain max " + d.apres_demain.max + " min " + d.apres_demain.min + ", " + d.apres_demain.description + ". Donne des conseils pratiques.";
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
+  } catch(e) { showResponse("Je n'arrive pas à trouver la météo. Réessayons !"); }
+}
+
+// === NOUVELLES ===
+async function demanderNouvelles() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  showUserMessage('Les nouvelles du jour 📰');
+  setStatus('Sofia cherche les nouvelles...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/nouvelles');
+    var d = await r.json();
+    var quebec = d.quebec || [];
+    var monde = d.monde || [];
+    var culture = d.culture || [];
+
+    var prompt = 'Tu es Sofia. Presente cette revue de presse de facon naturelle et chaleureuse. Commence par bonjour. Explique chaque nouvelle en 2-3 phrases simples. Presente dabord le Quebec et Canada, puis le monde, puis culture et arts.\n\n';
+    if (quebec.length > 0) {
+      prompt += 'QUEBEC ET CANADA:\n';
+      quebec.slice(0, 5).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+    if (monde.length > 0) {
+      prompt += '\nMONDE:\n';
+      monde.slice(0, 4).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+    if (culture.length > 0) {
+      prompt += '\nCULTURE ET ARTS:\n';
+      culture.slice(0, 4).forEach(function(a, i) {
+        prompt += (i+1) + '. ' + a.titre;
+        if (a.description) prompt += ' — ' + a.description;
+        prompt += '\n';
+      });
+    }
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
+  } catch(e) { showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !"); }
+}
+
+// === VOYAGE ===
+async function demanderVoyage() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  attenteVoyage = true;
+  showUserMessage('Voyage ✈️');
+  var msg = 'Quelle destination vous intéresse ? Dites-moi le nom de la ville ou du pays !';
+  showResponse(msg);
+  await speakText(msg);
+  setTimeout(function() { if (attenteVoyage) startListening(); }, 1500);
+}
+
+async function obtenirVoyage(destination) {
+  if (!destination || destination.trim().length < 2) { attenteVoyage = true; return; }
+  attenteVoyage = false;
+  showUserMessage(destination);
+  setStatus('Sofia cherche les infos voyage...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/voyage', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({destination: destination})
+    });
+    var d = await r.json();
+    var prompt = 'Tu es Sofia. La personne veut voyager a ' + destination + '. ';
+    if (d.destination && d.meteo) {
+      prompt += 'A ' + d.destination + ' en ' + d.pays + ', il fait actuellement ' + d.meteo.temperature + ' degres avec ' + d.meteo.description + '. Max ' + d.meteo.max + ' min ' + d.meteo.min + ' degres. ';
+    }
+    prompt += 'Parle de cette destination de facon enthousiaste et chaleureuse. Mentionne des attraits touristiques, la culture, la cuisine, les conseils pratiques pour un voyageur. Sois detaillee et inspirante !';
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
+  } catch(e) { showResponse("Je n'arrive pas à trouver les infos sur cette destination. Réessayons !"); }
+}
+
+// === ANCÊTRES ===
+async function demanderAncetres() {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  attenteAncetre = true;
+  showUserMessage('Recherche ancêtres 🔍');
+  var msg = 'Je serais ravie de vous aider à retrouver vos ancêtres ! Quel nom de famille voulez-vous rechercher ?';
+  showResponse(msg);
+  await speakText(msg);
+  setTimeout(function() { if (attenteAncetre) startListening(); }, 1500);
+}
+
+async function obtenirAncetres(nom) {
+  if (!nom || nom.trim().length < 2) { attenteAncetre = true; return; }
+  attenteAncetre = false;
+  showUserMessage(nom);
+  setStatus('Sofia cherche les ressources...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/ancetres', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({nom: nom})
+    });
+    var d = await r.json();
+    var prompt = 'Tu es Sofia. La personne cherche des ancetres avec le nom de famille ' + nom + '. ';
+    prompt += 'Voici les meilleures ressources quebecoises pour la genealogie: ';
+    d.sources.forEach(function(s) {
+      prompt += s.nom + ' (' + s.url + '): ' + s.description + '. ';
+    });
+    prompt += 'Conseils: ' + d.conseils.slice(0, 3).join('. ') + '. ';
+    prompt += 'Presente ces ressources de facon chaleureuse et encourageante, comme si tu aidais une amie a decouvrir ses racines. Sois enthousiaste et detaillee !';
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply();
+  } catch(e) { showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !"); }
+}
+
+// === UTILITAIRES ===
+function setStatus(t) { document.getElementById('statusText').textContent = t; }
+function autoResize(e) { e.style.height='auto'; e.style.height=Math.min(e.scrollHeight,40)+'px'; }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+
+function sendSuggestion(t) {
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  showUserMessage(t);
+  conversationHistory.push({role: 'user', content: t});
+  getSofiaReply();
+}
+
+function showUserMessage(t) {
+  var z = document.getElementById('responseZone');
+  z.innerHTML = '<div class="user-bubble">' + t + '</div>';
+}
+
+function showTyping() {
+  var z = document.getElementById('responseZone');
+  z.innerHTML += '<div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
+}
+
+function showResponse(t) {
+  var z = document.getElementById('responseZone');
+  z.innerHTML = '<div class="response-bubble">' + t.replace(/\n/g,'<br>') + '</div>';
+  z.scrollTop = z.scrollHeight;
+}
+
+function sendMessage() {
+  var i = document.getElementById('userInput');
+  var t = i.value.trim();
+  if (!t) return;
+  if (isListening) { try { recognition.stop(); } catch(e) {} }
+  showUserMessage(t);
+  i.value = ''; i.style.height = 'auto';
+  conversationHistory.push({role: 'user', content: t});
+  getSofiaReply();
+}
+
+async function getSofiaReply() {
+  document.getElementById('sendBtn').disabled = true;
+  setStatus('Sofia réfléchit...');
+  showTyping();
+  try {
+    var r = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({messages: conversationHistory, profil: profil})
+    });
+    var d = await r.json();
+    if (d.content && d.content[0]) {
+      var reply = d.content[0].text;
+      conversationHistory.push({role: 'assistant', content: reply});
+      showResponse(reply);
+      speakText(reply);
+    } else {
+      showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+      if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
+    }
+  } catch(e) {
+    showResponse("Je suis désolée, réessayons !");
+    if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+// Démarrage
+initRecognition();
+verifierProfil();
+</script>
+</body>
+</html>
