@@ -6,12 +6,18 @@ exports.handler = async function(event) {
     const { messages, profil, type } = JSON.parse(event.body);
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    // Garder seulement les 20 derniers messages pour limiter les tokens
+    // max_tokens selon le type de requête
+    const maxTokens = type === 'nouvelles' ? 1500
+                    : type === 'voyage'    ? 700
+                    : type === 'meteo'     ? 600
+                    : 400;
+
+    // Garder seulement les 20 derniers messages
     const messagesLimites = messages.slice(-20);
 
     let profilContexte = '';
     if (profil && profil.prenom) {
-      profilContexte = `\n\nPROFIL:\n`;
+      profilContexte = '\n\nPROFIL:\n';
       if (profil.prenom)      profilContexte += `- Prénom: ${profil.prenom}\n`;
       if (profil.statut)      profilContexte += `- Statut: ${profil.statut}\n`;
       if (profil.enfants)     profilContexte += `- Enfants: ${profil.enfants}\n`;
@@ -32,7 +38,7 @@ exports.handler = async function(event) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: type === 'nouvelles' ? 1500 : type === 'voyage' || type === 'meteo' ? 600 : 400,
+        max_tokens: maxTokens,
         system: `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
 
 RÈGLES ABSOLUES POUR LA VOIX:
