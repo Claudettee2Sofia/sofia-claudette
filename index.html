@@ -357,6 +357,72 @@
   }
   .profil-passer:hover { color: rgba(240,160,80,0.7); }
 
+  /* === MODAL CHOIX COMPAGNON === */
+  .choix-overlay {
+    position: fixed; inset: 0; z-index: 250;
+    background: rgba(10,2,0,0.95);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.5s ease;
+  }
+  .choix-modal {
+    background: linear-gradient(135deg, #4A1A05, #2A0A00);
+    border: 1px solid rgba(240,160,80,0.25);
+    border-radius: 24px; padding: 32px 24px;
+    width: min(90vw, 380px); text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  }
+  .choix-titre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600;
+    color: var(--or); margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(240,160,60,0.4);
+  }
+  .choix-sous-titre {
+    font-size: 14px; color: var(--or-pale);
+    opacity: 0.8; margin-bottom: 28px; line-height: 1.6;
+  }
+  .choix-cartes {
+    display: flex; gap: 16px; justify-content: center; margin-bottom: 20px;
+  }
+  .choix-carte {
+    flex: 1; border-radius: 18px; padding: 20px 12px;
+    cursor: pointer; border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  .choix-carte:active { transform: scale(0.97); }
+  .choix-carte.sofia {
+    background: linear-gradient(135deg, rgba(232,112,64,0.2), rgba(240,160,80,0.1));
+    border-color: rgba(232,112,64,0.35);
+  }
+  .choix-carte.leo {
+    background: linear-gradient(135deg, rgba(100,150,240,0.2), rgba(80,120,200,0.1));
+    border-color: rgba(100,150,240,0.35);
+  }
+  .choix-carte.selected {
+    border-color: var(--or);
+    box-shadow: 0 0 20px rgba(240,160,60,0.35);
+  }
+  .choix-emoji { font-size: 42px; margin-bottom: 10px; }
+  .choix-nom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--or);
+  }
+  .choix-desc {
+    font-size: 11px; color: rgba(250,220,170,0.6);
+    margin-top: 4px; line-height: 1.4;
+  }
+  .choix-btn {
+    background: linear-gradient(135deg, var(--or), var(--rose));
+    border: none; border-radius: 12px; padding: 13px 32px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: #2A0A00; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(240,160,60,0.4);
+    transition: all 0.2s;
+  }
+  .choix-btn:active { transform: scale(0.97); }
+
   /* === MODAL URGENCE === */
   .urgence-overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -479,6 +545,27 @@
   <span id="ecouteTexte">Écoute auto</span>
 </button>
 
+<!-- Modal Choix Compagnon -->
+<div class="choix-overlay" id="choixOverlay" style="display:none">
+  <div class="choix-modal">
+    <div class="choix-titre">✨ Bienvenue !</div>
+    <div class="choix-sous-titre">Choisissez votre compagnon vocal pour vous accompagner au quotidien.</div>
+    <div class="choix-cartes">
+      <div class="choix-carte sofia selected" id="carteSofia" onclick="selectionnerCompagnon('sofia')">
+        <div class="choix-emoji">☀️</div>
+        <div class="choix-nom">Sofia</div>
+        <div class="choix-desc">Voix féminine chaleureuse</div>
+      </div>
+      <div class="choix-carte leo" id="carteLeo" onclick="selectionnerCompagnon('leo')">
+        <div class="choix-emoji">🌙</div>
+        <div class="choix-nom">Léo</div>
+        <div class="choix-desc">Voix masculine douce</div>
+      </div>
+    </div>
+    <button class="choix-btn" onclick="confirmerChoix()">Confirmer mon choix →</button>
+  </div>
+</div>
+
 <!-- Modal Urgence -->
 <div class="urgence-overlay" id="urgenceOverlay" style="display:none">
   <div class="urgence-header">
@@ -584,10 +671,54 @@ var profilEtapes = [
 ];
 var profilEtapeActuelle = 0;
 
-function verifierProfil() {
+// === CHOIX COMPAGNON ===
+var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
+var VOIX = {
+  sofia: 'WeAAwKYcS06VmXw086yZ',
+  leo:   '93nuHbke4dTER9x2pDwE'
+};
+
+function selectionnerCompagnon(choix) {
+  compagnon = choix;
+  document.getElementById('carteSofia').classList.toggle('selected', choix === 'sofia');
+  document.getElementById('carteLeo').classList.toggle('selected', choix === 'leo');
+}
+
+function confirmerChoix() {
+  profil.compagnon = compagnon;
+  localStorage.setItem('sofia_compagnon', compagnon);
+  localStorage.setItem('sofia_profil', JSON.stringify(profil));
+  document.getElementById('choixOverlay').style.display = 'none';
+  appliquerCompagnon(compagnon);
   if (!profil.prenom) {
     document.getElementById('profilOverlay').style.display = 'flex';
     afficherEtapeProfil();
+  } else {
+    var nom = profil.prenom || 'vous';
+    var nomC = compagnon === 'leo' ? 'Léo' : 'Sofia';
+    var msg = 'Bonjour ' + nom + ' ! C'est ' + nomC + '. Comme je suis content de vous retrouver ! Comment allez-vous aujourd'hui ?';
+    showResponse(msg);
+    speakText(msg);
+  }
+}
+
+function appliquerCompagnon(choix) {
+  var nomC = choix === 'leo' ? 'Léo' : 'Sofia';
+  var icone = choix === 'leo' ? '🌙' : '☀️';
+  document.getElementById('soleil').querySelector('.soleil-nom').textContent = nomC;
+  document.querySelector('.text-hint').textContent = 'Dites "météo", "nouvelles", "voyage" ou "ancêtres" — ou appuyez sur ' + icone;
+  document.querySelector('#userInput').placeholder = 'Ou écrivez à ' + nomC + '...';
+}
+
+function verifierProfil() {
+  if (!profil.compagnon) {
+    document.getElementById('choixOverlay').style.display = 'flex';
+  } else if (!profil.prenom) {
+    document.getElementById('profilOverlay').style.display = 'flex';
+    afficherEtapeProfil();
+  } else {
+    // Utilisateur connu — mettre à jour l'interface
+    appliquerCompagnon(profil.compagnon);
   }
 }
 
@@ -625,11 +756,17 @@ function passerProfil() {
 function terminerProfil() {
   document.getElementById('profilOverlay').style.display = 'none';
   var nom = profil.prenom || 'vous';
+  var nomC = compagnon === 'leo' ? 'Léo' : 'Sofia';
   var msg;
   if (conversationHistory.length > 0) {
-    msg = 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+    var content = compagnon === 'leo'
+      ? 'Bonjour ' + nom + ' ! C\'est Léo. Comme je suis content de vous retrouver ! Comment allez-vous aujourd\'hui ?'
+      : 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+    msg = content;
   } else {
-    msg = 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
+    msg = compagnon === 'leo'
+      ? 'Bonjour ' + nom + ' ! Je suis Léo, votre compagnon. Je suis tellement content de faire votre connaissance ! N\'hésitez pas à me parler de tout ce qui vous passe par la tête !'
+      : 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
   }
   showResponse(msg);
   speakText(msg);
@@ -685,7 +822,7 @@ function speakText(t) {
   return fetch('/.netlify/functions/voice', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({text: c})
+    body: JSON.stringify({text: c, compagnon: compagnon})
   }).then(function(r) {
     if (!r.ok) throw new Error('failed');
     return r.blob();
