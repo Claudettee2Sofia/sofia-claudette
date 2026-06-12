@@ -419,10 +419,54 @@
 
   @media(min-width:768px){.orbit-container{width:min(58vh,430px);height:min(58vh,430px)}}
   @media(max-height:600px){.orbit-container{width:min(52vw,52vh,270px);height:min(52vw,52vh,270px)}.status-zone{margin-top:4px}.response-zone{max-height:16vh}}
+
+  /* CARNET URGENCE */
+  .urgence-overlay{position:fixed;inset:0;z-index:300;background:rgba(10,2,0,0.93);backdrop-filter:blur(12px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px;animation:fadeIn 0.3s ease}
+  .urgence-modal{background:linear-gradient(135deg,#3A0A05,#1A0400);border:1.5px solid rgba(239,83,80,0.3);border-radius:24px;padding:22px 18px;width:min(94vw,410px);margin:auto;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+  .urgence-titre{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:#FF8A80;text-align:center;margin-bottom:4px}
+  .urgence-sous{font-size:11px;color:rgba(255,200,180,0.6);text-align:center;margin-bottom:14px;line-height:1.5}
+  .btn-911{background:linear-gradient(135deg,#B71C1C,#D32F2F);border:none;border-radius:14px;padding:15px;width:100%;font-size:20px;font-weight:800;font-family:'Quicksand',sans-serif;color:white;cursor:pointer;box-shadow:0 4px 20px rgba(183,28,28,0.5);margin-bottom:14px;display:block;text-align:center;text-decoration:none}
+  .urg-section{font-size:10px;font-weight:800;color:rgba(255,160,120,0.6);text-transform:uppercase;letter-spacing:1.5px;margin:12px 0 8px}
+  .contact-card{background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.2);border-radius:12px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+  .contact-info{flex:1;min-width:0}
+  .contact-nom{font-size:14px;font-weight:700;color:rgba(255,220,200,0.95)}
+  .contact-tel{font-size:12px;color:rgba(255,180,150,0.7);margin-top:1px}
+  .contact-rel{font-size:10px;color:rgba(255,160,120,0.55);margin-top:1px}
+  .contact-btns{display:flex;gap:5px;flex-shrink:0}
+  .btn-call{background:linear-gradient(135deg,#2E7D32,#388E3C);border:none;border-radius:9px;padding:7px 10px;font-size:16px;cursor:pointer;text-decoration:none;display:flex;align-items:center}
+  .btn-sms{background:linear-gradient(135deg,#1565C0,#1976D2);border:none;border-radius:9px;padding:7px 10px;font-size:16px;cursor:pointer}
+  .btn-del{background:rgba(239,83,80,0.2);border:1px solid rgba(239,83,80,0.3);border-radius:9px;padding:7px 9px;font-size:13px;cursor:pointer;color:#FF8A80}
+  .urg-add{background:rgba(255,160,80,0.08);border:1px dashed rgba(255,160,80,0.25);border-radius:12px;padding:12px;margin-top:10px}
+  .urg-add-titre{font-size:12px;font-weight:700;color:rgba(255,200,150,0.8);margin-bottom:8px;text-align:center}
+  .urg-input{width:100%;background:rgba(255,160,80,0.1);border:1px solid rgba(255,160,80,0.25);border-radius:9px;padding:8px 11px;font-size:13px;font-family:'Quicksand',sans-serif;color:rgba(255,220,180,0.9);outline:none;margin-bottom:7px;display:block;box-sizing:border-box}
+  .urg-input::placeholder{color:rgba(255,160,80,0.35)}
+  .btn-import{width:100%;background:rgba(255,160,80,0.15);border:1px solid rgba(255,160,80,0.3);border-radius:9px;padding:9px;font-size:12px;font-weight:700;font-family:'Quicksand',sans-serif;color:rgba(255,200,150,0.9);cursor:pointer;margin-bottom:7px;display:block}
+  .btn-save{width:100%;background:linear-gradient(135deg,#E65100,#F57C00);border:none;border-radius:9px;padding:10px;font-size:13px;font-weight:800;font-family:'Quicksand',sans-serif;color:white;cursor:pointer;box-shadow:0 3px 12px rgba(230,81,0,0.4)}
+  .btn-close-urg{width:100%;margin-top:12px;background:transparent;border:1px solid rgba(255,160,120,0.2);border-radius:11px;padding:9px;font-size:12px;font-weight:600;font-family:'Quicksand',sans-serif;color:rgba(255,160,120,0.5);cursor:pointer}
+  .no-contact{text-align:center;color:rgba(255,160,120,0.5);font-size:12px;padding:10px;font-style:italic}
+
 </style>
 </head>
 <body>
 
+<div class="urgence-overlay" id="urgenceOverlay" style="display:none">
+  <div class="urgence-modal">
+    <div class="urgence-titre">🚨 Carnet d'urgence</div>
+    <div class="urgence-sous">En cas d'urgence médicale, composez le 911 immédiatement</div>
+    <a class="btn-911" href="tel:911">📞 Appeler le 911</a>
+    <div class="urg-section">Mes contacts d'urgence</div>
+    <div id="contactsList"></div>
+    <div class="urg-add">
+      <div class="urg-add-titre">➕ Ajouter un contact</div>
+      <button class="btn-import" onclick="importerContact()">📱 Importer depuis mon répertoire</button>
+      <input class="urg-input" id="cNom" type="text" placeholder="Nom (ex: Ma fille Marie)">
+      <input class="urg-input" id="cTel" type="tel" placeholder="Numéro de téléphone">
+      <input class="urg-input" id="cRel" type="text" placeholder="Relation (ex: Fille, Médecin...)">
+      <button class="btn-save" onclick="sauverContact()">Sauvegarder ✓</button>
+    </div>
+    <button class="btn-close-urg" onclick="fermerUrgence()">Fermer</button>
+  </div>
+</div>
 <div class="stars" id="stars"></div>
 <div class="horizon"></div>
 
@@ -487,7 +531,7 @@
 </div>
 
 <div class="bottom-bar">
-  <button class="urgence-btn" onclick="sendSuggestion('Urgence, appelle ma famille !')" title="Urgence">🚨</button>
+  <button class="urgence-btn" onclick="ouvrirUrgence()" title="Urgence">🚨</button>
   <textarea class="text-input" id="userInput" placeholder="Ou écrivez à Sofia..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
@@ -942,6 +986,57 @@ async function getSofiaReply() {
     if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
   }
   document.getElementById('sendBtn').disabled = false;
+}
+
+
+var contacts=JSON.parse(localStorage.getItem('sofia_contacts')||'[]');
+function ouvrirUrgence(){afficherContacts();document.getElementById('urgenceOverlay').style.display='flex';}
+function fermerUrgence(){document.getElementById('urgenceOverlay').style.display='none';}
+function afficherContacts(){
+  var z=document.getElementById('contactsList');
+  if(!contacts||contacts.length===0){z.innerHTML='<div class="no-contact">Aucun contact. Ajoutez vos proches ci-dessous.</div>';return;}
+  var h='';
+  for(var i=0;i<contacts.length;i++){
+    var c=contacts[i];
+    h+='<div class="contact-card"><div class="contact-info"><div class="contact-nom">'+c.nom+'</div><div class="contact-tel">'+c.tel+'</div>'+(c.rel?'<div class="contact-rel">'+c.rel+'</div>':'')+'</div><div class="contact-btns"><a class="btn-call" href="tel:'+c.tel+'">📞</a><button class="btn-sms" onclick="envoyerSMS('+i+')">💬</button><button class="btn-del" onclick="supprimerContact('+i+')">✕</button></div></div>';
+  }
+  z.innerHTML=h;
+}
+function sauverContact(){
+  var nom=document.getElementById('cNom').value.trim();
+  var tel=document.getElementById('cTel').value.trim();
+  var rel=document.getElementById('cRel').value.trim();
+  if(!nom||!tel){alert('Veuillez entrer un nom et un numéro.');return;}
+  contacts.push({nom:nom,tel:tel,rel:rel});
+  localStorage.setItem('sofia_contacts',JSON.stringify(contacts));
+  document.getElementById('cNom').value='';
+  document.getElementById('cTel').value='';
+  document.getElementById('cRel').value='';
+  afficherContacts();
+}
+function supprimerContact(i){
+  if(confirm('Supprimer '+contacts[i].nom+' ?')){
+    contacts.splice(i,1);
+    localStorage.setItem('sofia_contacts',JSON.stringify(contacts));
+    afficherContacts();
+  }
+}
+function envoyerSMS(i){
+  var c=contacts[i];
+  var nom=profil&&profil.prenom?profil.prenom:'votre proche';
+  var msg='Bonjour, je suis Sofia, '+nom+' a besoin d'aide. Veuillez la contacter.';
+  window.open('sms:'+c.tel+'?body='+encodeURIComponent(msg));
+}
+async function importerContact(){
+  if('contacts' in navigator&&navigator.contacts&&navigator.contacts.select){
+    try{
+      var r=await navigator.contacts.select(['name','tel'],{multiple:false});
+      if(r&&r.length>0){
+        if(r[0].name&&r[0].name[0])document.getElementById('cNom').value=r[0].name[0];
+        if(r[0].tel&&r[0].tel[0])document.getElementById('cTel').value=r[0].tel[0];
+      }
+    }catch(e){alert('Importation non disponible. Entrez manuellement.');}
+  }else{alert('Importation non disponible sur cet appareil. Entrez manuellement.');}
 }
 
 initRecognition();
