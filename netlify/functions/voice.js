@@ -3,15 +3,22 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   try {
-    const { text } = JSON.parse(event.body);
+    const { text, compagnon } = JSON.parse(event.body);
+
+    // ID de voix selon le compagnon choisi
+    const VOIX = {
+      sofia: 'WeAAwKYcS06VmXw086yZ',
+      leo:   '93nuHbke4dTER9x2pDwE'
+    };
+    const voiceId = VOIX[compagnon] || VOIX.sofia;
 
     // Nettoyer le texte pour une meilleure synthèse
     const textePropre = text
-      .replace(/["""«»]/g, '')          // guillemets parasites
-      .replace(/\s{2,}/g, ' ')          // espaces multiples
+      .replace(/["""«»]/g, '')
+      .replace(/\s{2,}/g, ' ')
       .trim();
 
-    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/WeAAwKYcS06VmXw086yZ', {
+    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
