@@ -40,7 +40,6 @@
     min-height: 100%;
   }
 
-  /* Nuages coucher de soleil */
   .nuage {
     position: fixed;
     border-radius: 50%;
@@ -55,19 +54,16 @@
     to { transform: translateX(120vw); opacity: 0; }
   }
 
-  /* Étoiles */
   .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
   .star { position: absolute; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
   @keyframes twinkle { 0%,100%{opacity:0.1}50%{opacity:0.7} }
 
-  /* Lueur horizon */
   .horizon {
     position: fixed; bottom: 0; left: 0; right: 0; height: 35%;
     background: linear-gradient(180deg, transparent, rgba(240,160,60,0.15));
     pointer-events: none; z-index: 0;
   }
 
-  /* Bouton écoute */
   .ecoute-btn {
     position: fixed; top: 14px; right: 14px; z-index: 100;
     background: rgba(240,160,80,0.15);
@@ -98,7 +94,6 @@
   }
   @keyframes dotPulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.4)} }
 
-  /* Zone principale */
   .main-zone {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -147,19 +142,14 @@
     50%{transform:translate(-50%,-50%)scale(1.12);opacity:1}
   }
 
-  /* Soleil Sofia */
   .soleil {
     width: 38%; height: 38%;
     min-width: 128px; min-height: 128px;
     max-width: 172px; max-height: 172px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 32%,
-      #FFFAED 0%,
-      #FFE070 12%,
-      #F5C040 28%,
-      #E89030 50%,
-      #D06020 72%,
-      #A03010 100%
+      #FFFAED 0%, #FFE070 12%, #F5C040 28%,
+      #E89030 50%, #D06020 72%, #A03010 100%
     );
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer; position: relative; z-index: 10;
@@ -196,32 +186,21 @@
   .soleil-nom {
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(24px, 5.5vw, 33px);
-    font-weight: 600;
-    color: #3A1505;
-    line-height: 1;
-    text-shadow: 0 1px 3px rgba(255,240,180,0.6);
-    letter-spacing: 1px;
+    font-weight: 600; color: #3A1505; line-height: 1;
+    text-shadow: 0 1px 3px rgba(255,240,180,0.6); letter-spacing: 1px;
   }
   .soleil-icone { font-size: clamp(28px, 7vw, 40px); line-height: 1; margin: 2px 0; }
   .soleil-texte {
-    font-size: clamp(8px, 1.8vw, 11px);
-    font-weight: 800;
-    color: #5A2008;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.85;
+    font-size: clamp(8px, 1.8vw, 11px); font-weight: 800;
+    color: #5A2008; letter-spacing: 2px; text-transform: uppercase; opacity: 0.85;
   }
 
-  /* Planètes */
   .planete {
     position: absolute;
-    width: clamp(48px, 15%, 64px);
-    height: clamp(48px, 15%, 64px);
+    width: clamp(48px, 15%, 64px); height: clamp(48px, 15%, 64px);
     border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    cursor: pointer;
-    border: 1.5px solid rgba(240,160,80,0.25);
-    z-index: 5;
+    cursor: pointer; border: 1.5px solid rgba(240,160,80,0.25); z-index: 5;
     animation: floatP 4s ease-in-out infinite;
     box-shadow: 0 4px 15px rgba(0,0,0,0.35), inset 0 0 8px rgba(255,255,255,0.1);
     transition: filter 0.2s;
@@ -231,16 +210,12 @@
 
   .planete-icone { font-size: clamp(17px, 3.8vw, 23px); line-height: 1; }
   .planete-nom {
-    font-size: clamp(6px, 1.6vw, 8px);
-    font-weight: 800;
-    color: rgba(255,255,255,0.92);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: clamp(6px, 1.6vw, 8px); font-weight: 800;
+    color: rgba(255,255,255,0.92); margin-top: 2px;
+    text-transform: uppercase; letter-spacing: 0.5px;
     text-shadow: 0 1px 3px rgba(0,0,0,0.6);
   }
 
-  /* Positions 7 planètes espacées à ~51° */
   .p-meteo     { background: radial-gradient(circle at 35% 35%, #E3F2FD, #42A5F5, #1565C0); top:2%;  left:50%; transform:translate(-50%,-50%); animation-delay:0s; }
   .p-nouvelles { background: radial-gradient(circle at 35% 35%, #FFF3E0, #FFA726, #E65100); top:17%; left:87%; transform:translate(-50%,-50%); animation-delay:0.4s; }
   .p-medic     { background: radial-gradient(circle at 35% 35%, #E8F5E9, #66BB6A, #2E7D32); top:62%; left:97%; transform:translate(-50%,-50%); animation-delay:0.8s; }
@@ -249,17 +224,12 @@
   .p-ancetres  { background: radial-gradient(circle at 35% 35%, #FCE4EC, #EC407A, #880E4F); top:62%; left:3%;  transform:translate(-50%,-50%); animation-delay:2s; }
   .p-activites { background: radial-gradient(circle at 35% 35%, #F3E5F5, #AB47BC, #4A148C); top:17%; left:13%; transform:translate(-50%,-50%); animation-delay:2.4s; }
 
-  /* Statut */
   .status-zone { margin-top:10px; text-align:center; min-height:20px; padding:0 20px; }
   .status-text {
-    font-size: clamp(12px, 3vw, 15px);
-    font-weight: 600;
-    color: var(--or-pale);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-    opacity: 0.9;
+    font-size: clamp(12px, 3vw, 15px); font-weight: 600;
+    color: var(--or-pale); text-shadow: 0 1px 4px rgba(0,0,0,0.5); opacity: 0.9;
   }
 
-  /* Réponse */
   .response-zone {
     width: 100%; max-width: 500px;
     margin-top: 8px; max-height: 22vh;
@@ -273,17 +243,13 @@
     backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
     border-radius: 18px; padding: 12px 16px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(15px, 3.8vw, 18px);
-    line-height: 1.7;
-    color: var(--or-pale);
-    border: 1px solid rgba(240,160,80,0.2);
+    font-size: clamp(15px, 3.8vw, 18px); line-height: 1.7;
+    color: var(--or-pale); border: 1px solid rgba(240,160,80,0.2);
     animation: fadeIn 0.4s ease;
   }
   .user-bubble {
-    background: rgba(200,100,30,0.1);
-    text-align: right; font-style: italic;
-    font-size: clamp(12px, 3vw, 14px);
-    color: rgba(250,220,170,0.65);
+    background: rgba(200,100,30,0.1); text-align: right; font-style: italic;
+    font-size: clamp(12px, 3vw, 14px); color: rgba(250,220,170,0.65);
     border: 1px solid rgba(240,160,80,0.12);
     border-radius: 18px; padding: 8px 14px;
     margin-bottom: 8px; animation: fadeIn 0.3s ease;
@@ -293,20 +259,16 @@
   .typing-dots { display:flex; gap:6px; padding:12px 18px; justify-content:center; }
   .td {
     width:10px; height:10px; border-radius:50%;
-    background: var(--rose-pale);
-    animation: tdB 1.2s ease-in-out infinite;
+    background: var(--rose-pale); animation: tdB 1.2s ease-in-out infinite;
   }
   .td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
   @keyframes tdB { 0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-8px);opacity:1} }
 
-  /* Barre du bas */
   .bottom-bar {
-    z-index: 10;
-    background: rgba(30,8,0,0.4);
+    z-index: 10; background: rgba(30,8,0,0.4);
     backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
     border-top: 1px solid rgba(240,160,80,0.12);
-    padding: 8px 12px;
-    display: flex; gap: 8px; align-items: center;
+    padding: 8px 12px; display: flex; gap: 8px; align-items: center;
   }
 
   .urgence-btn {
@@ -315,14 +277,12 @@
     border: 1.5px solid rgba(239,83,80,0.5);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     font-size: 20px; flex-shrink: 0;
-    box-shadow: 0 0 15px rgba(239,83,80,0.4);
-    transition: all 0.2s;
+    box-shadow: 0 0 15px rgba(239,83,80,0.4); transition: all 0.2s;
   }
   .urgence-btn:active { transform: scale(0.9); }
 
   .text-input {
-    flex: 1;
-    background: rgba(240,160,80,0.1);
+    flex: 1; background: rgba(240,160,80,0.1);
     border: 1px solid rgba(240,160,80,0.2);
     border-radius: 22px; padding: 8px 14px;
     font-size: 14px; font-family: 'Quicksand', sans-serif;
@@ -338,82 +298,62 @@
     border: 1px solid rgba(240,160,80,0.4);
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     font-size: 18px; flex-shrink: 0; color: white;
-    box-shadow: 0 3px 10px rgba(240,100,30,0.4);
-    transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(240,100,30,0.4); transition: all 0.2s;
   }
   .send-btn:active{transform:scale(0.9)}
   .send-btn:disabled{opacity:0.3}
 
   .text-hint {
-    font-size: 9px; color: rgba(240,160,80,0.3);
-    text-align: center;
+    font-size: 9px; color: rgba(240,160,80,0.3); text-align: center;
     padding: 2px 0 max(5px,env(safe-area-inset-bottom));
-    background: rgba(20,5,0,0.3);
-    font-style: italic;
+    background: rgba(20,5,0,0.3); font-style: italic;
   }
 
-  /* Modal profil */
   .profil-overlay {
     position: fixed; inset: 0; z-index: 200;
-    background: rgba(20,5,0,0.88);
-    backdrop-filter: blur(12px);
+    background: rgba(20,5,0,0.88); backdrop-filter: blur(12px);
     display: flex; align-items: center; justify-content: center;
     animation: fadeIn 0.5s ease;
   }
   .profil-modal {
     background: linear-gradient(135deg, #4A1A05, #2A0A00);
     border: 1px solid rgba(240,160,80,0.25);
-    border-radius: 24px; padding: 30px 24px;
-    width: min(90vw, 380px);
+    border-radius: 24px; padding: 30px 24px; width: min(90vw, 380px);
     box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(240,160,80,0.1);
     text-align: center;
   }
   .profil-titre {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 30px; font-weight: 600;
-    color: var(--or);
-    margin-bottom: 8px;
-    text-shadow: 0 0 20px rgba(240,160,60,0.4);
+    font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600;
+    color: var(--or); margin-bottom: 8px; text-shadow: 0 0 20px rgba(240,160,60,0.4);
   }
   .profil-sous-titre {
-    font-size: 14px; color: var(--or-pale);
-    opacity: 0.8; margin-bottom: 24px;
-    line-height: 1.6;
+    font-size: 14px; color: var(--or-pale); opacity: 0.8;
+    margin-bottom: 24px; line-height: 1.6;
   }
   .profil-question {
-    font-size: 17px; color: var(--or-pale);
-    margin-bottom: 16px; font-weight: 600;
-    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px; color: var(--or-pale); margin-bottom: 16px;
+    font-weight: 600; font-family: 'Cormorant Garamond', serif;
   }
   .profil-input {
-    width: 100%;
-    background: rgba(240,160,80,0.12);
+    width: 100%; background: rgba(240,160,80,0.12);
     border: 1px solid rgba(240,160,80,0.3);
     border-radius: 12px; padding: 12px 16px;
     font-size: 16px; font-family: 'Quicksand', sans-serif;
-    color: var(--or-pale); outline: none; text-align: center;
-    margin-bottom: 16px;
+    color: var(--or-pale); outline: none; text-align: center; margin-bottom: 16px;
   }
   .profil-input::placeholder{color:rgba(240,160,80,0.35)}
   .profil-input:focus{border-color:rgba(240,160,80,0.6)}
   .profil-btn {
     background: linear-gradient(135deg, var(--or), var(--rose));
-    border: none; border-radius: 12px;
-    padding: 12px 32px;
-    font-size: 16px; font-weight: 700;
-    font-family: 'Quicksand', sans-serif;
+    border: none; border-radius: 12px; padding: 12px 32px;
+    font-size: 16px; font-weight: 700; font-family: 'Quicksand', sans-serif;
     color: #2A0A00; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(240,160,60,0.4);
-    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(240,160,60,0.4); transition: all 0.2s;
   }
   .profil-btn:active{transform:scale(0.97)}
   .profil-passer {
-    margin-top: 12px;
-    font-size: 12px;
-    color: rgba(240,160,80,0.4);
-    cursor: pointer;
-    text-decoration: underline;
-    display: block;
+    margin-top: 12px; font-size: 12px; color: rgba(240,160,80,0.4);
+    cursor: pointer; text-decoration: underline; display: block;
   }
   .profil-passer:hover { color: rgba(240,160,80,0.7); }
 
@@ -431,7 +371,6 @@
   <span id="ecouteTexte">Écoute auto</span>
 </button>
 
-<!-- Modal profil -->
 <div class="profil-overlay" id="profilOverlay" style="display:none">
   <div class="profil-modal">
     <div class="profil-titre">✨ Bonjour !</div>
@@ -494,14 +433,15 @@
 <div class="text-hint">Dites "météo", "nouvelles", "voyage" ou "ancêtres" — ou appuyez sur le soleil ☀️</div>
 
 <script>
-// Étoiles
+// === ÉTOILES ===
 (function(){
-  var s=document.getElementById('stars');
-  for(var i=0;i<40;i++){
-    var st=document.createElement('div');st.className='star';
-    var sz=Math.random()*2+0.5;
-    var alpha=Math.random()*0.4+0.1;
-    st.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*50+'%;background:rgba(250,220,150,'+alpha+');position:absolute;border-radius:50%;animation-delay:'+Math.random()*5+'s;animation-duration:'+(Math.random()*3+2)+'s;';
+  var s = document.getElementById('stars');
+  for (var i = 0; i < 40; i++) {
+    var st = document.createElement('div');
+    st.className = 'star';
+    var sz = Math.random() * 2 + 0.5;
+    var alpha = Math.random() * 0.4 + 0.1;
+    st.style.cssText = 'width:' + sz + 'px;height:' + sz + 'px;left:' + Math.random()*100 + '%;top:' + Math.random()*50 + '%;background:rgba(250,220,150,' + alpha + ');position:absolute;border-radius:50%;animation-delay:' + Math.random()*5 + 's;animation-duration:' + (Math.random()*3+2) + 's;';
     s.appendChild(st);
   }
 })();
@@ -509,12 +449,12 @@
 // === PROFIL ===
 var profil = JSON.parse(localStorage.getItem('sofia_profil') || '{}');
 var profilEtapes = [
-  { champ: 'prenom', question: 'Comment vous appelez-vous ?' },
-  { champ: 'ville', question: 'Dans quelle ville habitez-vous ?' },
-  { champ: 'statut', question: 'Êtes-vous marié(e), veuf/veuve, célibataire ?' },
-  { champ: 'enfants', question: 'Avez-vous des enfants ou petits-enfants ?' },
+  { champ: 'prenom',   question: 'Comment vous appelez-vous ?' },
+  { champ: 'ville',    question: 'Dans quelle ville habitez-vous ?' },
+  { champ: 'statut',   question: 'Êtes-vous marié(e), veuf/veuve, célibataire ?' },
+  { champ: 'enfants',  question: 'Avez-vous des enfants ou petits-enfants ?' },
   { champ: 'interets', question: 'Quels sont vos passe-temps ou intérêts ?' },
-  { champ: 'voyages', question: 'Quelles destinations de voyage aimez-vous ?' }
+  { champ: 'voyages',  question: 'Quelles destinations de voyage aimez-vous ?' }
 ];
 var profilEtapeActuelle = 0;
 
@@ -529,7 +469,7 @@ function afficherEtapeProfil() {
   if (profilEtapeActuelle < profilEtapes.length) {
     document.getElementById('profilQuestion').textContent = profilEtapes[profilEtapeActuelle].question;
     document.getElementById('profilInput').value = '';
-    setTimeout(function(){ document.getElementById('profilInput').focus(); }, 100);
+    setTimeout(function() { document.getElementById('profilInput').focus(); }, 100);
   }
 }
 
@@ -544,21 +484,6 @@ function profilSuivant() {
     afficherEtapeProfil();
   } else {
     terminerProfil();
-    function terminerProfil() {
-  document.getElementById('profilOverlay').style.display = 'none';
-  var nom = profil.prenom || 'vous';
-  var msg;
-  
-  if (conversationHistory.length > 0) {
-    // Sofia se souvient — elle reprend naturellement
-    msg = 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
-  } else {
-    // Première fois
-    msg = 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
-  }
-  showResponse(msg);
-  speakText(msg);
-}
   }
 }
 
@@ -574,7 +499,12 @@ function passerProfil() {
 function terminerProfil() {
   document.getElementById('profilOverlay').style.display = 'none';
   var nom = profil.prenom || 'vous';
-  var msg = 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
+  var msg;
+  if (conversationHistory.length > 0) {
+    msg = 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+  } else {
+    msg = 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
+  }
   showResponse(msg);
   speakText(msg);
 }
@@ -588,68 +518,57 @@ var recognition = null;
 var autoRestartTimer = null;
 var modeAttente = null;
 
-// Sauvegarder l'historique à chaque ajout
-function sauvegarderHistorique async function mettreAJourMemoire() {
-  // Déclencher seulement tous les 10 messages
-  if (conversationHistory.length % 10 !== 0) return;
-  if (conversationHistory.length < 6) return;
-
-  try {
-    var r = await fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        messages: [
-          ...conversationHistory.slice(-20),
-          {
-            role: 'user',
-            content: 'Résume en 3 phrases maximum les sujets importants abordés dans cette conversation: préférences, famille, santé mentionnée, événements, centres d\'intérêt. Format: texte simple, pas de listes. Ce résumé sera utilisé pour que Sofia se souvienne de la personne.'
-          }
-        ],
-        profil: {}
-      })
-    });
-    var d = await r.json();
-    if (d.content && d.content[0]) {
-      profil.memoire = d.content[0].text;
-      localStorage.setItem('sofia_profil', JSON.stringify(profil));
-    }
-  } catch(e) {
-    // Silencieux — pas critique
-  }
-}() {
-  // Garder seulement les 30 derniers messages en local
+// === MÉMOIRE ===
+function sauvegarderHistorique() {
   var aGarder = conversationHistory.slice(-30);
   localStorage.setItem('sofia_historique', JSON.stringify(aGarder));
 }
 
+function mettreAJourMemoire() {
+  if (conversationHistory.length % 10 !== 0) return;
+  if (conversationHistory.length < 6) return;
+  var messages = conversationHistory.slice(-20).concat([{
+    role: 'user',
+    content: 'Résume en 3 phrases maximum les sujets importants abordés dans cette conversation: préférences, famille, santé mentionnée, événements, centres d\'intérêt. Format: texte simple, pas de listes. Ce résumé sera utilisé pour que Sofia se souvienne de la personne.'
+  }]);
+  fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ messages: messages, profil: {} })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.content && d.content[0]) {
+      profil.memoire = d.content[0].text;
+      localStorage.setItem('sofia_profil', JSON.stringify(profil));
+    }
+  }).catch(function() {}); // silencieux
+}
 
 // === VOIX ===
-async function speakText(t) {
+function speakText(t) {
   var c = t.replace(/<br\s*\/?>/gi, '. ')
             .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
             .replace(/\s+/g, ' ').trim();
   isSpeaking = true;
-  try { if(recognition) recognition.stop(); } catch(e) {}
+  try { if (recognition) recognition.stop(); } catch(e) {}
   isListening = false;
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleil').classList.add('speaking');
   document.getElementById('soleilIcone').textContent = '🔊';
   document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
-  try {
-    var r = await fetch('/.netlify/functions/voice', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({text: c})
-    });
+  return fetch('/.netlify/functions/voice', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text: c})
+  }).then(function(r) {
     if (!r.ok) throw new Error('failed');
-    var b = await r.blob();
+    return r.blob();
+  }).then(function(b) {
     var a = new Audio(URL.createObjectURL(b));
     a.onended = function() { onSpeakEnd(); };
     a.onerror = function() { onSpeakEnd(); };
     a.play();
-  } catch(e) { onSpeakEnd(); }
+  }).catch(function() { onSpeakEnd(); });
 }
 
 function onSpeakEnd() {
@@ -658,7 +577,6 @@ function onSpeakEnd() {
   document.getElementById('soleilIcone').textContent = '🎙️';
   document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
 
-  // Si on attend une réponse (ville/voyage/ancetre), relancer le micro
   if (modeAttente) {
     setStatus('Dites le nom... 👂');
     clearTimeout(autoRestartTimer);
@@ -679,36 +597,34 @@ function onSpeakEnd() {
   }
 }
 
-// === RECONNAISSANCE ===
-function initRecognition() {
- // === VAD (Voice Activity Detection) ===
+// === VAD ===
 var vadStream = null;
 var vadAnalyser = null;
 var vadContext = null;
 var vadInterval = null;
-var SEUIL_VOLUME = 18; // 0-100, ajustable
-var SILENCE_DUREE = 1800; // ms de silence avant d'arrêter
+var SEUIL_VOLUME = 18;
+var SILENCE_DUREE = 1800;
 var dernierSon = 0;
 
-async function initVAD() {
-  try {
-    vadStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    vadContext = new (window.AudioContext || window.webkitAudioContext)();
-    var source = vadContext.createMediaStreamSource(vadStream);
-    vadAnalyser = vadContext.createAnalyser();
-    vadAnalyser.fftSize = 512;
-    vadAnalyser.smoothingTimeConstant = 0.6;
-    source.connect(vadAnalyser);
-  } catch(e) {
-    console.log('VAD non disponible:', e.message);
-  }
+function initVAD() {
+  return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(function(stream) {
+      vadStream = stream;
+      vadContext = new (window.AudioContext || window.webkitAudioContext)();
+      var source = vadContext.createMediaStreamSource(stream);
+      vadAnalyser = vadContext.createAnalyser();
+      vadAnalyser.fftSize = 512;
+      vadAnalyser.smoothingTimeConstant = 0.6;
+      source.connect(vadAnalyser);
+    }).catch(function(e) {
+      console.log('VAD non disponible:', e.message);
+    });
 }
 
 function getVolume() {
   if (!vadAnalyser) return 0;
   var data = new Uint8Array(vadAnalyser.frequencyBinCount);
   vadAnalyser.getByteFrequencyData(data);
-  // Focaliser sur les fréquences vocales (300Hz - 3400Hz)
   var debut = Math.floor(300 / (vadContext.sampleRate / vadAnalyser.fftSize));
   var fin = Math.floor(3400 / (vadContext.sampleRate / vadAnalyser.fftSize));
   var somme = 0;
@@ -723,11 +639,8 @@ function demarrerVADLoop() {
     var vol = getVolume();
     if (vol > SEUIL_VOLUME) {
       dernierSon = Date.now();
-      if (!isListening) {
-        startListening();
-      }
+      if (!isListening) startListening();
     } else {
-      // Silence prolongé — arrêter si on écoute
       if (isListening && (Date.now() - dernierSon) > SILENCE_DUREE) {
         try { recognition.stop(); } catch(e) {}
       }
@@ -740,7 +653,7 @@ function arreterVADLoop() {
   vadInterval = null;
 }
 
-// === RECONNAISSANCE ===
+// === RECONNAISSANCE VOCALE ===
 function initRecognition() {
   var S = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!S) { document.getElementById('soleilTexte').textContent = 'Écrire'; return; }
@@ -753,7 +666,6 @@ function initRecognition() {
     var t = e.results[0][0].transcript.trim();
     var confiance = e.results[0][0].confidence;
 
-    // Ignorer si confiance trop basse (bruit capté par erreur)
     if (confiance < 0.4 && confiance > 0) {
       setStatus('Sofia vous écoute... 👂');
       return;
@@ -764,8 +676,8 @@ function initRecognition() {
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
 
-    if (modeAttente === 'ville') { obtenirMeteo(t); return; }
-    if (modeAttente === 'voyage') { obtenirVoyage(t); return; }
+    if (modeAttente === 'ville')   { obtenirMeteo(t); return; }
+    if (modeAttente === 'voyage')  { obtenirVoyage(t); return; }
     if (modeAttente === 'ancetre') { obtenirAncetres(t); return; }
 
     var tMin = t.toLowerCase();
@@ -787,7 +699,6 @@ function initRecognition() {
       document.getElementById('soleilIcone').textContent = '🎙️';
       document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
     }
-    // En mode modeAttente, redémarrer manuellement (pas la VAD)
     if (modeAttente && !isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
@@ -796,7 +707,7 @@ function initRecognition() {
     }
   };
 
-  recognition.onerror = function(err) {
+  recognition.onerror = function() {
     isListening = false;
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent = '🎙️';
@@ -809,6 +720,7 @@ function initRecognition() {
     }
   };
 }
+
 function startListening() {
   if (!recognition || isListening || isSpeaking) return;
   try {
@@ -850,104 +762,106 @@ function toggleEcoute() {
     texte.textContent = 'Écoute active';
     document.getElementById('soleilTexte').textContent = 'Auto';
     setStatus('Sofia vous écoute... 👂');
-    startListening();
+    initVAD().then(function() { demarrerVADLoop(); });
   } else {
     btn.classList.remove('active');
     texte.textContent = 'Écoute auto';
+    arreterVADLoop();
     clearTimeout(autoRestartTimer);
     stopListening();
   }
 }
 
 // === MÉTÉO ===
-async function demanderMeteo() {
+function demanderMeteo() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   showUserMessage('Météo 🌤️');
   var msg = 'Pour quelle ville voulez-vous la météo ?';
   showResponse(msg);
   modeAttente = 'ville';
-  await speakText(msg);
+  speakText(msg);
 }
 
-async function obtenirMeteo(ville) {
-  if (!ville || ville.trim().length < 2) { return; }
+function obtenirMeteo(ville) {
+  if (!ville || ville.trim().length < 2) return;
   modeAttente = null;
   showUserMessage(ville);
   setStatus('Sofia cherche la météo...');
   showTyping();
-  try {
-    var r = await fetch('/.netlify/functions/meteo', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ville: ville})
-    });
-    var d = await r.json();
+  fetch('/.netlify/functions/meteo', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ville: ville})
+  }).then(function(r) { return r.json(); }).then(function(d) {
     if (d.erreur) {
       var msg2 = "Je n'ai pas trouvé la météo pour " + ville + ". Pouvez-vous répéter ?";
       showResponse(msg2);
       modeAttente = 'ville';
-      await speakText(msg2);
+      speakText(msg2);
       return;
     }
     var prompt = "Tu es Sofia. Presente la météo de " + d.ville + " en " + d.pays + " chaleureusement. Actuellement " + d.maintenant.temperature + " degrés, " + d.maintenant.description + ", vent " + d.maintenant.vent + " km/h. Aujourd'hui max " + d.aujourd_hui.max + " min " + d.aujourd_hui.min + ", " + d.aujourd_hui.description + ". Demain max " + d.demain.max + " min " + d.demain.min + ", " + d.demain.description + ". Après-demain max " + d.apres_demain.max + " min " + d.apres_demain.min + ", " + d.apres_demain.description + ". Donne des conseils pratiques.";
     conversationHistory.push({role: 'user', content: prompt});
     getSofiaReply();
-  } catch(e) { showResponse("Je n'arrive pas à trouver la météo. Réessayons !"); modeAttente = null; }
+  }).catch(function() {
+    showResponse("Je n'arrive pas à trouver la météo. Réessayons !");
+    modeAttente = null;
+  });
 }
 
 // === NOUVELLES ===
-async function demanderNouvelles() {
+function demanderNouvelles() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   showUserMessage('Les nouvelles du jour 📰');
   setStatus('Sofia cherche les nouvelles...');
   showTyping();
-  try {
-    var r = await fetch('/.netlify/functions/nouvelles');
-    var d = await r.json();
-    var quebec = d.quebec || [];
-    var monde = d.monde || [];
-    var culture = d.culture || [];
-    var prompt = 'Tu es Sofia. Presente cette revue de presse chaleureusement. Commence par bonjour. Explique chaque nouvelle en 2-3 phrases simples. Dabord Quebec et Canada, puis le monde, puis culture et arts.\n\n';
-    if (quebec.length > 0) {
-      prompt += 'QUEBEC ET CANADA:\n';
-      quebec.slice(0,5).forEach(function(a,i){ prompt += (i+1)+'. '+a.titre+(a.description?' — '+a.description:'')+'\n'; });
-    }
-    if (monde.length > 0) {
-      prompt += '\nMONDE:\n';
-      monde.slice(0,4).forEach(function(a,i){ prompt += (i+1)+'. '+a.titre+(a.description?' — '+a.description:'')+'\n'; });
-    }
-    if (culture.length > 0) {
-      prompt += '\nCULTURE ET ARTS:\n';
-      culture.slice(0,4).forEach(function(a,i){ prompt += (i+1)+'. '+a.titre+(a.description?' — '+a.description:'')+'\n'; });
-    }
-    conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply();
-  } catch(e) { showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !"); }
+  fetch('/.netlify/functions/nouvelles')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var quebec  = d.quebec  || [];
+      var monde   = d.monde   || [];
+      var culture = d.culture || [];
+      var prompt = 'Tu es Sofia. Presente cette revue de presse chaleureusement. Commence par bonjour. Explique chaque nouvelle en 2-3 phrases simples. Dabord Quebec et Canada, puis le monde, puis culture et arts.\n\n';
+      if (quebec.length > 0) {
+        prompt += 'QUEBEC ET CANADA:\n';
+        quebec.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+      }
+      if (monde.length > 0) {
+        prompt += '\nMONDE:\n';
+        monde.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+      }
+      if (culture.length > 0) {
+        prompt += '\nCULTURE ET ARTS:\n';
+        culture.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+      }
+      conversationHistory.push({role: 'user', content: prompt});
+      getSofiaReply();
+    }).catch(function() {
+      showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
+    });
 }
 
 // === VOYAGE ===
-async function demanderVoyage() {
+function demanderVoyage() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   showUserMessage('Voyage ✈️');
   var msg = 'Quelle destination vous intéresse ? Dites-moi le nom de la ville ou du pays !';
   showResponse(msg);
   modeAttente = 'voyage';
-  await speakText(msg);
+  speakText(msg);
 }
 
-async function obtenirVoyage(destination) {
-  if (!destination || destination.trim().length < 2) { return; }
+function obtenirVoyage(destination) {
+  if (!destination || destination.trim().length < 2) return;
   modeAttente = null;
   showUserMessage(destination);
   setStatus('Sofia cherche les infos voyage...');
   showTyping();
-  try {
-    var r = await fetch('/.netlify/functions/voyage', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({destination: destination})
-    });
-    var d = await r.json();
+  fetch('/.netlify/functions/voyage', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({destination: destination})
+  }).then(function(r) { return r.json(); }).then(function(d) {
     var prompt = 'Tu es Sofia. La personne veut en savoir plus sur ' + destination + '. ';
     if (d.destination && d.meteo) {
       prompt += 'A ' + d.destination + ' en ' + d.pays + ', il fait actuellement ' + d.meteo.temperature + ' degres avec ' + d.meteo.description + '. Max ' + d.meteo.max + ' min ' + d.meteo.min + ' degres. ';
@@ -955,45 +869,49 @@ async function obtenirVoyage(destination) {
     prompt += 'Parle de cette destination de facon enthousiaste. Mentionne des attraits touristiques, la culture, la cuisine, des conseils pratiques. Sois detaillee et inspirante !';
     conversationHistory.push({role: 'user', content: prompt});
     getSofiaReply();
-  } catch(e) { showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !"); modeAttente = null; }
+  }).catch(function() {
+    showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !");
+    modeAttente = null;
+  });
 }
 
 // === ANCÊTRES ===
-async function demanderAncetres() {
+function demanderAncetres() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   showUserMessage('Recherche ancêtres 🔍');
   var msg = 'Je serais ravie de vous aider à retrouver vos ancêtres ! Quel nom de famille voulez-vous rechercher ?';
   showResponse(msg);
   modeAttente = 'ancetre';
-  await speakText(msg);
+  speakText(msg);
 }
 
-async function obtenirAncetres(nom) {
-  if (!nom || nom.trim().length < 2) { return; }
+function obtenirAncetres(nom) {
+  if (!nom || nom.trim().length < 2) return;
   modeAttente = null;
   showUserMessage(nom);
   setStatus('Sofia cherche les ressources...');
   showTyping();
-  try {
-    var r = await fetch('/.netlify/functions/ancetres', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({nom: nom})
-    });
-    var d = await r.json();
+  fetch('/.netlify/functions/ancetres', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({nom: nom})
+  }).then(function(r) { return r.json(); }).then(function(d) {
     var prompt = 'Tu es Sofia. La personne cherche ses ancetres avec le nom ' + nom + '. Voici les meilleures ressources quebecoises: ';
-    d.sources.forEach(function(s){ prompt += s.nom + ': ' + s.description + '. '; });
+    d.sources.forEach(function(s) { prompt += s.nom + ': ' + s.description + '. '; });
     prompt += 'Conseils importants: ' + d.conseils.slice(0,3).join('. ') + '. ';
     prompt += 'Presente ces ressources chaleureusement comme si tu aidais une amie a decouvrir ses racines. Sois enthousiaste, detaillee et encourage la personne !';
     conversationHistory.push({role: 'user', content: prompt});
     getSofiaReply();
-  } catch(e) { showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !"); modeAttente = null; }
+  }).catch(function() {
+    showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !");
+    modeAttente = null;
+  });
 }
 
 // === UTILITAIRES ===
 function setStatus(t) { document.getElementById('statusText').textContent = t; }
-function autoResize(e) { e.style.height='auto'; e.style.height=Math.min(e.scrollHeight,40)+'px'; }
-function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+function autoResize(e) { e.style.height = 'auto'; e.style.height = Math.min(e.scrollHeight, 40) + 'px'; }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 
 function sendSuggestion(t) {
   modeAttente = null;
@@ -1008,13 +926,15 @@ function showUserMessage(t) {
   var z = document.getElementById('responseZone');
   z.innerHTML = '<div class="user-bubble">' + t + '</div>';
 }
+
 function showTyping() {
   var z = document.getElementById('responseZone');
   z.innerHTML += '<div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
 }
+
 function showResponse(t) {
   var z = document.getElementById('responseZone');
-  z.innerHTML = '<div class="response-bubble">' + t.replace(/\n/g,'<br>') + '</div>';
+  z.innerHTML = '<div class="response-bubble">' + t.replace(/\n/g, '<br>') + '</div>';
   z.scrollTop = z.scrollHeight;
 }
 
@@ -1031,8 +951,7 @@ function sendMessage() {
   getSofiaReply();
 }
 
-async function getSofiaReply() {
-  // Fermer le micro immédiatement
+function getSofiaReply() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   modeAttente = null;
   document.getElementById('soleil').classList.remove('listening');
@@ -1041,30 +960,34 @@ async function getSofiaReply() {
   document.getElementById('sendBtn').disabled = true;
   setStatus('Sofia réfléchit...');
   showTyping();
-  try {
-    var r = await fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({messages: conversationHistory, profil: profil})
-    });
-    var d = await r.json();
+
+  var messagesLimites = conversationHistory.slice(-20);
+
+  fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({messages: messagesLimites, profil: profil})
+  }).then(function(r) { return r.json(); }).then(function(d) {
     if (d.content && d.content[0]) {
       var reply = d.content[0].text;
       conversationHistory.push({role: 'assistant', content: reply});
       sauvegarderHistorique();
+      mettreAJourMemoire();
       showResponse(reply);
       speakText(reply);
     } else {
       showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-      if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
+      if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
     }
-  } catch(e) {
+  }).catch(function() {
     showResponse("Je suis désolée, réessayons !");
-    if (isEcouteActive) setTimeout(function(){startListening();}, 1000);
-  }
-  document.getElementById('sendBtn').disabled = false;
+    if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+  }).then(function() {
+    document.getElementById('sendBtn').disabled = false;
+  });
 }
 
+// === INIT ===
 initRecognition();
 verifierProfil();
 </script>
