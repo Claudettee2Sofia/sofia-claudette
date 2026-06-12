@@ -716,8 +716,12 @@ function onSpeakEnd() {
     setStatus('Sofia vous écoute... 👂');
     clearTimeout(autoRestartTimer);
     autoRestartTimer = setTimeout(function() {
-      if (isEcouteActive && !isListening && !isSpeaking && !modeAttente) startListening();
+      if (isEcouteActive && !isListening && !isSpeaking && !modeAttente) {
+        demarrerVADLoop();
+        startListening();
+      }
     }, 1000);
+  }
   } else {
     setStatus('Appuyez sur Sofia pour parler 🌸');
   }
@@ -1078,11 +1082,15 @@ function sendMessage() {
 }
 
 function getSofiaReply(type) {
-  if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
+  // Couper micro et VAD immédiatement
+  arreterVADLoop();
+  clearTimeout(autoRestartTimer);
+  try { if (recognition) recognition.stop(); } catch(e) {}
+  isListening = false;
   modeAttente = null;
   document.getElementById('soleil').classList.remove('listening');
-  document.getElementById('soleilIcone').textContent = '🎙️';
-  document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
+  document.getElementById('soleilIcone').textContent = '⏳';
+  document.getElementById('soleilTexte').textContent = 'Attends...';
   document.getElementById('sendBtn').disabled = true;
   setStatus('Sofia réfléchit...');
   showTyping();
@@ -1101,6 +1109,7 @@ function getSofiaReply(type) {
       mettreAJourMemoire();
       showResponse(reply);
       speakText(reply);
+      // La VAD redémarre automatiquement dans onSpeakEnd() si isEcouteActive
     } else {
       showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
       if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
