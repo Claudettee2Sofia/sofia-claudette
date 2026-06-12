@@ -544,6 +544,21 @@ function profilSuivant() {
     afficherEtapeProfil();
   } else {
     terminerProfil();
+    function terminerProfil() {
+  document.getElementById('profilOverlay').style.display = 'none';
+  var nom = profil.prenom || 'vous';
+  var msg;
+  
+  if (conversationHistory.length > 0) {
+    // Sofia se souvient — elle reprend naturellement
+    msg = 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+  } else {
+    // Première fois
+    msg = 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
+  }
+  showResponse(msg);
+  speakText(msg);
+}
   }
 }
 
@@ -565,13 +580,21 @@ function terminerProfil() {
 }
 
 // === ÉTAT ===
-var conversationHistory = [];
+var conversationHistory = JSON.parse(localStorage.getItem('sofia_historique') || '[]');
 var isSpeaking = false;
 var isListening = false;
 var isEcouteActive = false;
 var recognition = null;
 var autoRestartTimer = null;
-var modeAttente = null; // 'ville', 'voyage', 'ancetre'
+var modeAttente = null;
+
+// Sauvegarder l'historique à chaque ajout
+function sauvegarderHistorique() {
+  // Garder seulement les 30 derniers messages en local
+  var aGarder = conversationHistory.slice(-30);
+  localStorage.setItem('sofia_historique', JSON.stringify(aGarder));
+}
+
 
 // === VOIX ===
 async function speakText(t) {
@@ -658,6 +681,7 @@ function initRecognition() {
 
     showUserMessage(t);
     conversationHistory.push({role: 'user', content: t});
+    sauvegarderHistorique();
     getSofiaReply();
   };
 
@@ -882,6 +906,7 @@ function sendSuggestion(t) {
   if (isListening) { try { recognition.stop(); } catch(e) {} }
   showUserMessage(t);
   conversationHistory.push({role: 'user', content: t});
+  sauvegarderHistorique();
   getSofiaReply();
 }
 
@@ -908,6 +933,7 @@ function sendMessage() {
   showUserMessage(t);
   i.value = ''; i.style.height = 'auto';
   conversationHistory.push({role: 'user', content: t});
+  sauvegarderHistorique();
   getSofiaReply();
 }
 
@@ -931,6 +957,7 @@ async function getSofiaReply() {
     if (d.content && d.content[0]) {
       var reply = d.content[0].text;
       conversationHistory.push({role: 'assistant', content: reply});
+      sauvegarderHistorique();
       showResponse(reply);
       speakText(reply);
     } else {
