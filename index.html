@@ -300,17 +300,14 @@
   @keyframes tdB { 0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-8px);opacity:1} }
 
   /* Barre du bas */
-.bottom-bar {
-  z-index: 10;
-  background: rgba(10,3,0,0.6);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-top: 1px solid rgba(240,160,80,0.3);
-  padding: 8px 12px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+  .bottom-bar {
+    z-index: 10;
+    background: rgba(30,8,0,0.4);
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(240,160,80,0.12);
+    padding: 8px 12px;
+    display: flex; gap: 8px; align-items: center;
+  }
 
   .urgence-btn {
     width: 44px; height: 44px; border-radius: 50%;
@@ -329,10 +326,10 @@
     border: 1px solid rgba(240,160,80,0.2);
     border-radius: 22px; padding: 8px 14px;
     font-size: 14px; font-family: 'Quicksand', sans-serif;
-    color: rgba(255,240,200,0.95);
+    color: var(--or-pale); resize: none; outline: none;
     max-height: 40px; line-height: 1.4;
   }
-  .text-input::placeholder{color:rgba(255,220,150,0.7)}
+  .text-input::placeholder{color:rgba(240,160,80,0.4)}
   .text-input:focus{border-color:rgba(240,160,80,0.5);background:rgba(240,160,80,0.15)}
 
   .send-btn {
@@ -347,14 +344,13 @@
   .send-btn:active{transform:scale(0.9)}
   .send-btn:disabled{opacity:0.3}
 
-.text-hint {
-  font-size: 12px;
-  color: rgba(250,220,170,0.8);
-  text-align: center;
-  padding: 4px 0 max(6px,env(safe-area-inset-bottom));
-  background: rgba(10,3,0,0.5);
-  font-weight: 600;
-}
+  .text-hint {
+    font-size: 9px; color: rgba(240,160,80,0.3);
+    text-align: center;
+    padding: 2px 0 max(5px,env(safe-area-inset-bottom));
+    background: rgba(20,5,0,0.3);
+    font-style: italic;
+  }
 
   /* Modal profil */
   .profil-overlay {
@@ -917,11 +913,6 @@ function sendMessage() {
 
 async function getSofiaReply() {
   document.getElementById('sendBtn').disabled = true;
-  if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
-document.getElementById('soleil').classList.remove('listening');
-document.getElementById('soleilIcone').textContent = '🎙️';
-document.getElementById('soleilTexte').textContent = isEcouteActive ? 'Auto' : 'Appuyez';
-Cliquez "Commit changes...", attendez 2 minutes et testez ! 🌸
   setStatus('Sofia réfléchit...');
   showTyping();
   try {
