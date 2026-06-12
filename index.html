@@ -681,6 +681,67 @@ function onSpeakEnd() {
 
 // === RECONNAISSANCE ===
 function initRecognition() {
+ // === VAD (Voice Activity Detection) ===
+var vadStream = null;
+var vadAnalyser = null;
+var vadContext = null;
+var vadInterval = null;
+var SEUIL_VOLUME = 18; // 0-100, ajustable
+var SILENCE_DUREE = 1800; // ms de silence avant d'arrêter
+var dernierSon = 0;
+
+async function initVAD() {
+  try {
+    vadStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    vadContext = new (window.AudioContext || window.webkitAudioContext)();
+    var source = vadContext.createMediaStreamSource(vadStream);
+    vadAnalyser = vadContext.createAnalyser();
+    vadAnalyser.fftSize = 512;
+    vadAnalyser.smoothingTimeConstant = 0.6;
+    source.connect(vadAnalyser);
+  } catch(e) {
+    console.log('VAD non disponible:', e.message);
+  }
+}
+
+function getVolume() {
+  if (!vadAnalyser) return 0;
+  var data = new Uint8Array(vadAnalyser.frequencyBinCount);
+  vadAnalyser.getByteFrequencyData(data);
+  // Focaliser sur les fréquences vocales (300Hz - 3400Hz)
+  var debut = Math.floor(300 / (vadContext.sampleRate / vadAnalyser.fftSize));
+  var fin = Math.floor(3400 / (vadContext.sampleRate / vadAnalyser.fftSize));
+  var somme = 0;
+  for (var i = debut; i < fin; i++) somme += data[i];
+  return somme / (fin - debut);
+}
+
+function demarrerVADLoop() {
+  if (vadInterval) return;
+  vadInterval = setInterval(function() {
+    if (isSpeaking || !isEcouteActive) return;
+    var vol = getVolume();
+    if (vol > SEUIL_VOLUME) {
+      dernierSon = Date.now();
+      if (!isListening) {
+        startListening();
+      }
+    } else {
+      // Silence prolongé — arrêter si on écoute
+      if (isListening && (Date.now() - dernierSon) > SILENCE_DUREE) {
+        try { recognition.stop(); } catch(e) {}
+      }
+    }
+  }, 150);
+}
+
+function arreterVADLoop() {
+  clearInterval(vadInterval);
+  vadInterval = null;
+}
+
+// === RECONNAISSANCE ===
+function initRecognition() {
   var S = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!S) { document.getElementById('soleilTexte').textContent = 'Écrire'; return; }
   recognition = new S();
@@ -690,27 +751,32 @@ function initRecognition() {
 
   recognition.onresult = function(e) {
     var t = e.results[0][0].transcript.trim();
+    var confiance = e.results[0][0].confidence;
+
+    // Ignorer si confiance trop basse (bruit capté par erreur)
+    if (confiance < 0.4 && confiance > 0) {
+      setStatus('Sofia vous écoute... 👂');
+      return;
+    }
+
     isListening = false;
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
 
-    // Modes d'attente spéciaux
     if (modeAttente === 'ville') { obtenirMeteo(t); return; }
     if (modeAttente === 'voyage') { obtenirVoyage(t); return; }
     if (modeAttente === 'ancetre') { obtenirAncetres(t); return; }
 
-    // Mots-clés vocaux
     var tMin = t.toLowerCase();
     if (tMin.includes('météo') || tMin.includes('meteo') || tMin.includes('température')) { demanderMeteo(); return; }
     if (tMin.includes('nouvelle') || tMin.includes('actualité') || tMin.includes('journal')) { demanderNouvelles(); return; }
     if (tMin.includes('voyage') || tMin.includes('destination') || tMin.includes('voyager')) { demanderVoyage(); return; }
-    if (tMin.includes('ancêtre') || tMin.includes('ancetre') || tMin.includes('généalogie') || tMin.includes('genealogie')) { demanderAncetres(); return; }
+    if (tMin.includes('ancêtre') || tMin.includes('ancetre') || tMin.includes('généalogie')) { demanderAncetres(); return; }
 
     showUserMessage(t);
     conversationHistory.push({role: 'user', content: t});
     sauvegarderHistorique();
-    mettreAJourMemoire(); // sans await — tourne en arrière-plan
     getSofiaReply();
   };
 
@@ -721,8 +787,8 @@ function initRecognition() {
       document.getElementById('soleilIcone').textContent = '🎙️';
       document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
     }
-    // Redémarrer si mode attente ou écoute active
-    if ((modeAttente || isEcouteActive) && !isSpeaking) {
+    // En mode modeAttente, redémarrer manuellement (pas la VAD)
+    if (modeAttente && !isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
         if (!isListening && !isSpeaking) startListening();
@@ -735,7 +801,7 @@ function initRecognition() {
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
-    if ((modeAttente || isEcouteActive) && !isSpeaking) {
+    if (modeAttente && !isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer = setTimeout(function() {
         if (!isListening && !isSpeaking) startListening();
@@ -743,7 +809,6 @@ function initRecognition() {
     }
   };
 }
-
 function startListening() {
   if (!recognition || isListening || isSpeaking) return;
   try {
