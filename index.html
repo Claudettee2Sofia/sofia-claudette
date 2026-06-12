@@ -357,6 +357,114 @@
   }
   .profil-passer:hover { color: rgba(240,160,80,0.7); }
 
+  /* === MODAL URGENCE === */
+  .urgence-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(10,0,0,0.92);
+    backdrop-filter: blur(12px);
+    display: flex; flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    padding: 20px 16px 40px;
+    animation: fadeIn 0.3s ease;
+  }
+  .urgence-header {
+    width: 100%; max-width: 420px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .urgence-titre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px; font-weight: 600; color: #FF6B6B;
+  }
+  .urgence-fermer {
+    background: rgba(255,107,107,0.15);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 50%; width: 38px; height: 38px;
+    color: #FF6B6B; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-911 {
+    width: 100%; max-width: 420px;
+    background: linear-gradient(135deg, #FF1744, #B71C1C);
+    border: none; border-radius: 18px;
+    padding: 22px; margin-bottom: 24px;
+    font-size: 32px; font-weight: 900;
+    font-family: 'Quicksand', sans-serif;
+    color: white; cursor: pointer; letter-spacing: 3px;
+    box-shadow: 0 0 30px rgba(255,23,68,0.5), 0 8px 25px rgba(0,0,0,0.4);
+    animation: pulse911 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse911 {
+    0%,100%{box-shadow:0 0 30px rgba(255,23,68,0.5)}
+    50%{box-shadow:0 0 60px rgba(255,23,68,0.8),0 0 0 10px rgba(255,23,68,0.1)}
+  }
+  .urgence-section-titre {
+    width: 100%; max-width: 420px;
+    font-size: 13px; font-weight: 800;
+    color: rgba(250,220,170,0.5);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .contact-card {
+    width: 100%; max-width: 420px;
+    background: rgba(255,100,100,0.08);
+    border: 1px solid rgba(255,100,100,0.2);
+    border-radius: 16px; padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-nom { font-size: 16px; font-weight: 700; color: var(--or-pale); margin-bottom: 2px; }
+  .contact-relation { font-size: 11px; color: rgba(250,220,170,0.45); text-transform: uppercase; letter-spacing: 1px; }
+  .contact-tel { font-size: 13px; color: rgba(250,220,170,0.6); margin-top: 2px; }
+  .contact-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-appeler {
+    background: linear-gradient(135deg, #4CAF50, #1B5E20);
+    border: none; border-radius: 12px; padding: 10px 14px; font-size: 18px;
+    cursor: pointer; box-shadow: 0 3px 10px rgba(76,175,80,0.4);
+  }
+  .btn-sms {
+    background: linear-gradient(135deg, #2196F3, #0D47A1);
+    border: none; border-radius: 12px; padding: 10px 14px; font-size: 18px;
+    cursor: pointer; box-shadow: 0 3px 10px rgba(33,150,243,0.4);
+  }
+  .btn-supprimer {
+    background: rgba(255,100,100,0.15);
+    border: 1px solid rgba(255,100,100,0.3);
+    border-radius: 12px; padding: 10px 12px;
+    font-size: 16px; cursor: pointer; color: #FF6B6B;
+  }
+  .ajout-form {
+    width: 100%; max-width: 420px;
+    background: rgba(240,160,80,0.06);
+    border: 1px solid rgba(240,160,80,0.15);
+    border-radius: 16px; padding: 16px; margin-top: 8px;
+  }
+  .ajout-form-titre {
+    font-size: 13px; font-weight: 800;
+    color: rgba(250,220,170,0.5);
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+  }
+  .ajout-input {
+    width: 100%; background: rgba(240,160,80,0.1);
+    border: 1px solid rgba(240,160,80,0.2);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 15px; font-family: 'Quicksand', sans-serif;
+    color: var(--or-pale); outline: none; margin-bottom: 10px;
+  }
+  .ajout-input::placeholder { color: rgba(240,160,80,0.35); }
+  .ajout-input:focus { border-color: rgba(240,160,80,0.5); }
+  .btn-ajouter-contact {
+    width: 100%;
+    background: linear-gradient(135deg, var(--or), var(--rose));
+    border: none; border-radius: 12px; padding: 12px;
+    font-size: 15px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: #2A0A00; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(240,160,60,0.3);
+  }
+
   @media(min-width:768px){.orbit-container{width:min(58vh,430px);height:min(58vh,430px)}}
   @media(max-height:600px){.orbit-container{width:min(52vw,52vh,270px);height:min(52vw,52vh,270px)}.status-zone{margin-top:4px}.response-zone{max-height:16vh}}
 </style>
@@ -370,6 +478,24 @@
   <div class="ecoute-dot"></div>
   <span id="ecouteTexte">Écoute auto</span>
 </button>
+
+<!-- Modal Urgence -->
+<div class="urgence-overlay" id="urgenceOverlay" style="display:none">
+  <div class="urgence-header">
+    <div class="urgence-titre">🚨 Urgence</div>
+    <button class="urgence-fermer" onclick="fermerUrgence()">✕</button>
+  </div>
+  <button class="btn-911" onclick="appeler911()">📞 APPELER LE 911</button>
+  <div class="urgence-section-titre">Mes contacts de confiance</div>
+  <div id="listeContacts"></div>
+  <div class="ajout-form">
+    <div class="ajout-form-titre">✍️ Ajouter un contact</div>
+    <input class="ajout-input" id="contactNom" type="text" placeholder="Prénom et nom">
+    <input class="ajout-input" id="contactTel" type="tel" placeholder="Numéro de téléphone">
+    <input class="ajout-input" id="contactRelation" type="text" placeholder="Relation (ex: fille, fils, voisin...)">
+    <button class="btn-ajouter-contact" onclick="ajouterContact()">+ Ajouter ce contact</button>
+  </div>
+</div>
 
 <div class="profil-overlay" id="profilOverlay" style="display:none">
   <div class="profil-modal">
@@ -426,7 +552,7 @@
 </div>
 
 <div class="bottom-bar">
-  <button class="urgence-btn" onclick="sendSuggestion('Urgence, appelle ma famille !')" title="Urgence">🚨</button>
+  <button class="urgence-btn" onclick="ouvrirUrgence()" title="Urgence">🚨</button>
   <textarea class="text-input" id="userInput" placeholder="Ou écrivez à Sofia..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
 </div>
@@ -985,6 +1111,81 @@ function getSofiaReply() {
   }).then(function() {
     document.getElementById('sendBtn').disabled = false;
   });
+}
+
+// === URGENCE ===
+var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
+
+function ouvrirUrgence() {
+  document.getElementById('urgenceOverlay').style.display = 'flex';
+  afficherContacts();
+}
+
+function fermerUrgence() {
+  document.getElementById('urgenceOverlay').style.display = 'none';
+}
+
+function appeler911() {
+  window.location.href = 'tel:911';
+}
+
+function afficherContacts() {
+  var liste = document.getElementById('listeContacts');
+  if (contactsUrgence.length === 0) {
+    liste.innerHTML = '<div style="color:rgba(250,220,170,0.35);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px;">Aucun contact encore ajouté.</div>';
+    return;
+  }
+  liste.innerHTML = '';
+  contactsUrgence.forEach(function(c, index) {
+    var card = document.createElement('div');
+    card.className = 'contact-card';
+    card.innerHTML =
+      '<div class="contact-info">' +
+        '<div class="contact-nom">' + c.nom + '</div>' +
+        '<div class="contact-relation">' + c.relation + '</div>' +
+        '<div class="contact-tel">' + c.tel + '</div>' +
+      '</div>' +
+      '<div class="contact-actions">' +
+        '<button class="btn-appeler" onclick="appelerContact(\'' + c.tel + '\')" title="Appeler">📞</button>' +
+        '<button class="btn-sms" onclick="envoyerSMS(\'' + c.tel + '\',\'' + c.nom + '\')" title="SMS">💬</button>' +
+        '<button class="btn-supprimer" onclick="supprimerContact(' + index + ')" title="Supprimer">🗑️</button>' +
+      '</div>';
+    liste.appendChild(card);
+  });
+}
+
+function ajouterContact() {
+  var nom = document.getElementById('contactNom').value.trim();
+  var tel = document.getElementById('contactTel').value.trim();
+  var relation = document.getElementById('contactRelation').value.trim();
+  if (!nom || !tel) {
+    alert('Veuillez entrer au moins un nom et un numéro de téléphone.');
+    return;
+  }
+  contactsUrgence.push({ nom: nom, tel: tel, relation: relation || 'Contact' });
+  localStorage.setItem('sofia_contacts', JSON.stringify(contactsUrgence));
+  document.getElementById('contactNom').value = '';
+  document.getElementById('contactTel').value = '';
+  document.getElementById('contactRelation').value = '';
+  afficherContacts();
+}
+
+function supprimerContact(index) {
+  if (confirm('Supprimer ce contact ?')) {
+    contactsUrgence.splice(index, 1);
+    localStorage.setItem('sofia_contacts', JSON.stringify(contactsUrgence));
+    afficherContacts();
+  }
+}
+
+function appelerContact(tel) {
+  window.location.href = 'tel:' + tel;
+}
+
+function envoyerSMS(tel, nom) {
+  var prenom = profil.prenom || 'votre proche';
+  var message = 'Bonjour, je suis Sofia. ' + prenom + ' a besoin d\'aide. Pouvez-vous le contacter dès que possible ?';
+  window.location.href = 'sms:' + tel + '?body=' + encodeURIComponent(message);
 }
 
 // === INIT ===
