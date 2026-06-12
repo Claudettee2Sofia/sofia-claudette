@@ -589,7 +589,35 @@ var autoRestartTimer = null;
 var modeAttente = null;
 
 // Sauvegarder l'historique à chaque ajout
-function sauvegarderHistorique() {
+function sauvegarderHistorique async function mettreAJourMemoire() {
+  // Déclencher seulement tous les 10 messages
+  if (conversationHistory.length % 10 !== 0) return;
+  if (conversationHistory.length < 6) return;
+
+  try {
+    var r = await fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        messages: [
+          ...conversationHistory.slice(-20),
+          {
+            role: 'user',
+            content: 'Résume en 3 phrases maximum les sujets importants abordés dans cette conversation: préférences, famille, santé mentionnée, événements, centres d\'intérêt. Format: texte simple, pas de listes. Ce résumé sera utilisé pour que Sofia se souvienne de la personne.'
+          }
+        ],
+        profil: {}
+      })
+    });
+    var d = await r.json();
+    if (d.content && d.content[0]) {
+      profil.memoire = d.content[0].text;
+      localStorage.setItem('sofia_profil', JSON.stringify(profil));
+    }
+  } catch(e) {
+    // Silencieux — pas critique
+  }
+}() {
   // Garder seulement les 30 derniers messages en local
   var aGarder = conversationHistory.slice(-30);
   localStorage.setItem('sofia_historique', JSON.stringify(aGarder));
@@ -682,6 +710,7 @@ function initRecognition() {
     showUserMessage(t);
     conversationHistory.push({role: 'user', content: t});
     sauvegarderHistorique();
+    mettreAJourMemoire(); // sans await — tourne en arrière-plan
     getSofiaReply();
   };
 
