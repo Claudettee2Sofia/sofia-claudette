@@ -928,7 +928,7 @@ function obtenirMeteo(ville) {
     }
     var prompt = "Tu es Sofia. Presente la météo de " + d.ville + " en " + d.pays + " chaleureusement. Actuellement " + d.maintenant.temperature + " degrés, " + d.maintenant.description + ", vent " + d.maintenant.vent + " km/h. Aujourd'hui max " + d.aujourd_hui.max + " min " + d.aujourd_hui.min + ", " + d.aujourd_hui.description + ". Demain max " + d.demain.max + " min " + d.demain.min + ", " + d.demain.description + ". Après-demain max " + d.apres_demain.max + " min " + d.apres_demain.min + ", " + d.apres_demain.description + ". Donne des conseils pratiques.";
     conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply();
+    getSofiaReply('meteo');
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver la météo. Réessayons !");
     modeAttente = null;
@@ -961,7 +961,7 @@ function demanderNouvelles() {
         culture.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
       }
       conversationHistory.push({role: 'user', content: prompt});
-      getSofiaReply();
+      getSofiaReply('nouvelles');
     }).catch(function() {
       showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
     });
@@ -994,7 +994,7 @@ function obtenirVoyage(destination) {
     }
     prompt += 'Parle de cette destination de facon enthousiaste. Mentionne des attraits touristiques, la culture, la cuisine, des conseils pratiques. Sois detaillee et inspirante !';
     conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply();
+    getSofiaReply('voyage');
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !");
     modeAttente = null;
@@ -1077,7 +1077,7 @@ function sendMessage() {
   getSofiaReply();
 }
 
-function getSofiaReply() {
+function getSofiaReply(type) {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   modeAttente = null;
   document.getElementById('soleil').classList.remove('listening');
@@ -1092,7 +1092,7 @@ function getSofiaReply() {
   fetch('/.netlify/functions/chat', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({messages: messagesLimites, profil: profil})
+    body: JSON.stringify({messages: messagesLimites, profil: profil, type: type || 'conversation'})
   }).then(function(r) { return r.json(); }).then(function(d) {
     if (d.content && d.content[0]) {
       var reply = d.content[0].text;
