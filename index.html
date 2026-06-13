@@ -1879,7 +1879,7 @@ function afficherCoupsCoeur() {
   coupsCoeur.forEach(function(c) {
     var item = document.createElement('div');
     item.className = 'coup-coeur-item';
-    item.innerHTML = '<span class="coup-coeur-nom">❤️ ' + c + '</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur('' + c + '')">✕</button>';
+    item.innerHTML = '<span class="coup-coeur-nom">❤️ ' + c + '</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur(\'' + c + '\')">✕</button>';
     items.appendChild(item);
   });
 }
