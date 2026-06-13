@@ -1,64 +1,97 @@
 exports.handler = async function(event) {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' };
+  }
   try {
-    const body = JSON.parse(event.body || '{}');
-    const destination = body.destination || '';
+    const { destination, type } = JSON.parse(event.body);
+    const WEATHER_KEY = process.env.OPENWEATHER_API_KEY;
+    const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
 
-    if (!destination) {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ erreur: 'Destination manquante' })
-      };
-    }
+    const resultat = {};
 
-    // Météo de la destination
-    const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destination)}&count=1&language=fr&format=json`;
-    const geoResponse = await fetch(geoUrl);
-    const geoData = await geoResponse.json();
+    // === MÉTÉO ===
+    try {
+      const meteoRes = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(destination)}&appid=${WEATHER_KEY}&units=metric&lang=fr`
+      );
+      const meteoData = await meteoRes.json();
+      if (meteoData.main) {
+        resultat.meteo = {
+          temperature: Math.round(meteoData.main.temp),
+          description: meteoData.weather[0].description,
+          max: Math.round(meteoData.main.temp_max),
+          min: Math.round(meteoData.main.temp_min),
+          humidite: meteoData.main.humidity,
+          vent: Math.round(meteoData.wind.speed * 3.6)
+        };
+        resultat.destination = meteoData.name;
+        resultat.pays = meteoData.sys.country;
 
-    let meteo = null;
-    let nomVille = destination;
-    let pays = '';
+        // Décalage horaire
+        const offsetSeconds = meteoData.timezone;
+        const offsetHeures = offsetSeconds / 3600;
+        const offsetQc = -4; // Québec été (EDT)
+        const diff = offsetHeures - offsetQc;
+        resultat.decalage = diff > 0 ? '+' + diff + 'h vs Québec' : diff + 'h vs Québec';
+      }
+    } catch(e) {}
 
-    if (geoData.results && geoData.results.length > 0) {
-      const lieu = geoData.results[0];
-      nomVille = lieu.name;
-      pays = lieu.country;
-      const lat = lieu.latitude;
-      const lon = lieu.longitude;
+    // === PHOTO UNSPLASH ===
+    try {
+      const photoRes = await fetch(
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(destination + ' travel landscape')}&per_page=1&orientation=landscape`,
+        { headers: { 'Authorization': 'Client-ID ' + UNSPLASH_KEY } }
+      );
+      const photoData = await photoRes.json();
+      if (photoData.results && photoData.results.length > 0) {
+        resultat.photo = {
+          url: photoData.results[0].urls.regular,
+          description: photoData.results[0].alt_description || destination,
+          credit: photoData.results[0].user.name
+        };
+      }
+    } catch(e) {}
 
-      const meteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=3`;
-      const meteoResponse = await fetch(meteoUrl);
-      const meteoData = await meteoResponse.json();
-
-      const codes = {
-        0:'ciel dégagé',1:'principalement dégagé',2:'partiellement nuageux',3:'couvert',
-        45:'brouillard',61:'pluie légère',63:'pluie modérée',65:'pluie forte',
-        71:'neige légère',73:'neige modérée',75:'neige forte',
-        80:'averses légères',81:'averses modérées',95:'orage'
-      };
-
-      meteo = {
-        temperature: Math.round(meteoData.current.temperature_2m),
-        description: codes[meteoData.current.weather_code] || 'conditions variables',
-        max: Math.round(meteoData.daily.temperature_2m_max[0]),
-        min: Math.round(meteoData.daily.temperature_2m_min[0])
-      };
-    }
+    // === INFOS PRATIQUES (Claude) ===
+    try {
+      const infoRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 400,
+          messages: [{
+            role: 'user',
+            content: `Pour la destination "${destination}", donne-moi en JSON uniquement (sans markdown) :
+{
+  "visa": "info visa pour Canadiens",
+  "monnaie": "nom et symbole de la monnaie",
+  "langue": "langue principale",
+  "meilleure_saison": "meilleure période pour visiter",
+  "villages": ["village ou lieu incontournable 1", "village ou lieu incontournable 2", "village ou lieu incontournable 3"],
+  "route": "suggestion de route en 2-3 phrases pour visiter les plus beaux endroits",
+  "conseils": "1 conseil pratique important"
+}`
+          }]
+        })
+      });
+      const infoData = await infoRes.json();
+      if (infoData.content && infoData.content[0]) {
+        const text = infoData.content[0].text.replace(/```json|```/g, '').trim();
+        resultat.infos = JSON.parse(text);
+      }
+    } catch(e) {}
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        destination: nomVille,
-        pays: pays,
-        meteo: meteo
-      })
+      body: JSON.stringify(resultat)
     };
-  } catch(error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message })
-    };
+  } catch (error) {
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
