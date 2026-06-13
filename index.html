@@ -1335,7 +1335,7 @@ function obtenirAncetres(nom) {
     prompt += 'Conseils importants: ' + d.conseils.slice(0,3).join('. ') + '. ';
     prompt += 'Presente ces ressources chaleureusement comme si tu aidais une amie a decouvrir ses racines. Sois enthousiaste, detaillee et encourage la personne !';
     conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply();
+    getSofiaReply('ancetres');
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !");
     modeAttente = null;
