@@ -748,6 +748,62 @@
     font-size: 18px; cursor: pointer; color: rgba(250,220,170,0.4);
   }
 
+  /* === MODAL VILLAGE === */
+  .village-overlay {
+    position: fixed; inset: 0; z-index: 400;
+    background: linear-gradient(180deg, #0a0500 0%, #2a1005 40%, #1a0800 100%);
+    display: flex; flex-direction: column;
+    align-items: center; overflow-y: auto;
+    padding: 0 0 40px; animation: fadeIn 0.3s ease;
+  }
+  .village-photos {
+    width: 100%; display: flex; gap: 3px;
+    height: 220px; overflow: hidden;
+  }
+  .village-photo-img {
+    flex: 1; object-fit: cover; display: block;
+    min-width: 0;
+  }
+  .village-header {
+    width: 100%; max-width: 600px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 20px 8px;
+  }
+  .village-nom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 600; color: var(--or);
+    text-shadow: 0 2px 10px rgba(240,160,60,0.3);
+  }
+  .village-fermer {
+    background: rgba(240,160,80,0.15);
+    border: 1px solid rgba(240,160,80,0.3);
+    border-radius: 50%; width: 42px; height: 42px;
+    color: var(--or-pale); font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .village-description {
+    width: 100%; max-width: 600px;
+    padding: 0 20px; margin-bottom: 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; color: var(--or-pale);
+    line-height: 1.8;
+  }
+  .village-loading {
+    width: 100%; max-width: 600px;
+    padding: 40px 20px; text-align: center;
+    font-size: 16px; color: rgba(250,220,170,0.5);
+  }
+  .btn-sofia-village {
+    width: calc(100% - 40px); max-width: 560px;
+    background: linear-gradient(135deg, var(--or), var(--rose));
+    border: none; border-radius: 14px; padding: 14px;
+    font-size: 15px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: #2A0A00; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(240,160,60,0.3);
+    margin: 0 20px;
+  }
+
   /* === MODAL URGENCE === */
   .urgence-overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -977,6 +1033,18 @@
     <div class="voyage-section-titre" style="margin-top:16px">❤️ Mes coups de cœur</div>
     <div id="coupsCoeurItems"></div>
   </div>
+</div>
+
+<!-- Modal Village -->
+<div class="village-overlay" id="villageOverlay" style="display:none">
+  <div class="village-photos" id="villagePhotos"></div>
+  <div class="village-header">
+    <div class="village-nom" id="villageNom"></div>
+    <button class="village-fermer" onclick="fermerVillage()">✕</button>
+  </div>
+  <div class="village-loading" id="villageLoading">✨ Sofia cherche les détails...</div>
+  <div class="village-description" id="villageDescription" style="display:none"></div>
+  <button class="btn-sofia-village" id="btnSofiaVillage" onclick="sofiaRaconteVillage()" style="display:none">🎙️ Sofia me raconte ce village</button>
 </div>
 
 <!-- Modal Urgence -->
@@ -1810,7 +1878,12 @@ function afficherVoyage(d, destination) {
         var icone = icones[i] || '📍';
         var item = document.createElement('div');
         item.className = 'voyage-village-item';
-        item.innerHTML = '<span>' + icone + '</span><span>' + v + '</span>';
+        item.style.cursor = 'pointer';
+        item.style.transition = 'all 0.2s';
+        item.innerHTML = '<span>' + icone + '</span><span style="flex:1">' + v + '</span><span style="color:rgba(250,220,170,0.4);font-size:18px">›</span>';
+        item.onclick = (function(village, destination) {
+          return function() { ouvrirVillage(village, destination); };
+        })(v, d.destination || destination);
         liste.appendChild(item);
       });
     }
@@ -1924,6 +1997,84 @@ function obtenirAncetres(nom) {
     showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !");
     modeAttente = null;
   });
+}
+
+// === VILLAGE DÉTAIL ===
+var villageActuel = null;
+var villageDescriptionTexte = null;
+
+function ouvrirVillage(village, destination) {
+  villageActuel = village;
+  villageDescriptionTexte = null;
+
+  // Reset modal
+  document.getElementById('villageNom').textContent = village;
+  document.getElementById('villagePhotos').innerHTML = '';
+  document.getElementById('villageDescription').style.display = 'none';
+  document.getElementById('villageDescription').textContent = '';
+  document.getElementById('villageLoading').style.display = 'block';
+  document.getElementById('btnSofiaVillage').style.display = 'none';
+  document.getElementById('villageOverlay').style.display = 'flex';
+
+  // Charger photos et description en parallèle
+  Promise.all([
+    chargerPhotosVillage(village),
+    chargerDescriptionVillage(village, destination)
+  ]);
+}
+
+function fermerVillage() {
+  document.getElementById('villageOverlay').style.display = 'none';
+}
+
+function chargerPhotosVillage(village) {
+  return fetch('/.netlify/functions/voyage', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({destination: village, type: 'photos'})
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    var zone = document.getElementById('villagePhotos');
+    zone.innerHTML = '';
+    if (d.photos && d.photos.length > 0) {
+      d.photos.forEach(function(p) {
+        var img = document.createElement('img');
+        img.className = 'village-photo-img';
+        img.src = p.url;
+        img.alt = p.description || village;
+        zone.appendChild(img);
+      });
+    }
+  }).catch(function() {});
+}
+
+function chargerDescriptionVillage(village, destination) {
+  return fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      messages: [{
+        role: 'user',
+        content: ["Décris le village ou lieu ", village, " en 4-5 phrases poétiques et inspirantes. Mentionne ce qui le rend unique, son atmosphere, ce qu on peut y faire, pourquoi c est incontournable. Ecris en français, sans formatage, juste du texte fluide."].join('')
+      }],
+      profil: {},
+      type: 'village'
+    })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.content && d.content[0]) {
+      villageDescriptionTexte = d.content[0].text;
+      document.getElementById('villageLoading').style.display = 'none';
+      document.getElementById('villageDescription').textContent = villageDescriptionTexte;
+      document.getElementById('villageDescription').style.display = 'block';
+      document.getElementById('btnSofiaVillage').style.display = 'block';
+    }
+  }).catch(function() {
+    document.getElementById("villageLoading").textContent = "Désolée, je n'arrive pas à charger les détails.";
+  });
+}
+
+function sofiaRaconteVillage() {
+  if (!villageDescriptionTexte) return;
+  speakText(villageDescriptionTexte);
 }
 
 // === UTILITAIRES ===
