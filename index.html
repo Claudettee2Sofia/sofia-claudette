@@ -615,6 +615,138 @@
   }
   .choix-btn:active { transform: scale(0.97); }
 
+  /* === MODULE VOYAGE ENRICHI === */
+  .voyage-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(10,2,0,0.95);
+    backdrop-filter: blur(12px);
+    display: flex; flex-direction: column;
+    align-items: center; overflow-y: auto;
+    padding: 0 0 40px; animation: fadeIn 0.3s ease;
+  }
+  .voyage-photo {
+    width: 100%; max-width: 500px;
+    height: 200px; object-fit: cover;
+    border-radius: 0 0 20px 20px;
+    display: block;
+  }
+  .voyage-photo-credit {
+    font-size: 9px; color: rgba(250,220,170,0.25);
+    text-align: right; padding: 3px 12px 0;
+    max-width: 500px; width: 100%;
+  }
+  .voyage-header {
+    width: 100%; max-width: 500px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 16px 8px;
+  }
+  .voyage-titre-zone { flex: 1; }
+  .voyage-nom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600; color: var(--or);
+  }
+  .voyage-pays { font-size: 13px; color: rgba(250,220,170,0.5); margin-top: 2px; }
+  .voyage-fermer {
+    background: rgba(240,160,80,0.15);
+    border: 1px solid rgba(240,160,80,0.3);
+    border-radius: 50%; width: 38px; height: 38px;
+    color: var(--or-pale); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .voyage-meteo-bar {
+    width: 100%; max-width: 500px;
+    display: flex; gap: 10px; padding: 0 16px 12px;
+    flex-wrap: wrap;
+  }
+  .voyage-meteo-chip {
+    background: rgba(240,160,80,0.12);
+    border: 1px solid rgba(240,160,80,0.2);
+    border-radius: 20px; padding: 6px 12px;
+    font-size: 12px; font-weight: 700; color: var(--or-pale);
+  }
+  .voyage-section {
+    width: 100%; max-width: 500px;
+    padding: 0 16px; margin-bottom: 16px;
+  }
+  .voyage-section-titre {
+    font-size: 11px; font-weight: 800;
+    color: rgba(250,220,170,0.4);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .voyage-infos-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .voyage-info-card {
+    background: rgba(240,160,80,0.07);
+    border: 1px solid rgba(240,160,80,0.15);
+    border-radius: 12px; padding: 10px 12px;
+  }
+  .voyage-info-label { font-size: 10px; color: rgba(250,220,170,0.4); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .voyage-info-valeur { font-size: 13px; font-weight: 700; color: var(--or-pale); }
+  .voyage-villages {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .voyage-village-item {
+    background: rgba(240,160,80,0.07);
+    border: 1px solid rgba(240,160,80,0.15);
+    border-radius: 12px; padding: 10px 14px;
+    font-size: 14px; color: var(--or-pale);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .voyage-route-texte {
+    background: rgba(100,150,240,0.08);
+    border: 1px solid rgba(100,150,240,0.2);
+    border-radius: 14px; padding: 14px 16px;
+    font-size: 14px; color: var(--or-pale);
+    line-height: 1.6; font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+  }
+  .voyage-conseil {
+    background: rgba(100,200,100,0.08);
+    border: 1px solid rgba(100,200,100,0.2);
+    border-radius: 14px; padding: 12px 16px;
+    font-size: 13px; color: var(--or-pale); line-height: 1.5;
+  }
+  .voyage-actions {
+    width: 100%; max-width: 500px;
+    padding: 0 16px; display: flex; gap: 10px;
+  }
+  .btn-coup-coeur {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(232,112,64,0.3), rgba(240,80,80,0.2));
+    border: 1px solid rgba(232,112,64,0.4);
+    border-radius: 12px; padding: 12px;
+    font-size: 14px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--or-pale); cursor: pointer;
+  }
+  .btn-sofia-raconte {
+    flex: 1;
+    background: linear-gradient(135deg, var(--or), var(--rose));
+    border: none; border-radius: 12px; padding: 12px;
+    font-size: 14px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: #2A0A00; cursor: pointer;
+  }
+  .coups-coeur-liste {
+    width: 100%; max-width: 500px;
+    padding: 0 16px; margin-bottom: 16px;
+  }
+  .coup-coeur-item {
+    background: rgba(232,112,64,0.08);
+    border: 1px solid rgba(232,112,64,0.2);
+    border-radius: 12px; padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .coup-coeur-nom { font-size: 14px; font-weight: 700; color: var(--or-pale); }
+  .btn-retirer-coeur {
+    background: none; border: none;
+    font-size: 16px; cursor: pointer; color: rgba(250,220,170,0.4);
+  }
+
   /* === MODAL URGENCE === */
   .urgence-overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -797,6 +929,52 @@
       </div>
     </div>
     <button class="choix-btn" onclick="confirmerChoix()">Confirmer mon choix →</button>
+  </div>
+</div>
+
+<!-- Modal Voyage Enrichi -->
+<div class="voyage-overlay" id="voyageOverlay" style="display:none">
+  <img class="voyage-photo" id="voyagePhoto" src="" alt="" style="display:none">
+  <div class="voyage-photo-credit" id="voyagePhotoCredit"></div>
+
+  <div class="voyage-header">
+    <div class="voyage-titre-zone">
+      <div class="voyage-nom" id="voyageNom">Destination</div>
+      <div class="voyage-pays" id="voyagePays"></div>
+    </div>
+    <button class="voyage-fermer" onclick="fermerVoyage()">✕</button>
+  </div>
+
+  <div class="voyage-meteo-bar" id="voyageMeteoBar"></div>
+
+  <div class="voyage-section" id="voyageInfosSection" style="display:none">
+    <div class="voyage-section-titre">📋 Infos pratiques</div>
+    <div class="voyage-infos-grid" id="voyageInfosGrid"></div>
+  </div>
+
+  <div class="voyage-section" id="voyageVillagesSection" style="display:none">
+    <div class="voyage-section-titre">🏘️ Villages & lieux incontournables</div>
+    <div class="voyage-villages" id="voyageVillagesList"></div>
+  </div>
+
+  <div class="voyage-section" id="voyageRouteSection" style="display:none">
+    <div class="voyage-section-titre">🗺️ Route suggérée</div>
+    <div class="voyage-route-texte" id="voyageRouteTxt"></div>
+  </div>
+
+  <div class="voyage-section" id="voyageConseilSection" style="display:none">
+    <div class="voyage-section-titre">💡 Conseil pratique</div>
+    <div class="voyage-conseil" id="voyageConseilTxt"></div>
+  </div>
+
+  <div class="voyage-actions">
+    <button class="btn-coup-coeur" id="btnCoupCoeur" onclick="toggleCoupCoeur()">❤️ Coup de cœur</button>
+    <button class="btn-sofia-raconte" onclick="sofiaRaconteVoyage()">🎙️ Sofia me raconte</button>
+  </div>
+
+  <div class="coups-coeur-liste" id="coupsCoeurListe" style="display:none">
+    <div class="voyage-section-titre" style="margin-top:16px">❤️ Mes coups de cœur</div>
+    <div id="coupsCoeurItems"></div>
   </div>
 </div>
 
@@ -1530,6 +1708,10 @@ function demanderNouvelles() {
 }
 
 // === VOYAGE ===
+var voyageDestinationActuelle = null;
+var coupsCoeur = JSON.parse(localStorage.getItem('sofia_coups_coeur') || '[]');
+var voyageDataActuelle = null;
+
 function demanderVoyage() {
   if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
   showUserMessage('Voyage ✈️');
@@ -1539,28 +1721,173 @@ function demanderVoyage() {
   speakText(msg);
 }
 
+function fermerVoyage() {
+  document.getElementById('voyageOverlay').style.display = 'none';
+}
+
 function obtenirVoyage(destination) {
   if (!destination || destination.trim().length < 2) return;
   modeAttente = null;
+  voyageDestinationActuelle = destination;
   showUserMessage(destination);
   setStatus('Sofia cherche les infos voyage...');
   showTyping();
+
   fetch('/.netlify/functions/voyage', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({destination: destination})
   }).then(function(r) { return r.json(); }).then(function(d) {
-    var prompt = 'Tu es Sofia. La personne veut en savoir plus sur ' + destination + '. ';
-    if (d.destination && d.meteo) {
-      prompt += 'A ' + d.destination + ' en ' + d.pays + ', il fait actuellement ' + d.meteo.temperature + ' degres avec ' + d.meteo.description + '. Max ' + d.meteo.max + ' min ' + d.meteo.min + ' degres. ';
-    }
-    prompt += 'Parle de cette destination de facon enthousiaste. Mentionne des attraits touristiques, la culture, la cuisine, des conseils pratiques. Sois detaillee et inspirante !';
-    conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply('voyage');
+    voyageDataActuelle = d;
+    afficherVoyage(d, destination);
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !");
     modeAttente = null;
   });
+}
+
+function afficherVoyage(d, destination) {
+  // Photo
+  if (d.photo) {
+    var img = document.getElementById('voyagePhoto');
+    img.src = d.photo.url;
+    img.alt = d.photo.description;
+    img.style.display = 'block';
+    document.getElementById('voyagePhotoCredit').textContent = 'Photo: ' + d.photo.credit + ' / Unsplash';
+  }
+
+  // Titre
+  document.getElementById('voyageNom').textContent = d.destination || destination;
+  document.getElementById('voyagePays').textContent = d.pays || '';
+
+  // Météo
+  var meteoBar = document.getElementById('voyageMeteoBar');
+  meteoBar.innerHTML = '';
+  if (d.meteo) {
+    var chips = [
+      '🌡️ ' + d.meteo.temperature + '°C',
+      '☁️ ' + d.meteo.description,
+      '💧 ' + d.meteo.humidite + '%',
+      '💨 ' + d.meteo.vent + ' km/h'
+    ];
+    if (d.decalage) chips.push('🕐 ' + d.decalage);
+    chips.forEach(function(c) {
+      var chip = document.createElement('div');
+      chip.className = 'voyage-meteo-chip';
+      chip.textContent = c;
+      meteoBar.appendChild(chip);
+    });
+  }
+
+  // Infos pratiques
+  if (d.infos) {
+    document.getElementById('voyageInfosSection').style.display = 'block';
+    var grid = document.getElementById('voyageInfosGrid');
+    grid.innerHTML = '';
+    var infosAfficher = [
+      {label: 'Visa', valeur: d.infos.visa},
+      {label: 'Monnaie', valeur: d.infos.monnaie},
+      {label: 'Langue', valeur: d.infos.langue},
+      {label: 'Meilleure saison', valeur: d.infos.meilleure_saison}
+    ];
+    infosAfficher.forEach(function(info) {
+      if (info.valeur) {
+        var card = document.createElement('div');
+        card.className = 'voyage-info-card';
+        card.innerHTML = '<div class="voyage-info-label">' + info.label + '</div><div class="voyage-info-valeur">' + info.valeur + '</div>';
+        grid.appendChild(card);
+      }
+    });
+
+    // Villages
+    if (d.infos.villages && d.infos.villages.length > 0) {
+      document.getElementById('voyageVillagesSection').style.display = 'block';
+      var liste = document.getElementById('voyageVillagesList');
+      liste.innerHTML = '';
+      d.infos.villages.forEach(function(v, i) {
+        var item = document.createElement('div');
+        item.className = 'voyage-village-item';
+        item.innerHTML = '<span>' + ['🥇','🥈','🥉'][i] || '📍' + '</span><span>' + v + '</span>';
+        liste.appendChild(item);
+      });
+    }
+
+    // Route
+    if (d.infos.route) {
+      document.getElementById('voyageRouteSection').style.display = 'block';
+      document.getElementById('voyageRouteTxt').textContent = d.infos.route;
+    }
+
+    // Conseil
+    if (d.infos.conseils) {
+      document.getElementById('voyageConseilSection').style.display = 'block';
+      document.getElementById('voyageConseilTxt').textContent = '💡 ' + d.infos.conseils;
+    }
+  }
+
+  // Coups de cœur
+  var estCoeur = coupsCoeur.some(function(c) { return c === (d.destination || destination); });
+  document.getElementById('btnCoupCoeur').textContent = estCoeur ? '💔 Retirer' : '❤️ Coup de cœur';
+  afficherCoupsCoeur();
+
+  // Afficher le modal
+  document.getElementById('voyageOverlay').style.display = 'flex';
+
+  // Sofia parle de la destination
+  sofiaRaconteVoyage();
+}
+
+function sofiaRaconteVoyage() {
+  if (!voyageDataActuelle) return;
+  var d = voyageDataActuelle;
+  var dest = d.destination || voyageDestinationActuelle;
+  var prompt = 'Tu es Sofia. La personne veut visiter ' + dest + '. ';
+  if (d.meteo) {
+    prompt += 'Il fait ' + d.meteo.temperature + ' degres avec ' + d.meteo.description + '. ';
+  }
+  if (d.infos) {
+    if (d.infos.villages) prompt += 'Les incontournables sont ' + d.infos.villages.join(', ') + '. ';
+    if (d.infos.route) prompt += 'Route suggérée: ' + d.infos.route + '. ';
+    if (d.infos.meilleure_saison) prompt += 'La meilleure période: ' + d.infos.meilleure_saison + '. ';
+  }
+  prompt += 'Parle de cette destination avec enthousiasme, comme si tu racontais a une amie. Sois chaleureuse et inspirante !';
+  conversationHistory.push({role: 'user', content: prompt});
+  getSofiaReply('voyage');
+}
+
+function toggleCoupCoeur() {
+  var dest = voyageDestinationActuelle;
+  if (!dest) return;
+  var index = coupsCoeur.indexOf(dest);
+  if (index === -1) {
+    coupsCoeur.push(dest);
+    document.getElementById('btnCoupCoeur').textContent = '💔 Retirer';
+  } else {
+    coupsCoeur.splice(index, 1);
+    document.getElementById('btnCoupCoeur').textContent = '❤️ Coup de cœur';
+  }
+  localStorage.setItem('sofia_coups_coeur', JSON.stringify(coupsCoeur));
+  afficherCoupsCoeur();
+}
+
+function afficherCoupsCoeur() {
+  var zone = document.getElementById('coupsCoeurListe');
+  var items = document.getElementById('coupsCoeurItems');
+  if (coupsCoeur.length === 0) { zone.style.display = 'none'; return; }
+  zone.style.display = 'block';
+  items.innerHTML = '';
+  coupsCoeur.forEach(function(c) {
+    var item = document.createElement('div');
+    item.className = 'coup-coeur-item';
+    item.innerHTML = '<span class="coup-coeur-nom">❤️ ' + c + '</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur('' + c + '')">✕</button>';
+    items.appendChild(item);
+  });
+}
+
+function retirerCoupCoeur(dest) {
+  coupsCoeur = coupsCoeur.filter(function(c) { return c !== dest; });
+  localStorage.setItem('sofia_coups_coeur', JSON.stringify(coupsCoeur));
+  afficherCoupsCoeur();
 }
 
 // === ANCÊTRES ===
