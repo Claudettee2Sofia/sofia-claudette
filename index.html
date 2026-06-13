@@ -376,6 +376,62 @@
     color: var(--or-pale);
   }
 
+  /* === MODAL ACCÈS === */
+  .acces-overlay {
+    position: fixed; inset: 0; z-index: 400;
+    background: rgba(10,2,0,0.97);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.5s ease;
+  }
+  .acces-modal {
+    background: linear-gradient(135deg, #4A1A05, #2A0A00);
+    border: 1px solid rgba(240,160,80,0.25);
+    border-radius: 24px; padding: 36px 28px;
+    width: min(90vw, 360px); text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  }
+  .acces-titre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 600;
+    color: var(--or); margin-bottom: 6px;
+    text-shadow: 0 0 20px rgba(240,160,60,0.4);
+  }
+  .acces-sous-titre {
+    font-size: 13px; color: rgba(250,220,170,0.55);
+    margin-bottom: 28px; line-height: 1.6;
+  }
+  .acces-input {
+    width: 100%;
+    background: rgba(240,160,80,0.12);
+    border: 1px solid rgba(240,160,80,0.3);
+    border-radius: 12px; padding: 14px 16px;
+    font-size: 20px; font-family: 'Quicksand', sans-serif;
+    color: var(--or-pale); outline: none; text-align: center;
+    margin-bottom: 16px; letter-spacing: 4px; font-weight: 700;
+  }
+  .acces-input::placeholder { color: rgba(240,160,80,0.3); letter-spacing: 1px; font-size: 14px; font-weight: 400; }
+  .acces-input:focus { border-color: rgba(240,160,80,0.6); }
+  .acces-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--or), var(--rose));
+    border: none; border-radius: 12px; padding: 14px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Quicksand', sans-serif;
+    color: #2A0A00; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(240,160,60,0.4);
+    margin-bottom: 12px;
+  }
+  .acces-btn:active { transform: scale(0.97); }
+  .acces-erreur {
+    font-size: 13px; color: #FF6B6B;
+    min-height: 18px; margin-top: 4px;
+  }
+  .acces-indice {
+    font-size: 11px; color: rgba(250,220,170,0.3);
+    margin-top: 16px; font-style: italic;
+  }
+
   /* === MODAL CHOIX COMPAGNON === */
   .choix-overlay {
     position: fixed; inset: 0; z-index: 250;
@@ -566,6 +622,19 @@
   <span id="ecouteTexte">Écoute auto</span>
 </button>
 
+<!-- Modal Accès -->
+<div class="acces-overlay" id="accesOverlay" style="display:none">
+  <div class="acces-modal">
+    <div class="acces-titre">✨ Sofia</div>
+    <div class="acces-sous-titre">Entrez le code d'accès pour continuer</div>
+    <input class="acces-input" id="accesInput" type="password" placeholder="Code d'accès" maxlength="12"
+      onkeydown="if(event.key==='Enter') verifierAcces()">
+    <button class="acces-btn" onclick="verifierAcces()">Entrer →</button>
+    <div class="acces-erreur" id="accesErreur"></div>
+    <div class="acces-indice">Le code change chaque jour à minuit</div>
+  </div>
+</div>
+
 <!-- Modal Choix Compagnon -->
 <div class="choix-overlay" id="choixOverlay" style="display:none">
   <div class="choix-modal">
@@ -691,6 +760,58 @@ var profilEtapes = [
   { champ: 'voyages',  question: 'Quelles destinations de voyage aimez-vous ?' }
 ];
 var profilEtapeActuelle = 0;
+
+// === ACCÈS ===
+var CODE_ADMIN = 'SOFIA2025'; // Ton code permanent — change-le si tu veux
+
+function getCodeDuJour() {
+  var d = new Date();
+  var jour = String(d.getDate()).padStart(2, '0');
+  var mois = String(d.getMonth() + 1).padStart(2, '0');
+  return 'SF' + jour + mois;
+}
+
+function verifierAcces() {
+  var code = document.getElementById('accesInput').value.trim().toUpperCase();
+  var erreur = document.getElementById('accesErreur');
+  if (code === CODE_ADMIN || code === getCodeDuJour()) {
+    // Accès accordé — sauvegarder la date pour ne pas redemander aujourd'hui
+    if (code === CODE_ADMIN) {
+      localStorage.setItem('sofia_acces_admin', 'oui');
+    } else {
+      var d = new Date();
+      localStorage.setItem('sofia_acces_date', d.toDateString());
+    }
+    document.getElementById('accesOverlay').style.display = 'none';
+    lancerSofia();
+  } else {
+    erreur.textContent = 'Code incorrect. Réessayez.';
+    document.getElementById('accesInput').value = '';
+    setTimeout(function() { erreur.textContent = ''; }, 3000);
+  }
+}
+
+function verifierAccesAuDemarrage() {
+  // Admin permanent
+  if (localStorage.getItem('sofia_acces_admin') === 'oui') {
+    lancerSofia();
+    return;
+  }
+  // Invité — vérifier si déjà validé aujourd'hui
+  var dateAcces = localStorage.getItem('sofia_acces_date');
+  var aujourd_hui = new Date().toDateString();
+  if (dateAcces === aujourd_hui) {
+    lancerSofia();
+    return;
+  }
+  // Sinon afficher le modal
+  document.getElementById('accesOverlay').style.display = 'flex';
+  setTimeout(function() { document.getElementById('accesInput').focus(); }, 300);
+}
+
+function lancerSofia() {
+  verifierProfil();
+}
 
 // === CHOIX COMPAGNON ===
 var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
@@ -857,10 +978,27 @@ function speakText(t) {
     if (!r.ok) throw new Error('failed');
     return r.blob();
   }).then(function(b) {
-    var a = new Audio(URL.createObjectURL(b));
-    a.onended = function() { onSpeakEnd(); };
-    a.onerror = function() { onSpeakEnd(); };
-    a.play();
+    var url = URL.createObjectURL(b);
+    var a = new Audio();
+    a.onended = function() {
+      URL.revokeObjectURL(url); // libérer la mémoire
+      onSpeakEnd();
+    };
+    a.onerror = function() {
+      URL.revokeObjectURL(url);
+      onSpeakEnd();
+    };
+    // Sur mobile, play() peut échouer silencieusement — on gère l'erreur
+    a.src = url;
+    a.load();
+    var playPromise = a.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(function(err) {
+        console.log('Audio play error:', err);
+        URL.revokeObjectURL(url);
+        onSpeakEnd();
+      });
+    }
   }).catch(function() { onSpeakEnd(); });
 }
 
@@ -1365,7 +1503,7 @@ function envoyerSMS(tel, nom) {
 
 // === INIT ===
 initRecognition();
-verifierProfil();
+verifierAccesAuDemarrage();
 </script>
 </body>
 </html>
