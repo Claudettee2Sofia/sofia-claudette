@@ -10,6 +10,7 @@ exports.handler = async function(event) {
     const maxTokens = type === 'nouvelles' ? 1500
                     : type === 'voyage'    ? 700
                     : type === 'meteo'     ? 600
+                    : type === 'ancetres'  ? 800
                     : 400;
 
     // Garder seulement les 20 derniers messages
