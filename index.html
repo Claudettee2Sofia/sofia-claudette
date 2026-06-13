@@ -458,6 +458,22 @@
   .admin-code-jour-label { font-size: 12px; color: rgba(250,220,170,0.5); text-transform: uppercase; letter-spacing: 1px; }
   .admin-code-jour-valeur { font-size: 22px; font-weight: 800; color: #90EE90; font-family: monospace; letter-spacing: 3px; }
 
+  /* === BOUTON ADMIN === */
+  .admin-btn {
+    position: fixed; bottom: 80px; right: 10px; z-index: 100;
+    background: rgba(240,160,80,0.08);
+    border: 1px solid rgba(240,160,80,0.15);
+    border-radius: 50%; width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px;
+    color: rgba(240,160,80,0.25);
+    transition: all 0.3s ease;
+  }
+  .admin-btn:hover {
+    background: rgba(240,160,80,0.2);
+    color: rgba(240,160,80,0.6);
+  }
+
   /* === BOUTON CHANGER COMPAGNON === */
   .changer-btn {
     position: fixed; top: 14px; left: 14px; z-index: 100;
@@ -718,6 +734,8 @@
 
 <button class="changer-btn" id="changerBtn" onclick="changerCompagnon()" id="changerBtn">☀️ <span id="changerTexte">Sofia</span></button>
 
+<button class="admin-btn" onclick="ouvrirAdminDepuisApp()" title="Admin">⚙️</button>
+
 <button class="ecoute-btn" id="ecouteBtn" onclick="toggleEcoute()">
   <div class="ecoute-dot"></div>
   <span id="ecouteTexte">Écoute auto</span>
@@ -891,8 +909,20 @@ var profilEtapeActuelle = 0;
 var usersConfiance = JSON.parse(localStorage.getItem('sofia_users_confiance') || '[]');
 // Format: [{nom: 'Claudette', code: 'ROSE2025'}, ...]
 
+function ouvrirAdminDepuisApp() {
+  var code = prompt('Code administrateur :');
+  if (!code) return;
+  if (code.trim().toUpperCase() === CODE_ADMIN) {
+    document.getElementById('adminCodeJour').textContent = getCodeDuJour();
+    document.getElementById('adminOverlay').style.display = 'flex';
+    adminAfficherUsers();
+  } else {
+    alert('Code incorrect.');
+  }
+}
+
 function ouvrirAdmin() {
-  // Vérifier que c'est bien l'admin
+  // Verifier que c'est bien l\'admin
   var code = document.getElementById('accesInput').value.trim().toUpperCase();
   if (code !== CODE_ADMIN) {
     alert('Accès admin réservé au propriétaire.');
@@ -966,7 +996,7 @@ function adminModifierUser(index) {
 
 function adminRetirerUser(index) {
   var nom = usersConfiance[index].nom;
-  if (confirm('Retirer l'accès de ' + nom + ' ?')) {
+  if (confirm('Retirer l\'acc\u00e8s de ' + nom + ' ?')) {
     usersConfiance.splice(index, 1);
     localStorage.setItem('sofia_users_confiance', JSON.stringify(usersConfiance));
     adminAfficherUsers();
