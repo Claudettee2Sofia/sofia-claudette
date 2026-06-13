@@ -7,9 +7,36 @@ exports.handler = async function(event) {
     const WEATHER_KEY = process.env.OPENWEATHER_API_KEY;
     const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
 
+    // === MODE PHOTOS VILLAGE ===
+    if (type === 'photos') {
+      const resultat = { photos: [] };
+      try {
+        const photoRes = await fetch(
+          `https://api.unsplash.com/search/photos?query=${encodeURIComponent(destination + ' village')}&per_page=3&orientation=landscape`,
+          { headers: { 'Authorization': 'Client-ID ' + UNSPLASH_KEY } }
+        );
+        const photoData = await photoRes.json();
+        if (photoData.results) {
+          resultat.photos = photoData.results.map(function(p) {
+            return {
+              url: p.urls.regular,
+              description: p.alt_description || destination,
+              credit: p.user.name
+            };
+          });
+        }
+      } catch(e) {}
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(resultat)
+      };
+    }
+
+    // === MODE DESTINATION COMPLÈTE ===
     const resultat = {};
 
-    // === MÉTÉO ===
+    // MÉTÉO
     try {
       const meteoRes = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(destination)}&appid=${WEATHER_KEY}&units=metric&lang=fr`
@@ -26,17 +53,14 @@ exports.handler = async function(event) {
         };
         resultat.destination = meteoData.name;
         resultat.pays = meteoData.sys.country;
-
-        // Décalage horaire
-        const offsetSeconds = meteoData.timezone;
-        const offsetHeures = offsetSeconds / 3600;
-        const offsetQc = -4; // Québec été (EDT)
+        const offsetHeures = meteoData.timezone / 3600;
+        const offsetQc = -4;
         const diff = offsetHeures - offsetQc;
         resultat.decalage = diff > 0 ? '+' + diff + 'h vs Québec' : diff + 'h vs Québec';
       }
     } catch(e) {}
 
-    // === PHOTO UNSPLASH ===
+    // PHOTO PRINCIPALE
     try {
       const photoRes = await fetch(
         `https://api.unsplash.com/search/photos?query=${encodeURIComponent(destination + ' travel landscape')}&per_page=1&orientation=landscape`,
@@ -52,7 +76,7 @@ exports.handler = async function(event) {
       }
     } catch(e) {}
 
-    // === INFOS PRATIQUES (Claude) ===
+    // INFOS PRATIQUES
     try {
       const infoRes = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -63,18 +87,18 @@ exports.handler = async function(event) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 400,
+          max_tokens: 500,
           messages: [{
             role: 'user',
             content: `Pour la destination "${destination}", donne-moi en JSON uniquement (sans markdown) :
 {
-  "visa": "info visa pour Canadiens",
+  "visa": "info visa pour Canadiens en 1 phrase courte",
   "monnaie": "nom et symbole de la monnaie",
   "langue": "langue principale",
-  "meilleure_saison": "meilleure période pour visiter",
+  "meilleure_saison": "meilleure période pour visiter en 1 phrase",
   "villages": ["village ou lieu incontournable 1", "village ou lieu incontournable 2", "village ou lieu incontournable 3"],
   "route": "suggestion de route en 2-3 phrases pour visiter les plus beaux endroits",
-  "conseils": "1 conseil pratique important"
+  "conseils": "1 conseil pratique important en 1 phrase"
 }`
           }]
         })
