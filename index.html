@@ -956,7 +956,7 @@
   <div class="admin-form">
     <div class="admin-form-titre">✍️ Ajouter un utilisateur</div>
     <input class="admin-input" id="adminNom" type="text" placeholder="Nom (ex: Claudette, Mon fils...)">
-    <input class="admin-input" id="adminCode" type="text" placeholder="Mot de passe permanent (ex: ROSE2025)">
+    <input class="admin-input" id="adminCode" type="password" placeholder="Mot de passe permanent (ex: ROSE2025)" autocomplete="new-password">
     <button class="btn-admin-ajouter" onclick="adminAjouterUser()">+ Ajouter cet utilisateur</button>
   </div>
 </div>
@@ -2310,6 +2310,31 @@ function envoyerSMS(tel, nom) {
 // === INIT ===
 initRecognition();
 verifierAccesAuDemarrage();
+
+// === PING SESSION ===
+function pingSession() {
+  if (!sessionId || !utilisateurId) return;
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'activite', data: {
+      utilisateur_id: utilisateurId,
+      type: 'ping',
+      detail: 'en ligne'
+    }})
+  }).catch(function() {});
+}
+// Ping toutes les 5 minutes
+setInterval(pingSession, 5 * 60 * 1000);
+
+// Fermer session quand l'utilisateur quitte
+window.addEventListener('beforeunload', function() {
+  if (sessionId) {
+    navigator.sendBeacon('/.netlify/functions/users',
+      JSON.stringify({ action: 'fin_session', data: { session_id: sessionId } })
+    );
+  }
+});
 
 // === PWA SERVICE WORKER ===
 if ('serviceWorker' in navigator) {
