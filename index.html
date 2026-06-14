@@ -380,7 +380,8 @@
   }
   .admin-titre {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 600; color: var(--or);
+    font-size: 28px; font-weight: 600; color: #FFD700;
+    text-shadow: 0 0 15px rgba(240,160,60,0.4);
   }
   .admin-fermer {
     background: rgba(240,160,80,0.15);
@@ -391,8 +392,8 @@
   }
   .admin-section-titre {
     width: 100%; max-width: 440px;
-    font-size: 11px; font-weight: 800;
-    color: rgba(250,220,170,0.4);
+    font-size: 12px; font-weight: 800;
+    color: rgba(250,220,170,0.7);
     text-transform: uppercase; letter-spacing: 2px;
     margin-bottom: 12px;
   }
@@ -405,10 +406,10 @@
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
   }
   .admin-user-info { flex: 1; min-width: 0; }
-  .admin-user-nom { font-size: 15px; font-weight: 700; color: var(--or-pale); margin-bottom: 3px; }
+  .admin-user-nom { font-size: 16px; font-weight: 800; color: #FFF8EE; margin-bottom: 3px; }
   .admin-user-code {
-    font-size: 13px; color: rgba(250,220,170,0.5);
-    font-family: monospace; letter-spacing: 1px;
+    font-size: 14px; color: rgba(250,220,170,0.85);
+    font-family: monospace; letter-spacing: 1px; font-weight: 700;
   }
   .admin-user-actions { display: flex; gap: 8px; flex-shrink: 0; }
   .btn-modifier {
@@ -435,15 +436,15 @@
     text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
   }
   .admin-input {
-    width: 100%; background: rgba(240,160,80,0.1);
-    border: 1px solid rgba(240,160,80,0.2);
-    border-radius: 10px; padding: 10px 14px;
-    font-size: 15px; font-family: 'Quicksand', sans-serif;
-    color: var(--or-pale); outline: none; margin-bottom: 10px;
-    font-weight: 600;
+    width: 100%; background: rgba(240,160,80,0.15);
+    border: 1px solid rgba(240,160,80,0.35);
+    border-radius: 10px; padding: 12px 14px;
+    font-size: 16px; font-family: 'Quicksand', sans-serif;
+    color: #FFF8EE; outline: none; margin-bottom: 10px;
+    font-weight: 700;
   }
-  .admin-input::placeholder { color: rgba(240,160,80,0.35); font-weight: 400; }
-  .admin-input:focus { border-color: rgba(240,160,80,0.5); }
+  .admin-input::placeholder { color: rgba(240,160,80,0.5); font-weight: 400; }
+  .admin-input:focus { border-color: rgba(240,160,80,0.7); background: rgba(240,160,80,0.22); }
   .btn-admin-ajouter {
     width: 100%;
     background: linear-gradient(135deg, var(--or), var(--rose));
@@ -1274,6 +1275,7 @@ function verifierAcces() {
   if (code === CODE_ADMIN) {
     localStorage.setItem('sofia_acces_admin', 'oui');
     document.getElementById('accesOverlay').style.display = 'none';
+    document.getElementById('accesInput').value = '';
     lancerSofia();
     return;
   }
@@ -1282,6 +1284,7 @@ function verifierAcces() {
   if (code === getCodeDuJour()) {
     localStorage.setItem('sofia_acces_date', new Date().toDateString());
     document.getElementById('accesOverlay').style.display = 'none';
+    document.getElementById('accesInput').value = '';
     lancerSofia();
     return;
   }
@@ -1304,6 +1307,7 @@ function verifierAcces() {
 
       // Proposer de changer son mot de passe si premier accès
       document.getElementById('accesOverlay').style.display = 'none';
+      document.getElementById('accesInput').value = '';
 
       // Demander si veut changer son mot de passe
       if (!localStorage.getItem('sofia_mdp_change_' + d.utilisateur.id)) {
