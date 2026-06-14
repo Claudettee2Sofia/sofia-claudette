@@ -1269,25 +1269,80 @@ function getCodeDuJour() {
 function verifierAcces() {
   var code = document.getElementById('accesInput').value.trim().toUpperCase();
   var erreur = document.getElementById('accesErreur');
-  // Vérifier users de confiance
-  var userConfiance = usersConfiance.find(function(u) { return u.code === code; });
 
-  if (code === CODE_ADMIN || code === getCodeDuJour() || userConfiance) {
-    if (code === CODE_ADMIN) {
-      localStorage.setItem('sofia_acces_admin', 'oui');
-    } else if (userConfiance) {
-      localStorage.setItem('sofia_acces_confiance_' + code, 'oui');
-    } else {
-      var d = new Date();
-      localStorage.setItem('sofia_acces_date', d.toDateString());
-    }
+  // Code admin
+  if (code === CODE_ADMIN) {
+    localStorage.setItem('sofia_acces_admin', 'oui');
     document.getElementById('accesOverlay').style.display = 'none';
     lancerSofia();
-  } else {
-    erreur.textContent = 'Code incorrect. Réessayez.';
-    document.getElementById('accesInput').value = '';
-    setTimeout(function() { erreur.textContent = ''; }, 3000);
+    return;
   }
+
+  // Code du jour (invité temporaire)
+  if (code === getCodeDuJour()) {
+    localStorage.setItem('sofia_acces_date', new Date().toDateString());
+    document.getElementById('accesOverlay').style.display = 'none';
+    lancerSofia();
+    return;
+  }
+
+  // Vérifier dans Supabase
+  erreur.textContent = 'Vérification...';
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'verifier', data: { code: code } })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.valide) {
+      // Sauvegarder session
+      localStorage.setItem('sofia_acces_confiance_' + code, 'oui');
+      localStorage.setItem('sofia_utilisateur_id', d.utilisateur.id);
+      localStorage.setItem('sofia_utilisateur_nom', d.utilisateur.nom);
+      localStorage.setItem('sofia_session_id', d.session_id);
+      utilisateurId = d.utilisateur.id;
+      sessionId = d.session_id;
+
+      // Proposer de changer son mot de passe si premier accès
+      document.getElementById('accesOverlay').style.display = 'none';
+
+      // Demander si veut changer son mot de passe
+      if (!localStorage.getItem('sofia_mdp_change_' + d.utilisateur.id)) {
+        setTimeout(function() {
+          if (confirm('Bonjour ' + d.utilisateur.nom + ' ! Voulez-vous créer votre propre mot de passe personnel ?')) {
+            var nouveau = prompt('Choisissez votre mot de passe (ex: MON2025) :');
+            if (nouveau && nouveau.trim().length >= 4) {
+              fetch('/.netlify/functions/users', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ action: 'changer_mon_code', data: {
+                  utilisateur_id: d.utilisateur.id,
+                  nouveau_code: nouveau.trim()
+                }})
+              }).then(function(r) { return r.json(); }).then(function(res) {
+                if (res.succes) {
+                  localStorage.setItem('sofia_mdp_change_' + d.utilisateur.id, 'oui');
+                  localStorage.setItem('sofia_acces_confiance_' + nouveau.trim().toUpperCase(), 'oui');
+                  alert('Parfait ! Votre nouveau mot de passe est: ' + nouveau.trim().toUpperCase());
+                } else {
+                  alert(res.erreur || 'Erreur. Gardez votre mot de passe actuel.');
+                }
+              });
+            }
+          } else {
+            localStorage.setItem('sofia_mdp_change_' + d.utilisateur.id, 'oui');
+          }
+        }, 500);
+      }
+      lancerSofia();
+    } else {
+      erreur.textContent = 'Code incorrect. Réessayez.';
+      document.getElementById('accesInput').value = '';
+      setTimeout(function() { erreur.textContent = ''; }, 3000);
+    }
+  }).catch(function() {
+    erreur.textContent = 'Erreur de connexion. Réessayez.';
+    setTimeout(function() { erreur.textContent = ''; }, 3000);
+  });
 }
 
 function verifierAccesAuDemarrage() {
@@ -1296,18 +1351,24 @@ function verifierAccesAuDemarrage() {
     lancerSofia();
     return;
   }
-  // Utilisateur de confiance — vérifier si son code est sauvegardé
-  var aAccesConfiance = usersConfiance.some(function(u) {
-    return localStorage.getItem('sofia_acces_confiance_' + u.code) === 'oui';
-  });
-  if (aAccesConfiance) {
+  // Utilisateur de confiance sauvegardé
+  var uid = localStorage.getItem('sofia_utilisateur_id');
+  if (uid) {
+    utilisateurId = uid;
+    // Créer nouvelle session
+    fetch('/.netlify/functions/users', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'verifier', data: {
+        code: localStorage.getItem('sofia_code_confiance') || ''
+      }})
+    }).catch(function() {});
     lancerSofia();
     return;
   }
   // Invité — vérifier si déjà validé aujourd'hui
   var dateAcces = localStorage.getItem('sofia_acces_date');
-  var aujourd_hui = new Date().toDateString();
-  if (dateAcces === aujourd_hui) {
+  if (dateAcces === new Date().toDateString()) {
     lancerSofia();
     return;
   }
@@ -1743,7 +1804,7 @@ function obtenirMeteo(ville) {
     }
     var prompt = "Tu es Sofia. Presente la météo de " + d.ville + " en " + d.pays + " chaleureusement. Actuellement " + d.maintenant.temperature + " degrés, " + d.maintenant.description + ", vent " + d.maintenant.vent + " km/h. Aujourd'hui max " + d.aujourd_hui.max + " min " + d.aujourd_hui.min + ", " + d.aujourd_hui.description + ". Demain max " + d.demain.max + " min " + d.demain.min + ", " + d.demain.description + ". Après-demain max " + d.apres_demain.max + " min " + d.apres_demain.min + ", " + d.apres_demain.description + ". Donne des conseils pratiques.";
     conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply('meteo');
+    enregistrerActivite('meteo', ville); getSofiaReply('meteo');
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver la météo. Réessayons !");
     modeAttente = null;
@@ -1776,7 +1837,7 @@ function demanderNouvelles() {
         culture.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
       }
       conversationHistory.push({role: 'user', content: prompt});
-      getSofiaReply('nouvelles');
+      enregistrerActivite('nouvelles', ''); getSofiaReply('nouvelles');
     }).catch(function() {
       showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
     });
@@ -1934,7 +1995,7 @@ function sofiaRaconteVoyage() {
   }
   prompt += 'Parle de cette destination avec enthousiasme, comme si tu racontais a une amie. Sois chaleureuse et inspirante !';
   conversationHistory.push({role: 'user', content: prompt});
-  getSofiaReply('voyage');
+  enregistrerActivite('voyage', destination || voyageDestinationActuelle || ''); getSofiaReply('voyage');
 }
 
 function toggleCoupCoeur() {
