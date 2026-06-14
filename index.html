@@ -941,7 +941,10 @@
 <div class="admin-overlay" id="adminOverlay" style="display:none">
   <div class="admin-header">
     <div class="admin-titre">⚙️ Gestion des accès</div>
-    <button class="admin-fermer" onclick="fermerAdmin()">✕</button>
+    <div style="display:flex;gap:8px">
+      <button style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.3);border-radius:50%;width:38px;height:38px;color:var(--or-pale);font-size:16px;cursor:pointer" onclick="adminChargerUsers()" title="Rafraîchir">🔄</button>
+      <button class="admin-fermer" onclick="fermerAdmin()">✕</button>
+    </div>
   </div>
 
   <div class="admin-section-titre">Code du jour (invités)</div>
@@ -956,7 +959,7 @@
   <div class="admin-form">
     <div class="admin-form-titre">✍️ Ajouter un utilisateur</div>
     <input class="admin-input" id="adminNom" type="text" placeholder="Nom (ex: Claudette, Mon fils...)">
-    <input class="admin-input" id="adminCode" type="password" placeholder="Mot de passe permanent (ex: ROSE2025)" autocomplete="new-password">
+    <input class="admin-input" id="adminCode" type="text" placeholder="Mot de passe permanent (ex: ROSE2025)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')">
     <button class="btn-admin-ajouter" onclick="adminAjouterUser()">+ Ajouter cet utilisateur</button>
   </div>
 </div>
