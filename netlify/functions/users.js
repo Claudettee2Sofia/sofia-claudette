@@ -10,7 +10,7 @@ async function supabase(method, table, data, query) {
       'Content-Type': 'application/json',
       'apikey': SUPABASE_KEY,
       'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
+      'Prefer': 'return=representation'
     }
   };
   if (data) options.body = JSON.stringify(data);
@@ -33,7 +33,9 @@ exports.handler = async function(event) {
 
     // === CRÉER UTILISATEUR ===
     if (action === 'creer') {
-      var existe = await supabase('GET', 'utilisateurs', null, 'code_acces=eq.' + data.code + '&select=id');
+      var existe = await supabase('GET', 'utilisateurs', null,
+        'code_acces=eq.' + data.code.toUpperCase() + '&select=id'
+      );
       if (existe.length > 0) {
         return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code existe déjà.' }) };
       }
@@ -47,6 +49,9 @@ exports.handler = async function(event) {
 
     // === VÉRIFIER CODE ACCÈS ===
     if (action === 'verifier') {
+      if (!data.code || data.code.length < 2) {
+        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
+      }
       var users = await supabase('GET', 'utilisateurs', null,
         'code_acces=eq.' + data.code.toUpperCase() + '&actif=eq.true&select=*'
       );
@@ -54,19 +59,27 @@ exports.handler = async function(event) {
         return { statusCode: 200, body: JSON.stringify({ valide: false }) };
       }
       var user = users[0];
+
+      // Fermer les vieilles sessions de cet utilisateur (+ de 2h)
+      await supabase('PATCH', 'sessions', { en_ligne: false, fin: new Date().toISOString() },
+        'utilisateur_id=eq.' + user.id + '&en_ligne=eq.true'
+      );
+
       // Mettre à jour dernière connexion
       await supabase('PATCH', 'utilisateurs', {
         derniere_connexion: new Date().toISOString()
       }, 'id=eq.' + user.id);
-      // Créer session
+
+      // Créer nouvelle session
       var session = await supabase('POST', 'sessions', {
         utilisateur_id: user.id,
         en_ligne: true
       });
+
       return { statusCode: 200, body: JSON.stringify({
         valide: true,
         utilisateur: user,
-        session_id: session[0].id
+        session_id: session[0] ? session[0].id : null
       })};
     }
 
@@ -82,17 +95,24 @@ exports.handler = async function(event) {
 
     // === FIN SESSION ===
     if (action === 'fin_session') {
-      await supabase('PATCH', 'sessions', {
-        fin: new Date().toISOString(),
-        en_ligne: false
-      }, 'id=eq.' + data.session_id);
+      if (data.session_id) {
+        await supabase('PATCH', 'sessions', {
+          fin: new Date().toISOString(),
+          en_ligne: false
+        }, 'id=eq.' + data.session_id);
+      }
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
     // === LISTE UTILISATEURS (admin) ===
     if (action === 'liste') {
+      // Marquer hors ligne les sessions de + de 30 minutes
+      var limite = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      await supabase('PATCH', 'sessions', { en_ligne: false },
+        'debut=lt.' + limite + '&en_ligne=eq.true'
+      );
+
       var users = await supabase('GET', 'utilisateurs', null, 'select=*&order=cree_le.desc');
-      // Pour chaque user, vérifier si en ligne
       var sessions = await supabase('GET', 'sessions', null, 'en_ligne=eq.true&select=utilisateur_id');
       var enLigne = sessions.map(function(s) { return s.utilisateur_id; });
       users = users.map(function(u) {
@@ -136,7 +156,7 @@ exports.handler = async function(event) {
         'code_acces=eq.' + data.nouveau_code.toUpperCase() + '&select=id'
       );
       if (existe.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code est déjà utilisé. Choisissez-en un autre.' }) };
+        return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code est déjà utilisé.' }) };
       }
       await supabase('PATCH', 'utilisateurs', {
         code_acces: data.nouveau_code.toUpperCase()
