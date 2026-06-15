@@ -17,7 +17,7 @@ async function supabase(method, table, data, query) {
   var r = await fetch(url, options);
   if (!r.ok) {
     var err = await r.text();
-    throw new Error('Supabase error: ' + err);
+    throw new Error('Supabase: ' + err);
   }
   var text = await r.text();
   return text ? JSON.parse(text) : [];
@@ -27,60 +27,44 @@ exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
-
   try {
     var { action, data } = JSON.parse(event.body);
 
-    // === CRÉER UTILISATEUR ===
-    if (action === 'creer') {
-      var existe = await supabase('GET', 'utilisateurs', null,
-        'code_acces=eq.' + data.code.toUpperCase() + '&select=id'
+    // === CONNEXION NETLIFY IDENTITY ===
+    if (action === 'connexion_netlify') {
+      // Vérifier si l'utilisateur existe déjà
+      var existing = await supabase('GET', 'utilisateurs', null,
+        'code_acces=eq.' + data.id + '&select=*'
       );
-      if (existe.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code existe déjà.' }) };
+      if (existing.length === 0) {
+        // Créer l'utilisateur
+        await supabase('POST', 'utilisateurs', {
+          nom: data.nom,
+          code_acces: data.id,
+          cree_par: 'netlify',
+          derniere_connexion: new Date().toISOString(),
+          actif: true
+        });
+      } else {
+        // Mettre à jour dernière connexion
+        await supabase('PATCH', 'utilisateurs', {
+          derniere_connexion: new Date().toISOString()
+        }, 'code_acces=eq.' + data.id);
       }
-      var user = await supabase('POST', 'utilisateurs', {
-        nom: data.nom,
-        code_acces: data.code.toUpperCase(),
-        cree_par: 'admin'
-      });
-      return { statusCode: 200, body: JSON.stringify({ succes: true, utilisateur: user[0] }) };
-    }
-
-    // === VÉRIFIER CODE ACCÈS ===
-    if (action === 'verifier') {
-      if (!data.code || data.code.length < 2) {
-        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
-      }
+      // Créer session
       var users = await supabase('GET', 'utilisateurs', null,
-        'code_acces=eq.' + data.code.toUpperCase() + '&actif=eq.true&select=*'
+        'code_acces=eq.' + data.id + '&select=id'
       );
-      if (users.length === 0) {
-        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
+      if (users.length > 0) {
+        await supabase('PATCH', 'sessions', { en_ligne: false },
+          'utilisateur_id=eq.' + users[0].id + '&en_ligne=eq.true'
+        );
+        await supabase('POST', 'sessions', {
+          utilisateur_id: users[0].id,
+          en_ligne: true
+        });
       }
-      var user = users[0];
-
-      // Fermer les vieilles sessions de cet utilisateur (+ de 2h)
-      await supabase('PATCH', 'sessions', { en_ligne: false, fin: new Date().toISOString() },
-        'utilisateur_id=eq.' + user.id + '&en_ligne=eq.true'
-      );
-
-      // Mettre à jour dernière connexion
-      await supabase('PATCH', 'utilisateurs', {
-        derniere_connexion: new Date().toISOString()
-      }, 'id=eq.' + user.id);
-
-      // Créer nouvelle session
-      var session = await supabase('POST', 'sessions', {
-        utilisateur_id: user.id,
-        en_ligne: true
-      });
-
-      return { statusCode: 200, body: JSON.stringify({
-        valide: true,
-        utilisateur: user,
-        session_id: session[0] ? session[0].id : null
-      })};
+      return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
     // === ENREGISTRER ACTIVITÉ ===
@@ -106,14 +90,16 @@ exports.handler = async function(event) {
 
     // === LISTE UTILISATEURS (admin) ===
     if (action === 'liste') {
-      // Marquer hors ligne les sessions de + de 30 minutes
       var limite = new Date(Date.now() - 30 * 60 * 1000).toISOString();
       await supabase('PATCH', 'sessions', { en_ligne: false },
         'debut=lt.' + limite + '&en_ligne=eq.true'
       );
-
-      var users = await supabase('GET', 'utilisateurs', null, 'select=*&order=cree_le.desc');
-      var sessions = await supabase('GET', 'sessions', null, 'en_ligne=eq.true&select=utilisateur_id');
+      var users = await supabase('GET', 'utilisateurs', null,
+        'select=*&order=derniere_connexion.desc.nullslast'
+      );
+      var sessions = await supabase('GET', 'sessions', null,
+        'en_ligne=eq.true&select=utilisateur_id'
+      );
       var enLigne = sessions.map(function(s) { return s.utilisateur_id; });
       users = users.map(function(u) {
         u.en_ligne = enLigne.includes(u.id);
@@ -122,7 +108,7 @@ exports.handler = async function(event) {
       return { statusCode: 200, body: JSON.stringify({ utilisateurs: users }) };
     }
 
-    // === HISTORIQUE UTILISATEUR (admin) ===
+    // === HISTORIQUE ===
     if (action === 'historique') {
       var activites = await supabase('GET', 'activites', null,
         'utilisateur_id=eq.' + data.utilisateur_id + '&select=*&order=date.desc&limit=50'
@@ -130,37 +116,9 @@ exports.handler = async function(event) {
       return { statusCode: 200, body: JSON.stringify({ activites: activites }) };
     }
 
-    // === MODIFIER MOT DE PASSE ===
-    if (action === 'modifier_code') {
-      var existe = await supabase('GET', 'utilisateurs', null,
-        'code_acces=eq.' + data.nouveau_code.toUpperCase() + '&select=id'
-      );
-      if (existe.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code est déjà utilisé.' }) };
-      }
-      await supabase('PATCH', 'utilisateurs', {
-        code_acces: data.nouveau_code.toUpperCase()
-      }, 'id=eq.' + data.utilisateur_id);
-      return { statusCode: 200, body: JSON.stringify({ succes: true }) };
-    }
-
     // === SUPPRIMER UTILISATEUR ===
     if (action === 'supprimer') {
       await supabase('DELETE', 'utilisateurs', null, 'id=eq.' + data.utilisateur_id);
-      return { statusCode: 200, body: JSON.stringify({ succes: true }) };
-    }
-
-    // === CHANGER MOT DE PASSE (utilisateur lui-même) ===
-    if (action === 'changer_mon_code') {
-      var existe = await supabase('GET', 'utilisateurs', null,
-        'code_acces=eq.' + data.nouveau_code.toUpperCase() + '&select=id'
-      );
-      if (existe.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ erreur: 'Ce code est déjà utilisé.' }) };
-      }
-      await supabase('PATCH', 'utilisateurs', {
-        code_acces: data.nouveau_code.toUpperCase()
-      }, 'id=eq.' + data.utilisateur_id);
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
