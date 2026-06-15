@@ -67,6 +67,34 @@ exports.handler = async function(event) {
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
+    // === VÉRIFIER CODE SUPABASE ===
+    if (action === 'verifier_code') {
+      var users = await supabase('GET', 'utilisateurs', null,
+        'code_acces=eq.' + data.code.toUpperCase() + '&actif=eq.true&select=*'
+      );
+      if (users.length === 0) {
+        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
+      }
+      var user = users[0];
+      await supabase('PATCH', 'utilisateurs', {
+        derniere_connexion: new Date().toISOString()
+      }, 'id=eq.' + user.id);
+      // Fermer vieilles sessions
+      await supabase('PATCH', 'sessions', { en_ligne: false, fin: new Date().toISOString() },
+        'utilisateur_id=eq.' + user.id + '&en_ligne=eq.true'
+      );
+      // Créer nouvelle session
+      var session = await supabase('POST', 'sessions', {
+        utilisateur_id: user.id,
+        en_ligne: true
+      });
+      return { statusCode: 200, body: JSON.stringify({
+        valide: true,
+        utilisateur: user,
+        session_id: session[0] ? session[0].id : null
+      })};
+    }
+
     // === ENREGISTRER ACTIVITÉ ===
     if (action === 'activite') {
       await supabase('POST', 'activites', {
