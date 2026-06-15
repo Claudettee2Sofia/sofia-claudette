@@ -1172,7 +1172,7 @@ function ouvrirAdminDepuisApp() {
   if (code.trim().toUpperCase() === CODE_ADMIN) {
     document.getElementById('adminCodeJour').textContent = getCodeDuJour();
     document.getElementById('adminOverlay').style.display = 'flex';
-    adminAfficherUsers();
+    adminChargerUsers();
   } else {
     alert('Code incorrect.');
   }
@@ -1459,6 +1459,7 @@ function terminerProfil() {
 
 // === ÉTAT ===
 var sessionId = null;
+var utilisateurId = localStorage.getItem('sofia_utilisateur_id') || null;
 var conversationHistory = JSON.parse(localStorage.getItem('sofia_historique') || '[]');
 var isSpeaking = false;
 var isListening = false;
@@ -1794,15 +1795,15 @@ function demanderNouvelles() {
       var prompt = 'Tu es Sofia. Presente cette revue de presse chaleureusement. Commence par bonjour. Explique chaque nouvelle en 2-3 phrases simples. Dabord Quebec et Canada, puis le monde, puis culture et arts.\n\n';
       if (quebec.length > 0) {
         prompt += 'QUEBEC ET CANADA:\n';
-        quebec.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+        quebec.slice(0,5).forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + '\n'; });
       }
       if (monde.length > 0) {
         prompt += '\nMONDE:\n';
-        monde.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+        monde.slice(0,3).forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + '\n'; });
       }
       if (culture.length > 0) {
         prompt += '\nCULTURE ET ARTS:\n';
-        culture.forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + (a.description ? ' — ' + a.description : '') + '\n'; });
+        culture.slice(0,3).forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + '\n'; });
       }
       conversationHistory.push({role: 'user', content: prompt});
       enregistrerActivite('nouvelles', '');
@@ -1964,7 +1965,8 @@ function sofiaRaconteVoyage() {
   }
   prompt += 'Parle de cette destination avec enthousiasme, comme si tu racontais a une amie. Sois chaleureuse et inspirante !';
   conversationHistory.push({role: 'user', content: prompt});
-  enregistrerActivite('voyage', destination || voyageDestinationActuelle || ''); getSofiaReply('voyage');
+  enregistrerActivite('voyage', destination || voyageDestinationActuelle || '');
+  getSofiaReply('voyage');
 }
 
 function toggleCoupCoeur() {
