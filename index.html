@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Sofia</title>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#F0C060">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -932,7 +931,6 @@
 <button class="changer-btn" id="changerBtn" onclick="changerCompagnon()" id="changerBtn">☀️ <span id="changerTexte">Sofia</span></button>
 
 <button class="admin-btn" onclick="ouvrirAdminDepuisApp()" title="Admin">⚙️</button>
-<button class="admin-btn" style="bottom:110px" onclick="netlifyIdentity.logout()" title="Déconnexion">🚪</button>
 
 <button class="ecoute-btn" id="ecouteBtn" onclick="toggleEcoute()">
   <div class="ecoute-dot"></div>
@@ -966,16 +964,16 @@
   </div>
 </div>
 
-<!-- Modal Accès Netlify Identity -->
+<!-- Modal Accès Simple -->
 <div class="acces-overlay" id="accesOverlay" style="display:none">
   <div class="acces-modal">
     <div class="acces-titre">✨ Sofia</div>
-    <div class="acces-sous-titre">Connectez-vous pour accéder à votre compagne</div>
-    <button class="acces-btn" onclick="ouvrirConnexion()" style="margin-bottom:12px">
-      🔐 Se connecter
-    </button>
+    <div class="acces-sous-titre">Entrez votre code d'accès</div>
+    <input class="acces-input" id="accesInput" type="password" placeholder="Code d'accès" maxlength="30"
+      autocomplete="off" onkeydown="if(event.key==='Enter') verifierAcces()">
+    <button class="acces-btn" onclick="verifierAcces()">Entrer →</button>
     <div class="acces-erreur" id="accesErreur"></div>
-    <div class="acces-indice">Utilisez l'email et mot de passe reçus par invitation</div>
+    <div class="acces-indice">Code fourni par l'administrateur</div>
     <div style="margin-top:20px;font-size:10px;color:rgba(240,160,80,0.2);cursor:pointer;" onclick="ouvrirAdminDepuisApp()">⚙️ Admin</div>
   </div>
 </div>
@@ -1262,20 +1260,8 @@ function adminRetirerUser(index) {
   }
 }
 
-// === ACCÈS NETLIFY IDENTITY ===
+// === ACCÈS ===
 var CODE_ADMIN = 'SOFIA2025';
-var utilisateurNetlify = null;
-
-function ouvrirConnexion() {
-  try {
-    netlifyIdentity.open('login');
-  } catch(e) {
-    console.log('Erreur Identity:', e);
-    // Fallback - initialiser et réessayer
-    netlifyIdentity.init();
-    setTimeout(function() { netlifyIdentity.open('login'); }, 500);
-  }
-}
 
 function getCodeDuJour() {
   var d = new Date();
@@ -1284,65 +1270,82 @@ function getCodeDuJour() {
   return 'SF' + jour + mois;
 }
 
-function verifierAccesAuDemarrage() {
-  // Vérifier si déjà connecté via Netlify Identity
-  var user = netlifyIdentity.currentUser();
-  if (user) {
-    utilisateurNetlify = user;
-    enregistrerConnexion(user);
+function verifierAcces() {
+  var input = document.getElementById('accesInput');
+  var code = input.value.trim().toUpperCase();
+  var erreur = document.getElementById('accesErreur');
+  if (!code) return;
+
+  // Code admin
+  if (code === CODE_ADMIN) {
+    localStorage.setItem('sofia_acces_admin', 'oui');
+    input.value = '';
     lancerSofia();
     return;
   }
-  // Afficher le modal de connexion
+
+  // Code du jour
+  if (code === getCodeDuJour()) {
+    localStorage.setItem('sofia_acces_date', new Date().toDateString());
+    input.value = '';
+    lancerSofia();
+    return;
+  }
+
+  // Vérifier dans Supabase
+  erreur.textContent = 'Vérification...';
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'verifier_code', data: { code: code } })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.valide) {
+      localStorage.setItem('sofia_utilisateur_id', d.utilisateur.id);
+      localStorage.setItem('sofia_utilisateur_nom', d.utilisateur.nom);
+      localStorage.setItem('sofia_code_' + code, 'oui');
+      utilisateurId = d.utilisateur.id;
+      input.value = '';
+      erreur.textContent = '';
+      lancerSofia();
+    } else {
+      erreur.textContent = 'Code incorrect. Réessayez.';
+      input.value = '';
+      setTimeout(function() { erreur.textContent = ''; }, 3000);
+    }
+  }).catch(function() {
+    // Si Supabase ne répond pas, essayer les codes locaux
+    erreur.textContent = 'Erreur réseau. Réessayez.';
+    setTimeout(function() { erreur.textContent = ''; }, 3000);
+  });
+}
+
+function verifierAccesAuDemarrage() {
+  // Admin permanent
+  if (localStorage.getItem('sofia_acces_admin') === 'oui') {
+    lancerSofia();
+    return;
+  }
+  // Utilisateur Supabase déjà connecté
+  var uid = localStorage.getItem('sofia_utilisateur_id');
+  if (uid) {
+    utilisateurId = uid;
+    lancerSofia();
+    return;
+  }
+  // Invité du jour
+  if (localStorage.getItem('sofia_acces_date') === new Date().toDateString()) {
+    lancerSofia();
+    return;
+  }
+  // Afficher écran connexion
   document.getElementById('accesOverlay').style.display = 'flex';
+  setTimeout(function() { document.getElementById('accesInput').focus(); }, 300);
 }
 
 function lancerSofia() {
   document.getElementById('accesOverlay').style.display = 'none';
   verifierProfil();
 }
-
-function enregistrerConnexion(user) {
-  utilisateurId = user.id;
-  localStorage.setItem('sofia_utilisateur_id', user.id);
-  localStorage.setItem('sofia_utilisateur_nom', user.user_metadata.full_name || user.email);
-  // Enregistrer dans Supabase
-  fetch('/.netlify/functions/users', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ action: 'connexion_netlify', data: {
-      id: user.id,
-      email: user.email,
-      nom: user.user_metadata.full_name || user.email.split('@')[0]
-    }})
-  }).catch(function() {});
-}
-
-// Initialiser Netlify Identity
-netlifyIdentity.init({
-  container: '#accesOverlay'
-});
-
-// Écouter les événements Netlify Identity
-netlifyIdentity.on('login', function(user) {
-  utilisateurNetlify = user;
-  enregistrerConnexion(user);
-  lancerSofia();
-});
-
-netlifyIdentity.on('logout', function() {
-  utilisateurNetlify = null;
-  utilisateurId = null;
-  localStorage.removeItem('sofia_utilisateur_id');
-  document.getElementById('accesOverlay').style.display = 'flex';
-});
-
-netlifyIdentity.on('error', function(err) {
-  document.getElementById('accesErreur').textContent = 'Erreur de connexion. Réessayez.';
-  setTimeout(function() {
-    document.getElementById('accesErreur').textContent = '';
-  }, 3000);
-});
 
 // === CHOIX COMPAGNON ===
 var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
