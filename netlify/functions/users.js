@@ -70,7 +70,7 @@ exports.handler = async function(event) {
     // === VÉRIFIER CODE SUPABASE ===
     if (action === 'verifier_code') {
       var users = await supabase('GET', 'utilisateurs', null,
-        'code_acces=eq.' + data.code.toUpperCase() + '&actif=eq.true&select=*'
+        'code_acces=ilike.' + data.code + '&actif=eq.true&select=*'
       );
       if (users.length === 0) {
         return { statusCode: 200, body: JSON.stringify({ valide: false }) };
