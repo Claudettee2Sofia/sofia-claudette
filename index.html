@@ -1458,6 +1458,7 @@ function terminerProfil() {
 }
 
 // === ÉTAT ===
+var sessionId = null;
 var conversationHistory = JSON.parse(localStorage.getItem('sofia_historique') || '[]');
 var isSpeaking = false;
 var isListening = false;
