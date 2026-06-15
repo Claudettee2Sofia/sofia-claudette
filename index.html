@@ -2145,10 +2145,16 @@ function sendMessage() {
   var i = document.getElementById('userInput');
   var t = i.value.trim();
   if (!t) return;
-  modeAttente = null;
   if (isListening) { try { recognition.stop(); } catch(e) {} }
   showUserMessage(t);
   i.value = ''; i.style.height = 'auto';
+
+  // Vérifier si on attend une réponse spécifique
+  if (modeAttente === 'ville')   { obtenirMeteo(t); return; }
+  if (modeAttente === 'voyage')  { obtenirVoyage(t); return; }
+  if (modeAttente === 'ancetre') { obtenirAncetres(t); return; }
+
+  modeAttente = null;
   conversationHistory.push({role: 'user', content: t});
   sauvegarderHistorique();
   getSofiaReply();
