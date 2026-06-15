@@ -971,7 +971,7 @@
   <div class="acces-modal">
     <div class="acces-titre">✨ Sofia</div>
     <div class="acces-sous-titre">Connectez-vous pour accéder à votre compagne</div>
-    <button class="acces-btn" onclick="netlifyIdentity.open()" style="margin-bottom:12px">
+    <button class="acces-btn" onclick="ouvrirConnexion()" style="margin-bottom:12px">
       🔐 Se connecter
     </button>
     <div class="acces-erreur" id="accesErreur"></div>
@@ -1266,6 +1266,17 @@ function adminRetirerUser(index) {
 var CODE_ADMIN = 'SOFIA2025';
 var utilisateurNetlify = null;
 
+function ouvrirConnexion() {
+  try {
+    netlifyIdentity.open('login');
+  } catch(e) {
+    console.log('Erreur Identity:', e);
+    // Fallback - initialiser et réessayer
+    netlifyIdentity.init();
+    setTimeout(function() { netlifyIdentity.open('login'); }, 500);
+  }
+}
+
 function getCodeDuJour() {
   var d = new Date();
   var jour = String(d.getDate()).padStart(2, '0');
@@ -1306,6 +1317,11 @@ function enregistrerConnexion(user) {
     }})
   }).catch(function() {});
 }
+
+// Initialiser Netlify Identity
+netlifyIdentity.init({
+  container: '#accesOverlay'
+});
 
 // Écouter les événements Netlify Identity
 netlifyIdentity.on('login', function(user) {
