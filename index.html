@@ -2270,10 +2270,6 @@ function envoyerSMS(tel, nom) {
   window.location.href = 'sms:' + tel + '?body=' + encodeURIComponent(message);
 }
 
-// === INIT ===
-initRecognition();
-verifierAccesAuDemarrage();
-
 // === PING SESSION ===
 function pingSession() {
   if (!sessionId || !utilisateurId) return;
@@ -2287,10 +2283,8 @@ function pingSession() {
     }})
   }).catch(function() {});
 }
-// Ping toutes les 5 minutes
 setInterval(pingSession, 5 * 60 * 1000);
 
-// Fermer session quand l'utilisateur quitte
 window.addEventListener('beforeunload', function() {
   if (sessionId) {
     navigator.sendBeacon('/.netlify/functions/users',
@@ -2298,6 +2292,10 @@ window.addEventListener('beforeunload', function() {
     );
   }
 });
+
+// === INIT ===
+initRecognition();
+verifierAccesAuDemarrage();
 
 // === PWA SERVICE WORKER ===
 if ('serviceWorker' in navigator) {
