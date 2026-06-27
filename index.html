@@ -1274,21 +1274,21 @@ function verifierAcces() {
   var code = document.getElementById('accesInput').value.trim().toUpperCase();
   var erreur = document.getElementById('accesErreur');
 
-  // Code admin
+// Code admin
   if (code === CODE_ADMIN) {
     localStorage.setItem('sofia_acces_admin', 'oui');
-    document.getElementById('accesOverlay').style.display = 'none';
     document.getElementById('accesInput').value = '';
-    // Notifier connexion admin
+    // Notifier connexion admin AVANT de lancer Sofia
     fetch('/.netlify/functions/users', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ action: 'connexion_admin', data: {} })
-    }).catch(function() {});
-    lancerSofia();
+    }).finally(function() {
+      document.getElementById('accesOverlay').style.display = 'none';
+      lancerSofia();
+    });
     return;
   }
-
   // Code du jour (invité temporaire)
   if (code === getCodeDuJour()) {
     erreur.textContent = 'Vérification...';
