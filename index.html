@@ -2149,6 +2149,15 @@ function sofiaRaconteVillage() {
 }
 
 // === UTILITAIRES ===
+function enregistrerActivite(type, detail) {
+  if (!utilisateurId) return;
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'activite', data: { utilisateur_id: utilisateurId, type: type, detail: detail || '' } })
+  }).catch(function() {});
+}
+
 function setStatus(t) { document.getElementById('statusText').textContent = t; }
 function autoResize(e) { e.style.height = 'auto'; e.style.height = Math.min(e.scrollHeight, 40) + 'px'; }
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
