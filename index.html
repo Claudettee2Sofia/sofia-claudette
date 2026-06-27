@@ -1413,11 +1413,12 @@ function confirmerChoix() {
 function appliquerCompagnon(choix) {
   var nomC = choix === 'leo' ? 'Léo' : 'Sofia';
   var icone = choix === 'leo' ? '🌙' : '☀️';
-  document.getElementById('soleil').querySelector('.soleil-nom').textContent = nomC;
+  document.querySelector('.soleil-nom').textContent = nomC;
+  document.querySelector('.soleil-icone').textContent = '🎙️';
+  document.querySelector('.soleil-texte').textContent = 'Appuyez';
   document.querySelector('.text-hint').textContent = 'Dites "météo", "nouvelles", "voyage" ou "ancêtres" — ou appuyez sur ' + icone;
   document.querySelector('#userInput').placeholder = 'Ou écrivez à ' + nomC + '...';
   document.getElementById('changerTexte').textContent = nomC;
-  document.getElementById('changerBtn').querySelector('span').previousSibling.textContent = icone + ' ';
 }
 
 function verifierProfil() {
