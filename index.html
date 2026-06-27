@@ -1827,17 +1827,22 @@ function demanderNouvelles() {
         prompt += '\nMONDE:\n';
         monde.slice(0,3).forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + '\n'; });
       }
-      if (culture.length > 0) {
+        if (culture.length > 0) {
         prompt += '\nCULTURE ET ARTS:\n';
         culture.slice(0,3).forEach(function(a, i) { prompt += (i+1) + '. ' + a.titre + '\n'; });
+      }
+      var total = quebec.length + monde.length + culture.length;
+      if (total === 0) {
+        showResponse("Je n'arrive pas à trouver les nouvelles en ce moment. Réessayez dans quelques minutes !");
+        return;
       }
       conversationHistory.push({role: 'user', content: prompt});
       enregistrerActivite('nouvelles', '');
       getSofiaReply('nouvelles');
-    }).catch(function() {
+    }).catch(function(err) {
+      console.log('Erreur nouvelles:', err);
       showResponse("Je n'arrive pas à trouver les nouvelles. Réessayons !");
     });
-}
 
 // === VOYAGE ===
 var voyageDestinationActuelle = null;
