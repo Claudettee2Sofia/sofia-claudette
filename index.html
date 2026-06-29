@@ -2279,12 +2279,7 @@ function retirerCoupCoeur(dest) {
 
 // === ANCÊTRES ===
 function demanderAncetres() {
-  if (isListening) { try { recognition.stop(); } catch(e) {} isListening = false; }
-  showUserMessage('Recherche ancêtres 🔍');
-  var msg = 'Je serais ravie de vous aider à retrouver vos ancêtres ! Quel nom de famille voulez-vous rechercher ?';
-  showResponse(msg);
-  modeAttente = 'ancetre';
-  speakText(msg);
+  ouvrirGenealogie();
 }
 
 function obtenirAncetres(nom) {
