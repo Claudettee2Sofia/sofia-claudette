@@ -98,7 +98,7 @@ exports.handler = async function(event) {
 
     liens.push({
       nom: 'Cinoche.com — Horaires cinéma',
-      url: 'https://www.cinoche.com/' + villeCinoche.toLowerCase() + '/',
+      url: 'https://www.cinoche.com/',
       description: 'Tous les films et horaires des cinémas à ' + ville
     });
 
