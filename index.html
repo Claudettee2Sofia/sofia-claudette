@@ -2723,10 +2723,13 @@ function genealogieEffacer() {
   // === ACTIVITES ===
 function demanderActivites() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
-  showUserMessage('Activités 🎭');
-  setStatus('Sofia cherche les activités...');
+  var villeDefaut = profil.ville || 'Québec';
+  var choix = prompt('Pour quelle ville voulez-vous des activités ?\n\nAppuyez sur OK pour ' + villeDefaut + ', ou entrez une autre ville (ex: Montréal, Paris, New York...)');
+  if (choix === null) return; // annulé
+  var ville = choix.trim() || villeDefaut;
+  showUserMessage('Activités à ' + ville + ' 🎭');
+  setStatus('Sofia cherche les activités à ' + ville + '...');
   showTyping();
-  var ville = profil.ville || 'Québec';
   fetch('/.netlify/functions/activites', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
