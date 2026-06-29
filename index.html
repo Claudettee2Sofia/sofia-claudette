@@ -2721,85 +2721,67 @@ function genealogieEffacer() {
     genealogieAfficherEtape(1);
   }
 }
-  // === ACTIVITES ===
+// === ACTIVITES ===
 function demanderActivites() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
-  var villeDefaut = profil.ville || 'Québec';
+  var villeDefaut = profil.ville || 'Quebec';
   var choix = prompt('Pour quelle ville voulez-vous des activites ?\n\nAppuyez sur OK pour ' + villeDefaut + ', ou entrez une autre ville (ex: Montreal, Paris, New York...)');
   if (choix === null) return;
   var ville = choix.trim() || villeDefaut;
-  showUserMessage('Activités à ' + ville + ' 🎭');
-  setStatus('Sofia cherche les activités à ' + ville + '...');
+  showUserMessage('Activites a ' + ville + ' 🎭');
+  setStatus('Sofia cherche les activites...');
   showTyping();
   fetch('/.netlify/functions/activites', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ ville: ville, region: ville })
   }).then(function(r) { return r.json(); }).then(function(d) {
-
-    // Construire le prompt pour Sofia
-    var prompt = 'Tu es Sofia. La personne veut des activités à ' + ville + '. ';
+    var prompt = 'Tu es Sofia. La personne veut des activites a ' + ville + '. ';
     if (d.analyse) {
       if (d.analyse.conseil_saison) prompt += d.analyse.conseil_saison + ' ';
       if (d.analyse.activites_culturelles && d.analyse.activites_culturelles.length > 0) {
-        prompt += 'Activités culturelles: ';
-        d.analyse.activites_culturelles.forEach(function(a) { prompt += a.nom + ' — ' + a.description + '. '; });
+        prompt += 'Activites culturelles: ';
+        d.analyse.activites_culturelles.forEach(function(a) { prompt += a.nom + ' : ' + a.description + '. '; });
       }
       if (d.analyse.activites_bien_etre && d.analyse.activites_bien_etre.length > 0) {
-        prompt += 'Activités bien-être: ';
-        d.analyse.activites_bien_etre.forEach(function(a) { prompt += a.nom + ' — ' + a.description + '. '; });
+        prompt += 'Activites bien-etre: ';
+        d.analyse.activites_bien_etre.forEach(function(a) { prompt += a.nom + ' : ' + a.description + '. '; });
       }
       if (d.analyse.cinema_recommande && d.analyse.cinema_recommande.length > 0) {
-        prompt += 'Films recommandés en ce moment: ';
-        d.analyse.cinema_recommande.forEach(function(f) { prompt += f.titre + ' — ' + f.description + '. '; });
+        prompt += 'Films recommandes: ';
+        d.analyse.cinema_recommande.forEach(function(f) { prompt += f.titre + ' : ' + f.description + '. '; });
       }
       if (d.analyse.ressources_locales && d.analyse.ressources_locales.length > 0) {
         prompt += 'Ressources locales: ' + d.analyse.ressources_locales.join(', ') + '. ';
       }
     }
     if (d.activitesRSS && d.activitesRSS.length > 0) {
-      prompt += 'Actualités culturelles: ';
+      prompt += 'Actualites culturelles: ';
       d.activitesRSS.slice(0,3).forEach(function(a) { prompt += a.titre + '. '; });
     }
-   prompt += 'Presente ces activites avec enthousiasme et chaleur. Mentionne aussi les liens disponibles pour les horaires de cinema et les spectacles. Sois encourageante !';
+    prompt += 'Presente ces activites avec enthousiasme et chaleur. Sois encourageante !';
     conversationHistory.push({role: 'user', content: prompt});
-
-     // Sauvegarder les liens pour les afficher après la réponse de Sofia
     window.activitesLiens = d.liens || [];
     window.activitesVille = ville;
-
-    getSofiaReply('activites');
-      html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles à ' + ville + '</div>';
-      d.liens.forEach(function(l) {
-        html += '<div style="background:rgba(240,160,80,0.08);border:1px solid rgba(240,160,80,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px">';
-        html += '<div style="font-size:14px;font-weight:800;color:var(--or);margin-bottom:4px">' + l.nom + '</div>';
-        html += '<div style="font-size:13px;color:rgba(250,220,170,0.7);margin-bottom:8px">' + l.description + '</div>';
-        html += '<a href="' + l.url + '" target="_blank" style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.35);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--or-pale);text-decoration:none">Ouvrir →</a>';
-        html += '</div>';
-      });
-      html += '</div>';
-      var z = document.getElementById('responseZone');
-      z.innerHTML = '<div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>' + html;
-    }
-
     getSofiaReply('activites');
   }).catch(function() {
-    var msg = 'Je vous conseille de visiter les musées, bibliothèques et centres communautaires de ' + ville + ' — il y a toujours de belles activités pour vous !';
+    var msg = 'Je vous conseille de visiter les musees et centres communautaires de ' + ville + ' !';
     showResponse(msg);
     speakText(msg);
   });
 }
-  function afficherLiensActivites() {
+
+function afficherLiensActivites() {
   if (!window.activitesLiens || window.activitesLiens.length === 0) return;
   var z = document.getElementById('responseZone');
   var html = z.innerHTML;
   html += '<div style="margin-top:12px">';
-  html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles à ' + window.activitesVille + '</div>';
+  html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles a ' + window.activitesVille + '</div>';
   window.activitesLiens.forEach(function(l) {
     html += '<div style="background:rgba(240,160,80,0.08);border:1px solid rgba(240,160,80,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px">';
     html += '<div style="font-size:14px;font-weight:800;color:var(--or);margin-bottom:4px">' + l.nom + '</div>';
     html += '<div style="font-size:13px;color:rgba(250,220,170,0.7);margin-bottom:8px">' + l.description + '</div>';
-    html += '<a href="' + l.url + '" target="_blank" style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.35);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--or-pale);text-decoration:none">Ouvrir →</a>';
+    html += '<a href="' + l.url + '" target="_blank" style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.35);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--or-pale);text-decoration:none">Ouvrir</a>';
     html += '</div>';
   });
   html += '</div>';
