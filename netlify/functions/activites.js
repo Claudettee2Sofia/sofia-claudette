@@ -97,10 +97,9 @@ exports.handler = async function(event) {
     else if (villeMin.includes('trois-rivières') || villeMin.includes('trois-rivieres')) villeCinoche = 'Trois-Rivieres';
 
     liens.push({
-      nom: 'Cinoche.com — Horaires cinema',
-      url: 'https://www.cinoche.com/',
-      description: 'Tous les films et horaires des cinemas au Quebec'
-    });
+      nom: 'Cinoche.com — Horaires cinéma',
+      url: 'https://www.cinoche.com/' + villeCinoche.toLowerCase() + '/',
+      description: 'Tous les films et horaires des cinémas à ' + ville
     });
 
     // Spectacle.ca
