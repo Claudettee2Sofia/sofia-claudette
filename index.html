@@ -1773,6 +1773,7 @@ function speakText(t) {
   document.getElementById('soleilIcone').textContent = '🔊';
   document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
+  afficherLiensActivites();
    afficherLiensActivites();
   return fetch('/.netlify/functions/voice', {
     method: 'POST',
