@@ -1056,7 +1056,90 @@
   <div class="village-description" id="villageDescription" style="display:none"></div>
   <button class="btn-sofia-village" id="btnSofiaVillage" onclick="sofiaRaconteVillage()" style="display:none">🎙️ Sofia me raconte ce village</button>
 </div>
+<!-- Modal Généalogie -->
+<div class="genealogie-overlay" id="genealogieOverlay" style="display:none">
+  <div class="genealogie-header">
+    <div class="genealogie-titre">🔍 Recherche d'ancêtres</div>
+    <button class="genealogie-fermer" onclick="fermerGenealogie()">✕</button>
+  </div>
 
+  <!-- Étapes -->
+  <div class="genealogie-etapes" id="genealogieEtapes">
+    <div class="genealogie-etape active" id="etape1dot">1</div>
+    <div class="genealogie-ligne"></div>
+    <div class="genealogie-etape" id="etape2dot">2</div>
+    <div class="genealogie-ligne"></div>
+    <div class="genealogie-etape" id="etape3dot">3</div>
+    <div class="genealogie-ligne"></div>
+    <div class="genealogie-etape" id="etape4dot">4</div>
+  </div>
+
+  <!-- Étape 1 : Personne à rechercher -->
+  <div class="genealogie-section" id="genealogieEtape1">
+    <div class="genealogie-section-titre">👤 Qui recherchez-vous ?</div>
+    <input class="genealogie-input" id="gPrenom" type="text" placeholder="Prénom">
+    <input class="genealogie-input" id="gNom" type="text" placeholder="Nom de famille">
+    <select class="genealogie-input" id="gRegion">
+      <option value="Quebec">Québec (général)</option>
+      <option value="Montreal">Montréal</option>
+      <option value="Quebec City">Ville de Québec</option>
+      <option value="Saguenay">Saguenay-Lac-Saint-Jean</option>
+      <option value="Mauricie">Mauricie</option>
+      <option value="Estrie">Estrie</option>
+      <option value="Acadie">Acadie</option>
+      <option value="Ontario">Ontario</option>
+    </select>
+    <input class="genealogie-input" id="gEpoque" type="text" placeholder="Époque approximative (ex: 1850-1900)">
+    <button class="genealogie-btn" onclick="genealogieEtapeSuivante(1)">Suivant →</button>
+  </div>
+
+  <!-- Étape 2 : Parents -->
+  <div class="genealogie-section" id="genealogieEtape2" style="display:none">
+    <div class="genealogie-section-titre">👨‍👩‍👧 Vos parents</div>
+    <div class="genealogie-sous-titre">Père</div>
+    <input class="genealogie-input" id="gPerePr" type="text" placeholder="Prénom du père">
+    <input class="genealogie-input" id="gPereNom" type="text" placeholder="Nom du père">
+    <div class="genealogie-sous-titre">Mère</div>
+    <input class="genealogie-input" id="gMerePr" type="text" placeholder="Prénom de la mère">
+    <input class="genealogie-input" id="gMereNom" type="text" placeholder="Nom de jeune fille de la mère">
+    <div class="genealogie-checkbox-row">
+      <input type="checkbox" id="gParentsMaries" checked>
+      <label for="gParentsMaries" class="genealogie-label">Parents mariés au Québec</label>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="genealogie-btn-retour" onclick="genealogieEtapePrecedente(2)">← Retour</button>
+      <button class="genealogie-btn" onclick="genealogieEtapeSuivante(2)">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- Étape 3 : Grands-parents -->
+  <div class="genealogie-section" id="genealogieEtape3" style="display:none">
+    <div class="genealogie-section-titre">👴👵 Grands-parents (optionnel)</div>
+    <div class="genealogie-sous-titre">Côté paternel</div>
+    <input class="genealogie-input" id="gGPPatPr" type="text" placeholder="Prénom grand-père paternel">
+    <input class="genealogie-input" id="gGPPatNom" type="text" placeholder="Nom grand-père paternel">
+    <input class="genealogie-input" id="gGMPatNom" type="text" placeholder="Nom de jeune fille grand-mère paternelle">
+    <div class="genealogie-sous-titre">Côté maternel</div>
+    <input class="genealogie-input" id="gGPMatPr" type="text" placeholder="Prénom grand-père maternel">
+    <input class="genealogie-input" id="gGPMatNom" type="text" placeholder="Nom grand-père maternel">
+    <input class="genealogie-input" id="gGMMatNom" type="text" placeholder="Nom de jeune fille grand-mère maternelle">
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="genealogie-btn-retour" onclick="genealogieEtapePrecedente(3)">← Retour</button>
+      <button class="genealogie-btn" onclick="genealogieEtapeSuivante(3)">Rechercher →</button>
+    </div>
+  </div>
+
+  <!-- Étape 4 : Résultats -->
+  <div class="genealogie-section" id="genealogieEtape4" style="display:none">
+    <div class="genealogie-section-titre">✨ Résultats de recherche</div>
+    <div id="genealogieLoading" style="text-align:center;padding:20px;color:rgba(250,220,170,0.5);">Sofia cherche vos ancêtres...</div>
+    <div id="genealogieResultats"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="genealogie-btn-retour" onclick="genealogieEtapePrecedente(4)">← Modifier</button>
+      <button class="genealogie-btn" onclick="genealogieEffacer()">🗑️ Réinitialiser</button>
+    </div>
+  </div>
+</div>
 <!-- Modal Urgence -->
 <div class="urgence-overlay" id="urgenceOverlay" style="display:none">
   <div class="urgence-header">
