@@ -1359,7 +1359,7 @@
     <div class="planete p-ancetres" onclick="demanderAncetres()">
       <div class="planete-icone">🔍</div><div class="planete-nom">Ancêtres</div>
     </div>
-    <div class="planete p-activites" onclick="sendSuggestion('Quelles activités culturelles me conseilles-tu ?')">
+    <div class="planete p-activites" onclick="demanderActivites()">
       <div class="planete-icone">🎭</div><div class="planete-nom">Activités</div>
     </div>
   </div>
@@ -2719,6 +2719,46 @@ function genealogieEffacer() {
     document.getElementById('gGMMatNom').value = '';
     genealogieAfficherEtape(1);
   }
+}
+  // === ACTIVITES ===
+function demanderActivites() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  showUserMessage('Activités 🎭');
+  setStatus('Sofia cherche les activités...');
+  showTyping();
+  var ville = profil.ville || 'Québec';
+  fetch('/.netlify/functions/activites', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ ville: ville, region: ville })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    var prompt = 'Tu es Sofia. La personne habite à ' + ville + '. ';
+    if (d.analyse) {
+      if (d.analyse.conseil_saison) prompt += d.analyse.conseil_saison + ' ';
+      if (d.analyse.activites_culturelles && d.analyse.activites_culturelles.length > 0) {
+        prompt += 'Activités culturelles recommandées: ';
+        d.analyse.activites_culturelles.forEach(function(a) { prompt += a.nom + ' — ' + a.description + '. '; });
+      }
+      if (d.analyse.activites_bien_etre && d.analyse.activites_bien_etre.length > 0) {
+        prompt += 'Activités bien-être: ';
+        d.analyse.activites_bien_etre.forEach(function(a) { prompt += a.nom + ' — ' + a.description + '. '; });
+      }
+      if (d.analyse.ressources_locales && d.analyse.ressources_locales.length > 0) {
+        prompt += 'Ressources locales: ' + d.analyse.ressources_locales.join(', ') + '. ';
+      }
+    }
+    if (d.activitesRSS && d.activitesRSS.length > 0) {
+      prompt += 'Actualités culturelles du moment: ';
+      d.activitesRSS.slice(0,3).forEach(function(a) { prompt += a.titre + '. '; });
+    }
+    prompt += 'Présente ces activités avec enthousiasme et chaleur, comme si tu parlais à une amie. Sois encourageante !';
+    conversationHistory.push({role: 'user', content: prompt});
+    getSofiaReply('activites');
+  }).catch(function() {
+    var msg = 'Je vous conseille de visiter les musées, bibliothèques et centres communautaires de ' + ville + ' — il y a toujours de belles activités pour vous !';
+    showResponse(msg);
+    speakText(msg);
+  });
 }
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
