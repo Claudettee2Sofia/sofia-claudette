@@ -2779,9 +2779,9 @@ function afficherLiensActivites() {
   html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles a ' + window.activitesVille + '</div>';
   window.activitesLiens.forEach(function(l) {
     html += '<div style="background:rgba(240,160,80,0.08);border:1px solid rgba(240,160,80,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px">';
-    html += '<div style="font-size:14px;font-weight:800;color:var(--or);margin-bottom:4px">' + l.nom + '</div>';
-    html += '<div style="font-size:13px;color:rgba(250,220,170,0.7);margin-bottom:8px">' + l.description + '</div>';
-    html += '<a href="' + l.url + '" target="_blank" style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.35);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--or-pale);text-decoration:none">Ouvrir</a>';
+   html += '<div style="font-size:18px;font-weight:800;color:#FFD700;margin-bottom:6px">' + l.nom + '</div>';
+    html += '<div style="font-size:16px;color:#FFFFFF;margin-bottom:10px;line-height:1.5">' + l.description + '</div>';
+    html += '<a href="' + l.url + '" target="_blank" style="background:linear-gradient(135deg,#F0C060,#E87040);border:none;border-radius:10px;padding:10px 18px;font-size:16px;font-weight:800;color:#2A0A00;text-decoration:none;display:inline-block">Ouvrir →</a>';
     html += '</div>';
   });
   html += '</div>';
