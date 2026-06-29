@@ -1773,6 +1773,7 @@ function speakText(t) {
   document.getElementById('soleilIcone').textContent = '🔊';
   document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
+   afficherLiensActivites();
   return fetch('/.netlify/functions/voice', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -2763,9 +2764,11 @@ function demanderActivites() {
     prompt += 'Présente ces activités avec enthousiasme et chaleur. Mentionne aussi qu\'il y a des liens pour les horaires de cinéma et les spectacles. Sois encourageante !';
     conversationHistory.push({role: 'user', content: prompt});
 
-    // Afficher les liens utiles
-    if (d.liens && d.liens.length > 0) {
-      var html = '<div style="margin-top:12px">';
+     // Sauvegarder les liens pour les afficher après la réponse de Sofia
+    window.activitesLiens = d.liens || [];
+    window.activitesVille = ville;
+
+    getSofiaReply('activites');
       html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles à ' + ville + '</div>';
       d.liens.forEach(function(l) {
         html += '<div style="background:rgba(240,160,80,0.08);border:1px solid rgba(240,160,80,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px">';
@@ -2785,6 +2788,23 @@ function demanderActivites() {
     showResponse(msg);
     speakText(msg);
   });
+}
+  function afficherLiensActivites() {
+  if (!window.activitesLiens || window.activitesLiens.length === 0) return;
+  var z = document.getElementById('responseZone');
+  var html = z.innerHTML;
+  html += '<div style="margin-top:12px">';
+  html += '<div style="font-size:13px;color:rgba(250,220,170,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px">🔗 Liens utiles à ' + window.activitesVille + '</div>';
+  window.activitesLiens.forEach(function(l) {
+    html += '<div style="background:rgba(240,160,80,0.08);border:1px solid rgba(240,160,80,0.2);border-radius:12px;padding:12px 14px;margin-bottom:8px">';
+    html += '<div style="font-size:14px;font-weight:800;color:var(--or);margin-bottom:4px">' + l.nom + '</div>';
+    html += '<div style="font-size:13px;color:rgba(250,220,170,0.7);margin-bottom:8px">' + l.description + '</div>';
+    html += '<a href="' + l.url + '" target="_blank" style="background:rgba(240,160,80,0.2);border:1px solid rgba(240,160,80,0.35);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--or-pale);text-decoration:none">Ouvrir →</a>';
+    html += '</div>';
+  });
+  html += '</div>';
+  z.innerHTML = html;
+  window.activitesLiens = [];
 }
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
