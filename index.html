@@ -2059,11 +2059,16 @@ function obtenirAncetres(nom) {
     body: JSON.stringify({nom: nom})
   }).then(function(r) { return r.json(); }).then(function(d) {
     var prompt = 'Tu es Sofia. La personne cherche ses ancetres avec le nom ' + nom + '. Voici les meilleures ressources quebecoises: ';
-    d.sources.forEach(function(s) { prompt += s.nom + ': ' + s.description + '. '; });
-    prompt += 'Conseils importants: ' + d.conseils.slice(0,3).join('. ') + '. ';
-    prompt += 'Presente ces ressources chaleureusement comme si tu aidais une amie a decouvrir ses racines. Sois enthousiaste, detaillee et encourage la personne !';
-    conversationHistory.push({role: 'user', content: prompt});
-    getSofiaReply('ancetres');
+   d.sources.forEach(function(s) { prompt += s.nom + ': ' + s.description + '. '; });
+      prompt += 'Conseils importants: ' + d.conseils.slice(0,3).join('. ') + '. ';
+      if (d.actualites && d.actualites.length > 0) {
+        prompt += 'Actualites genealogiques recentes: ';
+        d.actualites.slice(0,3).forEach(function(a) { prompt += a.titre + ' (' + a.source + '). '; });
+        prompt += 'Mentionne ces actualites avec enthousiasme ! ';
+      }
+      prompt += 'Presente ces ressources chaleureusement comme si tu aidais une amie a decouvrir ses racines. Sois enthousiaste, detaillee et encourage la personne !';
+      conversationHistory.push({role: 'user', content: prompt});
+      getSofiaReply('ancetres');
   }).catch(function() {
     showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !");
     modeAttente = null;
