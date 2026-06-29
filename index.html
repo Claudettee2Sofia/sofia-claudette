@@ -2622,12 +2622,51 @@ function genealogieAfficherResultats(d, personne) {
   }
   html += '</div>';
 
-  // Suggestions personnalisées
-  if (d.suggestions && d.suggestions.length > 0) {
-    html += '<div class="genealogie-section-titre" style="margin-bottom:10px">💡 Conseils personnalisés</div>';
-    d.suggestions.forEach(function(s) {
-      html += '<div class="genealogie-suggestion">💡 ' + s + '</div>';
-    });
+  // Analyse enrichie par Claude
+  if (d.analyse) {
+    // Origine du nom
+    if (d.analyse.origine_nom) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">📜 Origine du nom de famille</div>';
+      html += '<div class="genealogie-resultat-desc">' + d.analyse.origine_nom + '</div>';
+      html += '</div>';
+    }
+
+    // Histoire de la famille
+    if (d.analyse.histoire_famille) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">📖 Contexte historique</div>';
+      html += '<div class="genealogie-resultat-desc">' + d.analyse.histoire_famille + '</div>';
+      html += '</div>';
+    }
+
+    // Période clé
+    if (d.analyse.periode_cle) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">📅 Période clé à rechercher</div>';
+      html += '<div class="genealogie-resultat-desc">' + d.analyse.periode_cle + '</div>';
+      html += '</div>';
+    }
+
+    // Paroisses suggérées
+    if (d.analyse.paroisses_suggeres && d.analyse.paroisses_suggeres.length > 0) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">⛪ Paroisses suggérées</div>';
+      d.analyse.paroisses_suggeres.forEach(function(p) {
+        html += '<div class="genealogie-suggestion" style="margin-bottom:6px">⛪ ' + p + '</div>';
+      });
+      html += '</div>';
+    }
+
+    // Pistes de recherche
+    if (d.analyse.pistes_recherche && d.analyse.pistes_recherche.length > 0) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">💡 Pistes personnalisées</div>';
+      d.analyse.pistes_recherche.forEach(function(p) {
+        html += '<div class="genealogie-suggestion" style="margin-bottom:6px">💡 ' + p + '</div>';
+      });
+      html += '</div>';
+    }
   }
 
   // Liens de recherche
@@ -2644,7 +2683,6 @@ function genealogieAfficherResultats(d, personne) {
 
   zone.innerHTML = html;
 }
-
 function genealogieSofiaParle(d, personne) {
   var prompt = 'Tu es Sofia. ';
   var nom = (personne.prenom + ' ' + personne.nom).trim();
