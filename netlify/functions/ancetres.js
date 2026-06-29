@@ -167,9 +167,9 @@ Réponds UNIQUEMENT en JSON avec cette structure exacte, sans aucun texte avant 
           description: 'Recherche directe dans les archives pour ' + prenom + ' ' + nomFamille + ' — résultats pré-remplis'
         },
         {
-          source: 'Nos Origines',
-          url: urlNosOrigines,
-          description: 'Arbre généalogique gratuit — famille ' + nomFamille
+           source: 'Nos Origines',
+          url: 'https://www.nosorigines.qc.ca/genealogieSearch.aspx?lng=fr',
+          description: 'Entrez le nom "' + nomFamille + '" et prénom "' + prenom + '" dans les champs de recherche'
         },
         {
           source: 'Généalogie Québec',
