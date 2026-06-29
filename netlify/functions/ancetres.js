@@ -156,7 +156,9 @@ Réponds UNIQUEMENT en JSON avec cette structure exacte, sans aucun texte avant 
       urlFamilySearch += '&q.residencePlace=' + encodeURIComponent(region);
 
      const urlNosOrigines = 'https://www.nosorigines.qc.ca/genealogieSearch.aspx?nom=' +
-        encodeURIComponent(nomFamille) + '&prenom=' + encodeURIComponent(prenom) + '&langue=fr';
+        encodeURIComponent(nomFamille) + '&prenom=' + encodeURIComponent(prenom) +
+        (nomMere ? '&nom2=' + encodeURIComponent(nomMere) + '&prenom2=' + encodeURIComponent(prenomMere) : '') +
+        '&lng=fr';
 
       const resultats = [
         {
