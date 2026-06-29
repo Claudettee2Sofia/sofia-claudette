@@ -2491,7 +2491,201 @@ function getSofiaReply(type) {
     document.getElementById('sendBtn').disabled = false;
   });
 }
+// === GENEALOGIE ===
+var genealogieDonnees = JSON.parse(localStorage.getItem('sofia_genealogie') || '{}');
 
+function ouvrirGenealogie() {
+  document.getElementById('genealogieOverlay').style.display = 'flex';
+  genealogieChargerDonnees();
+  genealogieAfficherEtape(1);
+}
+
+function fermerGenealogie() {
+  document.getElementById('genealogieOverlay').style.display = 'none';
+}
+
+function genealogieChargerDonnees() {
+  if (genealogieDonnees.prenom) document.getElementById('gPrenom').value = genealogieDonnees.prenom || '';
+  if (genealogieDonnees.nom) document.getElementById('gNom').value = genealogieDonnees.nom || '';
+  if (genealogieDonnees.region) document.getElementById('gRegion').value = genealogieDonnees.region || 'Quebec';
+  if (genealogieDonnees.epoque) document.getElementById('gEpoque').value = genealogieDonnees.epoque || '';
+  if (genealogieDonnees.pere_prenom) document.getElementById('gPerePr').value = genealogieDonnees.pere_prenom || '';
+  if (genealogieDonnees.pere_nom) document.getElementById('gPereNom').value = genealogieDonnees.pere_nom || '';
+  if (genealogieDonnees.mere_prenom) document.getElementById('gMerePr').value = genealogieDonnees.mere_prenom || '';
+  if (genealogieDonnees.mere_nom) document.getElementById('gMereNom').value = genealogieDonnees.mere_nom || '';
+  if (genealogieDonnees.gp_pat_prenom) document.getElementById('gGPPatPr').value = genealogieDonnees.gp_pat_prenom || '';
+  if (genealogieDonnees.gp_pat_nom) document.getElementById('gGPPatNom').value = genealogieDonnees.gp_pat_nom || '';
+  if (genealogieDonnees.gm_pat_nom) document.getElementById('gGMPatNom').value = genealogieDonnees.gm_pat_nom || '';
+  if (genealogieDonnees.gp_mat_prenom) document.getElementById('gGPMatPr').value = genealogieDonnees.gp_mat_prenom || '';
+  if (genealogieDonnees.gp_mat_nom) document.getElementById('gGPMatNom').value = genealogieDonnees.gp_mat_nom || '';
+  if (genealogieDonnees.gm_mat_nom) document.getElementById('gGMMatNom').value = genealogieDonnees.gm_mat_nom || '';
+}
+
+function genealogieSauvegarder() {
+  genealogieDonnees.prenom = document.getElementById('gPrenom').value.trim();
+  genealogieDonnees.nom = document.getElementById('gNom').value.trim();
+  genealogieDonnees.region = document.getElementById('gRegion').value;
+  genealogieDonnees.epoque = document.getElementById('gEpoque').value.trim();
+  genealogieDonnees.pere_prenom = document.getElementById('gPerePr').value.trim();
+  genealogieDonnees.pere_nom = document.getElementById('gPereNom').value.trim();
+  genealogieDonnees.mere_prenom = document.getElementById('gMerePr').value.trim();
+  genealogieDonnees.mere_nom = document.getElementById('gMereNom').value.trim();
+  genealogieDonnees.gp_pat_prenom = document.getElementById('gGPPatPr').value.trim();
+  genealogieDonnees.gp_pat_nom = document.getElementById('gGPPatNom').value.trim();
+  genealogieDonnees.gm_pat_nom = document.getElementById('gGMPatNom').value.trim();
+  genealogieDonnees.gp_mat_prenom = document.getElementById('gGPMatPr').value.trim();
+  genealogieDonnees.gp_mat_nom = document.getElementById('gGPMatNom').value.trim();
+  genealogieDonnees.gm_mat_nom = document.getElementById('gGMMatNom').value.trim();
+  genealogieDonnees.parents_maries = document.getElementById('gParentsMaries').checked;
+  localStorage.setItem('sofia_genealogie', JSON.stringify(genealogieDonnees));
+}
+
+function genealogieAfficherEtape(num) {
+  for (var i = 1; i <= 4; i++) {
+    var section = document.getElementById('genealogieEtape' + i);
+    var dot = document.getElementById('etape' + i + 'dot');
+    if (section) section.style.display = i === num ? 'block' : 'none';
+    if (dot) {
+      dot.classList.remove('active', 'done');
+      if (i === num) dot.classList.add('active');
+      else if (i < num) dot.classList.add('done');
+    }
+  }
+}
+
+function genealogieEtapeSuivante(etapeActuelle) {
+  genealogieSauvegarder();
+  if (etapeActuelle === 3) {
+    genealogieAfficherEtape(4);
+    genealogieLancerRecherche();
+  } else {
+    genealogieAfficherEtape(etapeActuelle + 1);
+  }
+}
+
+function genealogieEtapePrecedente(etapeActuelle) {
+  genealogieAfficherEtape(etapeActuelle - 1);
+}
+
+function genealogieLancerRecherche() {
+  document.getElementById('genealogieLoading').style.display = 'block';
+  document.getElementById('genealogieResultats').innerHTML = '';
+
+  var personne = {
+    prenom: genealogieDonnees.prenom || '',
+    nom: genealogieDonnees.nom || '',
+    region: genealogieDonnees.region || 'Quebec',
+    epoque: genealogieDonnees.epoque || '',
+    pere_prenom: genealogieDonnees.pere_prenom || '',
+    pere_nom: genealogieDonnees.pere_nom || '',
+    mere_prenom: genealogieDonnees.mere_prenom || '',
+    mere_nom: genealogieDonnees.mere_nom || '',
+    gp_pat_prenom: genealogieDonnees.gp_pat_prenom || '',
+    gp_pat_nom: genealogieDonnees.gp_pat_nom || '',
+    gm_pat_nom: genealogieDonnees.gm_pat_nom || '',
+    gp_mat_prenom: genealogieDonnees.gp_mat_prenom || '',
+    gp_mat_nom: genealogieDonnees.gp_mat_nom || '',
+    gm_mat_nom: genealogieDonnees.gm_mat_nom || '',
+    parents_maries: genealogieDonnees.parents_maries
+  };
+
+  fetch('/.netlify/functions/ancetres', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'rechercher', personne: personne })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    document.getElementById('genealogieLoading').style.display = 'none';
+    genealogieAfficherResultats(d, personne);
+    genealogieSofiaParle(d, personne);
+  }).catch(function() {
+    document.getElementById('genealogieLoading').style.display = 'none';
+    document.getElementById('genealogieResultats').innerHTML = '<div class="genealogie-suggestion">Je n\'arrive pas à lancer la recherche. Réessayons !</div>';
+  });
+}
+
+function genealogieAfficherResultats(d, personne) {
+  var zone = document.getElementById('genealogieResultats');
+  var html = '';
+
+  // Arbre résumé
+  html += '<div class="genealogie-arbre">';
+  html += '<div class="genealogie-arbre-titre">🌳 Votre arbre</div>';
+  if (personne.prenom || personne.nom) {
+    html += '<div class="genealogie-personne"><span>👤</span><div><div class="genealogie-personne-nom">' + (personne.prenom + ' ' + personne.nom).trim() + '</div><div class="genealogie-personne-role">Personne recherchée</div></div></div>';
+  }
+  if (personne.pere_prenom || personne.pere_nom) {
+    html += '<div class="genealogie-personne"><span>👨</span><div><div class="genealogie-personne-nom">' + (personne.pere_prenom + ' ' + personne.pere_nom).trim() + '</div><div class="genealogie-personne-role">Père</div></div></div>';
+  }
+  if (personne.mere_prenom || personne.mere_nom) {
+    html += '<div class="genealogie-personne"><span>👩</span><div><div class="genealogie-personne-nom">' + (personne.mere_prenom + ' ' + personne.mere_nom).trim() + '</div><div class="genealogie-personne-role">Mère</div></div></div>';
+  }
+  if (personne.gp_pat_prenom || personne.gp_pat_nom) {
+    html += '<div class="genealogie-personne"><span>👴</span><div><div class="genealogie-personne-nom">' + (personne.gp_pat_prenom + ' ' + personne.gp_pat_nom).trim() + '</div><div class="genealogie-personne-role">Grand-père paternel</div></div></div>';
+  }
+  if (personne.gp_mat_prenom || personne.gp_mat_nom) {
+    html += '<div class="genealogie-personne"><span>👴</span><div><div class="genealogie-personne-nom">' + (personne.gp_mat_prenom + ' ' + personne.gp_mat_nom).trim() + '</div><div class="genealogie-personne-role">Grand-père maternel</div></div></div>';
+  }
+  html += '</div>';
+
+  // Suggestions personnalisées
+  if (d.suggestions && d.suggestions.length > 0) {
+    html += '<div class="genealogie-section-titre" style="margin-bottom:10px">💡 Conseils personnalisés</div>';
+    d.suggestions.forEach(function(s) {
+      html += '<div class="genealogie-suggestion">💡 ' + s + '</div>';
+    });
+  }
+
+  // Liens de recherche
+  if (d.resultats && d.resultats.length > 0) {
+    html += '<div class="genealogie-section-titre" style="margin:16px 0 10px">🔗 Rechercher dans les archives</div>';
+    d.resultats.forEach(function(r) {
+      html += '<div class="genealogie-resultat-card">';
+      html += '<div class="genealogie-resultat-source">' + r.source + '</div>';
+      html += '<div class="genealogie-resultat-desc">' + r.description + '</div>';
+      html += '<a href="' + r.url + '" target="_blank" class="genealogie-resultat-btn">Ouvrir →</a>';
+      html += '</div>';
+    });
+  }
+
+  zone.innerHTML = html;
+}
+
+function genealogieSofiaParle(d, personne) {
+  var prompt = 'Tu es Sofia. ';
+  var nom = (personne.prenom + ' ' + personne.nom).trim();
+  if (nom) prompt += 'La personne recherche des informations généalogiques sur ' + nom + '. ';
+  if (personne.pere_prenom || personne.pere_nom) prompt += 'Le père est ' + (personne.pere_prenom + ' ' + personne.pere_nom).trim() + '. ';
+  if (personne.mere_prenom || personne.mere_nom) prompt += 'La mère est ' + (personne.mere_prenom + ' ' + personne.mere_nom).trim() + '. ';
+  if (personne.region) prompt += 'La région est ' + personne.region + '. ';
+  if (d.suggestions && d.suggestions.length > 0) {
+    prompt += 'Voici les pistes de recherche: ' + d.suggestions.slice(0,2).join('. ') + '. ';
+  }
+  prompt += 'Encourage chaleureusement la personne dans sa recherche généalogique. Mentionne les ressources disponibles. Sois enthousiaste et bienveillante !';
+  conversationHistory.push({role: 'user', content: prompt});
+  getSofiaReply('ancetres');
+}
+
+function genealogieEffacer() {
+  if (confirm('Effacer toutes les informations généalogiques ?')) {
+    genealogieDonnees = {};
+    localStorage.removeItem('sofia_genealogie');
+    document.getElementById('gPrenom').value = '';
+    document.getElementById('gNom').value = '';
+    document.getElementById('gRegion').value = 'Quebec';
+    document.getElementById('gEpoque').value = '';
+    document.getElementById('gPerePr').value = '';
+    document.getElementById('gPereNom').value = '';
+    document.getElementById('gMerePr').value = '';
+    document.getElementById('gMereNom').value = '';
+    document.getElementById('gGPPatPr').value = '';
+    document.getElementById('gGPPatNom').value = '';
+    document.getElementById('gGMPatNom').value = '';
+    document.getElementById('gGPMatPr').value = '';
+    document.getElementById('gGPMatNom').value = '';
+    document.getElementById('gGMMatNom').value = '';
+    genealogieAfficherEtape(1);
+  }
+}
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
 
