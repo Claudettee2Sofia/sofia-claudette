@@ -124,7 +124,7 @@ exports.handler = async function(event) {
     if (villeMin.includes('québec') || villeMin.includes('quebec')) {
       liens.push({
         nom: 'Québec Original — Événements',
-        url: 'https://www.quebecoriginal.com/fr-ca/type-activite/evenements',
+       url: 'https://www.bonjourquebec.com/fr-ca/quoi-faire',
         description: 'Festivals, expositions et événements dans la région de Québec'
       });
     }
