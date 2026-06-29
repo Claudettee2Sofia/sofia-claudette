@@ -2725,7 +2725,7 @@ function genealogieEffacer() {
 function demanderActivites() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   var villeDefaut = profil.ville || 'Québec';
-  var choix = prompt('Pour quelle ville voulez-vous des activités ?\n\nAppuyez sur OK pour ' + villeDefaut + ', ou entrez une autre ville (ex: Montréal, Paris, New York...)');
+  var choix = prompt('Pour quelle ville voulez-vous des activites ?\n\nAppuyez sur OK pour ' + villeDefaut + ', ou entrez une autre ville (ex: Montreal, Paris, New York...)');
   if (choix === null) return;
   var ville = choix.trim() || villeDefaut;
   showUserMessage('Activités à ' + ville + ' 🎭');
@@ -2761,7 +2761,7 @@ function demanderActivites() {
       prompt += 'Actualités culturelles: ';
       d.activitesRSS.slice(0,3).forEach(function(a) { prompt += a.titre + '. '; });
     }
-    prompt += 'Présente ces activités avec enthousiasme et chaleur. Mentionne aussi qu\'il y a des liens pour les horaires de cinéma et les spectacles. Sois encourageante !';
+   prompt += 'Presente ces activites avec enthousiasme et chaleur. Mentionne aussi les liens disponibles pour les horaires de cinema et les spectacles. Sois encourageante !';
     conversationHistory.push({role: 'user', content: prompt});
 
      // Sauvegarder les liens pour les afficher après la réponse de Sofia
