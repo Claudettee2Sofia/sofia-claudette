@@ -2830,7 +2830,14 @@ function demanderEpicerie() {
     var msg = 'Voici la circulaire de la semaine de ' + epicerie.nom + ' ! Je vais l\'ouvrir pour vous. Voulez-vous aussi que je vous aide avec votre liste d\'épicerie ?';
     showResponse(msg);
     speakText(msg);
-    setTimeout(function() { window.open(epicerie.url, '_blank'); }, 1500);
+     setTimeout(function() {
+      window.open(epicerie.url, '_blank');
+      setTimeout(function() {
+        var prompt2 = 'Tu es Sofia. La personne vient de consulter la circulaire de ' + epicerie.nom + '. Propose-lui de dresser sa liste d\'epicerie ensemble. Demande-lui quels fruits et legumes elle a besoin, ensuite viandes, produits laitiers, et autres. Sois chaleureuse et organisee !';
+        conversationHistory.push({role: 'user', content: prompt2});
+        getSofiaReply('epicerie');
+      }, 2000);
+    }, 1500);
   } else {
     sendSuggestion('Aide-moi avec ma liste d\'épicerie.');
   }
