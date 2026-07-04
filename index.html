@@ -2801,12 +2801,12 @@ var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 function demanderEpicerie() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
 var epiceries = {
-    '1': { nom: 'IGA', url: 'https://flipp.com/fr-ca/flyers/iga' },
-    '2': { nom: 'Metro', url: 'https://flipp.com/fr-ca/flyers/metro' },
-    '3': { nom: 'Maxi', url: 'https://flipp.com/fr-ca/flyers/maxi' },
+    '1': { nom: 'IGA', url: 'https://www.iga.net/fr/circulaire' },
+    '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
+    '3': { nom: 'Maxi', url: 'https://www.maxi.ca/fr/circulaire' },
     '4': { nom: 'Super C', url: 'https://www.superc.ca/circulaire' },
-    '5': { nom: 'Provigo', url: 'https://flipp.com/fr-ca/flyers/provigo' },
-    '6': { nom: 'Walmart', url: 'https://flipp.com/fr-ca/flyers/walmart' }
+    '5': { nom: 'Provigo', url: 'https://www.provigo.ca/fr/circulaire' },
+    '6': { nom: 'Walmart', url: 'https://www.walmart.ca/fr/circulaires' }
   };
   var choix = prompt(
     'Quelle épicerie fréquentez-vous ?\n\n' +
