@@ -2801,12 +2801,12 @@ var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 function demanderEpicerie() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
 var epiceries = {
-    '1': { nom: 'IGA', url: 'https://www.circulaire-en-ligne.ca/circulaire-iga-epicerie/circulaire-semaine-iga' },
-    '2': { nom: 'Metro', url: 'https://www.circulaire-en-ligne.ca/circulaire-metro/circulaire-semaine-metro' },
-    '3': { nom: 'Maxi', url: 'https://www.circulaire-en-ligne.ca/circulaire-maxi/circulaire-semaine-maxi' },
-    '4': { nom: 'Super C', url: 'https://www.circulaire-en-ligne.ca/circulaire-super-c/circulaire-semaine-super-c' },
-    '5': { nom: 'Provigo', url: 'https://www.circulaire-en-ligne.ca/circulaire-provigo/circulaire-semaine-provigo' },
-    '6': { nom: 'Walmart', url: 'https://www.circulaire-en-ligne.ca/circulaire-walmart/circulaire-semaine-walmart' }
+    '1': { nom: 'IGA', url: 'https://flipp.com/fr-ca/flyers/iga' },
+    '2': { nom: 'Metro', url: 'https://flipp.com/fr-ca/flyers/metro' },
+    '3': { nom: 'Maxi', url: 'https://flipp.com/fr-ca/flyers/maxi' },
+    '4': { nom: 'Super C', url: 'https://www.superc.ca/circulaire' },
+    '5': { nom: 'Provigo', url: 'https://flipp.com/fr-ca/flyers/provigo' },
+    '6': { nom: 'Walmart', url: 'https://flipp.com/fr-ca/flyers/walmart' }
   };
   var choix = prompt(
     'Quelle épicerie fréquentez-vous ?\n\n' +
