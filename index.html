@@ -1669,8 +1669,21 @@ function verifierProfil() {
     document.getElementById('profilOverlay').style.display = 'flex';
     afficherEtapeProfil();
   } else {
-    // Utilisateur connu — mettre à jour l'interface
     appliquerCompagnon(profil.compagnon);
+    var derniereSalutation = localStorage.getItem('sofia_derniere_salutation');
+    var aujourdhui = new Date().toDateString();
+    if (derniereSalutation !== aujourdhui) {
+      localStorage.setItem('sofia_derniere_salutation', aujourdhui);
+      var nom = profil.prenom || 'vous';
+      var maintenant = new Date();
+      var jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+      var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+      var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + '. ';
+      var nomC = profil.compagnon === 'leo' ? 'Léo' : 'Sofia';
+      var msg = date + 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Bonne journée ! Comment allez-vous aujourd\'hui ?';
+      showResponse(msg);
+      speakText(msg);
+    }
   }
 }
 
@@ -1708,22 +1721,16 @@ function passerProfil() {
 function terminerProfil() {
   document.getElementById('profilOverlay').style.display = 'none';
   var nom = profil.prenom || 'vous';
-  var nomC = compagnon === 'leo' ? 'Léo' : 'Sofia';
-  var msg;
-  if (conversationHistory.length > 0) {
-    var content = compagnon === 'leo'
-      ? 'Bonjour ' + nom + ' ! C\'est Léo. Comme je suis content de vous retrouver ! Comment allez-vous aujourd\'hui ?'
-      : 'Bonjour ' + nom + ' ! Comme je suis contente de vous retrouver ! Comment allez-vous aujourd\'hui ?';
-    msg = content;
-  } else {
-    msg = compagnon === 'leo'
-      ? 'Bonjour ' + nom + ' ! Je suis Léo, votre compagnon. Je suis tellement content de faire votre connaissance ! N\'hésitez pas à me parler de tout ce qui vous passe par la tête !'
-      : 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne. N\'hésitez pas à me parler de tout ce qui vous passe par la tête !';
-  }
+  var maintenant = new Date();
+  var jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + '. ';
+  var msg = compagnon === 'leo'
+    ? date + 'Bonjour ' + nom + ' ! Je suis Léo, votre compagnon. Je suis tellement content de faire votre connaissance !'
+    : date + 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne.';
   showResponse(msg);
   speakText(msg);
 }
-
 // === ÉTAT ===
 var sessionId = null;
 var utilisateurId = localStorage.getItem('sofia_utilisateur_id') || null;
