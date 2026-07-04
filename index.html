@@ -1350,7 +1350,7 @@
     <div class="planete p-medic" onclick="sendSuggestion('Rappelle-moi mes médicaments.')">
       <div class="planete-icone">💊</div><div class="planete-nom">Médic.</div>
     </div>
-    <div class="planete p-epicerie" onclick="sendSuggestion('Aide-moi avec ma liste épicerie.')">
+   <div class="planete p-epicerie" onclick="demanderEpicerie()">
       <div class="planete-icone">🛒</div><div class="planete-nom">Épicerie</div>
     </div>
     <div class="planete p-voyage" onclick="demanderVoyage()">
@@ -2794,6 +2794,46 @@ html += '<a href="' + l.url + '" target="_blank" style="background:linear-gradie
   html += '</div>';
   z.innerHTML = html;
   window.activitesLiens = [];
+}
+  // === EPICERIE ===
+var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
+
+function demanderEpicerie() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  var epiceries = {
+    '1': { nom: 'IGA', url: 'https://www.iga.ca/fr/circulaire' },
+    '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
+    '3': { nom: 'Maxi', url: 'https://www.maxi.ca/fr/circulaire' },
+    '4': { nom: 'Super C', url: 'https://www.superc.ca/fr/circulaire' },
+    '5': { nom: 'Provigo', url: 'https://www.provigo.ca/fr/circulaire' },
+    '6': { nom: 'Walmart', url: 'https://www.walmart.ca/fr/epicierie' }
+  };
+  var choix = prompt(
+    'Quelle épicerie fréquentez-vous ?\n\n' +
+    '1 - IGA\n' +
+    '2 - Metro\n' +
+    '3 - Maxi\n' +
+    '4 - Super C\n' +
+    '5 - Provigo\n' +
+    '6 - Walmart\n\n' +
+    'Entrez le numéro (ou appuyez sur Annuler pour la liste d\'épicerie)'
+  );
+  if (choix === null) {
+    sendSuggestion('Aide-moi avec ma liste d\'épicerie.');
+    return;
+  }
+  var epicerie = epiceries[choix.trim()];
+  if (epicerie) {
+    localStorage.setItem('sofia_epicerie', epicerie.nom);
+    epicerieChoisie = epicerie.nom;
+    showUserMessage('Circulaire ' + epicerie.nom + ' 🛒');
+    var msg = 'Voici la circulaire de la semaine de ' + epicerie.nom + ' ! Je vais l\'ouvrir pour vous. Voulez-vous aussi que je vous aide avec votre liste d\'épicerie ?';
+    showResponse(msg);
+    speakText(msg);
+    setTimeout(function() { window.open(epicerie.url, '_blank'); }, 1500);
+  } else {
+    sendSuggestion('Aide-moi avec ma liste d\'épicerie.');
+  }
 }
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
