@@ -2800,7 +2800,18 @@ var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 
 function demanderEpicerie() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
-var epiceries = {
+Desole, ca ne foctionne pas avec ces adresse... trop de pub, on arrive pas directement a la chaicne desireJe comprends ! La vraie solution est d'utiliser Reebee.com — c'est le site officiel de circulaires au Canada, propre, sans pub excessive, et on arrive directement à la circulaire de l'épicerie choisie.Web recherchéWeb recherchéLa vraie solution : utiliser Flipp.com qui est propre, direct et affiche la circulaire immédiatement. Sur GitHub, remplace toute la liste par :
+javascriptvar epiceries = {
+    '1': { nom: 'IGA', url: 'https://flipp.com/fr-ca/flyers/iga' },
+    '2': { nom: 'Metro', url: 'https://flipp.com/fr-ca/flyers/metro' },
+    '3': { nom: 'Maxi', url: 'https://flipp.com/fr-ca/flyers/maxi' },
+    '4': { nom: 'Super C', url: 'https://www.superc.ca/circulaire' },
+    '5': { nom: 'Provigo', url: 'https://flipp.com/fr-ca/flyers/provigo' },
+    '6': { nom: 'Walmart', url: 'https://flipp.com/fr-ca/flyers/walmart' }
+  };
+Commit changes, teste et dis-moi ce que tu vois ! 🎯Flipp ne fonctionne pas non plus pour IGA. Mais je vois que Flipp fonctionne bien en général — il suffit de trouver les bonnes URLs. Clique sur Circulaires dans le menu gauche de Flipp et dis-moi quelle URL apparaît quand tu cliques sur IGA !il ny a pas igaJe vois le problème — Flipp te montre les circulaires de Fort-de-France (Martinique) et non du Québec ! IGA n'existe pas en Martinique, donc il n'apparaît pas.
+La vraie solution pour Claudette au Québec est simple — utilisons directement les sites officiels qui fonctionnent bien au Québec. Sur GitHub, remplace toute la liste par :
+javascriptvar epiceries = {
     '1': { nom: 'IGA', url: 'https://www.iga.net/fr/circulaire' },
     '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
     '3': { nom: 'Maxi', url: 'https://www.maxi.ca/fr/circulaire' },
@@ -2808,6 +2819,19 @@ var epiceries = {
     '5': { nom: 'Provigo', url: 'https://www.provigo.ca/fr/circulaire' },
     '6': { nom: 'Walmart', url: 'https://www.walmart.ca/fr/circulaires' }
   };
+Note que j'ai changé IGA pour iga.net au lieu de iga.ca — c'est l'adresse qui fonctionne au Québec.
+Commit changes et teste ! 🎯Access Denied
+You don't have permission to access "http://www.iga.net/fr/circulaire" on this server.
+Reference #18.24d5dd17.1783187607.1ad89047
+https://errors.edgesuite.net/18.24d5dd17.1783187607.1ad89047IGA bloque systématiquement les accès externes ! La vraie solution est d'afficher simplement un bouton qui ouvre une recherche Google directement pour la circulaire de la semaine. C'est simple, ça marche toujours et Claudette arrive directement aux résultats.
+Sur GitHub, remplace toute la liste par :
+javascriptvar epiceries = {
+    '1': { nom: 'IGA', url: 'https://www.google.com/search?q=circulaire+IGA+cette+semaine+Quebec' },
+    '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
+    '3': { nom: 'Maxi', url: 'https://www.maxi.ca/fr/circulaire' },
+    '4': { nom: 'Super C', url: 'https://www.superc.ca/circulaire' },
+    '5': { nom: 'Provigo', url: 'https://www.google.com/search?q=circulaire+Provigo+cette+semaine+Quebec' },
+    '6': { nom: 'Walmart', url: 'https://www.walmart.ca/fr/circulaires' }
   var choix = prompt(
     'Quelle épicerie fréquentez-vous ?\n\n' +
     '1 - IGA\n' +
