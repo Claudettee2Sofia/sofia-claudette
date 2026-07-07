@@ -1439,24 +1439,25 @@ function fermerAdmin() {
 
 function adminAfficherUsers() {
   var liste = document.getElementById('adminListeUsers');
-  if (usersConfiance.length === 0) {
-    liste.innerHTML = '<div style="color:rgba(250,220,170,0.3);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px;">Aucun utilisateur de confiance.</div>';
-    return;
-  }
-  liste.innerHTML = '';
-  usersConfiance.forEach(function(u, index) {
-    var card = document.createElement('div');
-    card.className = 'admin-user-card';
-    card.innerHTML =
-      '<div class="admin-user-info">' +
-        '<div class="admin-user-nom">' + u.nom + '</div>' +
-        '<div class="admin-user-code">🔑 ' + u.code + '</div>' +
-      '</div>' +
-      '<div class="admin-user-actions">' +
-        '<button class="btn-modifier" onclick="adminModifierUser(' + index + ')" title="Modifier">✏️</button>' +
-        '<button class="btn-retirer" onclick="adminRetirerUser(' + index + ')" title="Retirer">🗑️</button>' +
-      '</div>';
-    liste.appendChild(card);
+  liste.innerHTML = '<div style="color:rgba(250,220,170,0.3);font-size:13px;text-align:center;padding:10px 0;">Chargement...</div>';
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'liste', data: {} })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    var users = d.utilisateurs || [];
+    if (users.length === 0) {
+      liste.innerHTML = '<div style="color:rgba(250,220,170,0.3);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px;">Aucun utilisateur de confiance.</div>';
+      return;
+    }
+    liste.innerHTML = '';
+    users.forEach(function(u) {
+      var card = document.createElement('div'); card.className = 'admin-user-card';
+      card.innerHTML = '<div class="admin-user-info"><div class="admin-user-nom">'+u.nom+'</div><div class="admin-user-code">🔑 '+u.code_acces+'</div></div><div class="admin-user-actions"><button class="btn-retirer" onclick="adminRetirerUser(\''+u.id+'\')" title="Retirer">🗑️</button></div>';
+      liste.appendChild(card);
+    });
+  }).catch(function() {
+    liste.innerHTML = '<div style="color:#FF6B6B;font-size:13px;text-align:center;padding:10px 0;">Erreur de chargement.</div>';
   });
 }
 
