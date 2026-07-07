@@ -2795,12 +2795,12 @@ html += '<a href="' + l.url + '" target="_blank" style="background:linear-gradie
   z.innerHTML = html;
   window.activitesLiens = [];
 }
-  // === EPICERIE ===
+// === EPICERIE ===
 var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 
 function demanderEpicerie() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
-var epiceries = {
+  var epiceries = {
     '1': { nom: 'IGA', url: 'https://cacirculaire.ca/iga-qc' },
     '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
     '3': { nom: 'Maxi', url: 'https://cacirculaire.ca/maxi' },
@@ -2808,20 +2808,18 @@ var epiceries = {
     '5': { nom: 'Provigo', url: 'https://cacirculaire.ca/provigo' },
     '6': { nom: 'Walmart', url: 'https://cacirculaire.ca/walmart-qc' }
   };
-
- 
-
-    'Quelle épicerie fréquentez-vous ?\n\n' +
+  var choix = prompt(
+    'Quelle epicerie frequentez-vous ?\n\n' +
     '1 - IGA\n' +
     '2 - Metro\n' +
     '3 - Maxi\n' +
     '4 - Super C\n' +
     '5 - Provigo\n' +
     '6 - Walmart\n\n' +
-    'Entrez le numéro (ou appuyez sur Annuler pour la liste d\'épicerie)'
+    'Entrez le numero (ou Annuler pour la liste)'
   );
   if (choix === null) {
-    sendSuggestion('Aide-moi avec ma liste d\'épicerie.');
+    sendSuggestion('Aide-moi avec ma liste d\'epicerie.');
     return;
   }
   var epicerie = epiceries[choix.trim()];
@@ -2834,7 +2832,7 @@ var epiceries = {
     window.open(epicerie.url, '_blank');
     speakText(msg);
   } else {
-    sendSuggestion('Aide-moi avec ma liste d\'épicerie.');
+    sendSuggestion('Aide-moi avec ma liste d\'epicerie.');
   }
 }
 // === URGENCE ===
