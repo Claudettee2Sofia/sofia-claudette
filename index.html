@@ -1413,7 +1413,7 @@ function ouvrirAdminDepuisApp() {
   if (code.trim().toUpperCase() === CODE_ADMIN) {
     document.getElementById('adminCodeJour').textContent = getCodeDuJour();
     document.getElementById('adminOverlay').style.display = 'flex';
-    adminChargerUsers();
+   adminAfficherUsers();
   } else {
     alert('Code incorrect.');
   }
