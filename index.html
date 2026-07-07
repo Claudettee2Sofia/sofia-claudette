@@ -1463,21 +1463,24 @@ function adminAfficherUsers() {
 function adminAjouterUser() {
   var nom = document.getElementById('adminNom').value.trim();
   var code = document.getElementById('adminCode').value.trim().toUpperCase();
-  if (!nom || !code) {
-    alert('Veuillez entrer un nom et un mot de passe.');
-    return;
-  }
-  // Vérifier que le code n'est pas déjà utilisé
-  var dejaPris = usersConfiance.some(function(u) { return u.code === code; });
-  if (dejaPris || code === CODE_ADMIN) {
-    alert('Ce mot de passe est déjà utilisé. Choisissez-en un autre.');
-    return;
-  }
-  usersConfiance.push({ nom: nom, code: code });
-  localStorage.setItem('sofia_users_confiance', JSON.stringify(usersConfiance));
-  document.getElementById('adminNom').value = '';
-  document.getElementById('adminCode').value = '';
-  adminAfficherUsers();
+  if (!nom || !code) { alert('Veuillez entrer un nom et un mot de passe.'); return; }
+  if (code === CODE_ADMIN) { alert('Ce mot de passe est réservé.'); return; }
+  fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ action: 'ajouter', data: { nom: nom, code: code } })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.succes) {
+      document.getElementById('adminNom').value = '';
+      document.getElementById('adminCode').value = '';
+      alert('Utilisateur ' + nom + ' ajouté avec succès !');
+      adminAfficherUsers();
+    } else {
+      alert(d.erreur || 'Erreur lors de l\'ajout.');
+    }
+  }).catch(function() {
+    alert('Erreur réseau. Réessayez.');
+  });
 }
 
 function adminModifierUser(index) {
