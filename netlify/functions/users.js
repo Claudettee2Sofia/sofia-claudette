@@ -174,7 +174,22 @@ exports.handler = async function(event) {
       }
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
-
+  // === AJOUTER UTILISATEUR ===
+    if (action === 'ajouter') {
+      var dejaPris = await supabase('GET', 'utilisateurs', null,
+        'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=id'
+      );
+      if (dejaPris.length > 0) {
+        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Code déjà utilisé.' }) };
+      }
+      var nouvel = await supabase('POST', 'utilisateurs', {
+        nom: data.nom,
+        code_acces: data.code.toUpperCase(),
+        actif: true,
+        cree_par: 'admin'
+      });
+      return { statusCode: 200, body: JSON.stringify({ succes: true, utilisateur: nouvel[0] }) };
+    }
     // === LISTE UTILISATEURS (admin) ===
     if (action === 'liste') {
       var limite = new Date(Date.now() - 30 * 60 * 1000).toISOString();
