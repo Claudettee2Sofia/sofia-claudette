@@ -2800,14 +2800,13 @@ var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 
 function demanderEpicerie() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
-Desole, ca ne foctionne pas avec ces adresse... trop de pub, on arrive pas directement a la chaicne desireJe comprends ! La vraie solution est d'utiliser Reebee.com — c'est le site officiel de circulaires au Canada, propre, sans pub excessive, et on arrive directement à la circulaire de l'épicerie choisie.Web recherchéWeb recherchéLa vraie solution : utiliser Flipp.com qui est propre, direct et affiche la circulaire immédiatement. Sur GitHub, remplace toute la liste par :
-javascriptvar epiceries = {
-    '1': { nom: 'IGA', url: 'https://flipp.com/fr-ca/flyers/iga' },
-    '2': { nom: 'Metro', url: 'https://flipp.com/fr-ca/flyers/metro' },
-    '3': { nom: 'Maxi', url: 'https://flipp.com/fr-ca/flyers/maxi' },
+var epiceries = {
+    '1': { nom: 'IGA', url: 'https://cacirculaire.ca/iga-qc' },
+    '2': { nom: 'Metro', url: 'https://www.metro.ca/circulaire' },
+    '3': { nom: 'Maxi', url: 'https://cacirculaire.ca/maxi' },
     '4': { nom: 'Super C', url: 'https://www.superc.ca/circulaire' },
-    '5': { nom: 'Provigo', url: 'https://flipp.com/fr-ca/flyers/provigo' },
-    '6': { nom: 'Walmart', url: 'https://flipp.com/fr-ca/flyers/walmart' }
+    '5': { nom: 'Provigo', url: 'https://cacirculaire.ca/provigo' },
+    '6': { nom: 'Walmart', url: 'https://cacirculaire.ca/walmart-qc' }
   };
 Commit changes, teste et dis-moi ce que tu vois ! 🎯Flipp ne fonctionne pas non plus pour IGA. Mais je vois que Flipp fonctionne bien en général — il suffit de trouver les bonnes URLs. Clique sur Circulaires dans le menu gauche de Flipp et dis-moi quelle URL apparaît quand tu cliques sur IGA !il ny a pas igaJe vois le problème — Flipp te montre les circulaires de Fort-de-France (Martinique) et non du Québec ! IGA n'existe pas en Martinique, donc il n'apparaît pas.
 La vraie solution pour Claudette au Québec est simple — utilisons directement les sites officiels qui fonctionnent bien au Québec. Sur GitHub, remplace toute la liste par :
