@@ -1496,14 +1496,20 @@ function adminModifierUser(index) {
   adminAfficherUsers();
 }
 
-function adminRetirerUser(index) {
-  var nom = usersConfiance[index].nom;
-  if (confirm('Retirer l\'acc\u00e8s de ' + nom + ' ?')) {
-    usersConfiance.splice(index, 1);
-    localStorage.setItem('sofia_users_confiance', JSON.stringify(usersConfiance));
-    adminAfficherUsers();
+function adminRetirerUser(id) {
+  if (confirm('Retirer cet utilisateur ?')) {
+    fetch('/.netlify/functions/users', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ action: 'supprimer', data: { utilisateur_id: id } })
+    }).then(function() {
+      adminAfficherUsers();
+    }).catch(function() {
+      alert('Erreur lors de la suppression.');
+    });
   }
 }
+Commit changes et dis-moi quand c'est fait ! 🎯
 
 // === ACCÈS ===
 var CODE_ADMIN = 'SOFIA2025';
