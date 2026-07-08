@@ -1589,10 +1589,11 @@ function verifierAcces() {
       document.getElementById('accesInput').value = '';
       setTimeout(function() { erreur.textContent = ''; }, 3000);
     }
-  }).catch(function() {
+ }).catch(function() {
     erreur.textContent = 'Erreur reseau. Reessayez.';
     setTimeout(function() { erreur.textContent = ''; }, 3000);
   });
+}
 
 function verifierAccesAuDemarrage() {
   // Admin permanent
