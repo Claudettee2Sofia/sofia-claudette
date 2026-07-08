@@ -43,7 +43,7 @@ async function envoyerCourriel(sujet, contenu) {
       })
     });
   } catch(e) {
-    console.log('Courriel non envoyé:', e.message);
+    console.log('Courriel non envoye:', e.message);
   }
 }
 
@@ -58,7 +58,6 @@ async function compterInvitesDuJour() {
     );
     return result.length;
   } catch(e) {
-    // Si la table n'existe pas encore, on retourne 0
     return 0;
   }
 }
@@ -70,7 +69,7 @@ async function enregistrerInvite(ip) {
       ip: ip || 'inconnue'
     });
   } catch(e) {
-    console.log('Erreur enregistrement invité:', e.message);
+    console.log('Erreur enregistrement invite:', e.message);
   }
 }
 
@@ -83,56 +82,54 @@ exports.handler = async function(event) {
     var ip = event.headers['x-forwarded-for'] || 'inconnue';
     var maintenant = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });
 
-    // === VÉRIFIER CODE INVITÉ DU JOUR ===
+    // === VERIFIER CODE INVITE DU JOUR ===
     if (action === 'verifier_invite') {
-      // Compter les invités du jour
       var nbInvites = await compterInvitesDuJour();
       if (nbInvites >= MAX_INVITES_PAR_JOUR) {
         return { statusCode: 200, body: JSON.stringify({
           valide: false,
           erreur: 'limite',
-          message: 'Le nombre maximum de visiteurs pour aujourd\'hui est atteint. Réessayez demain !'
+          message: 'Le nombre maximum de visiteurs pour aujourd\'hui est atteint. Reessayez demain !'
         })};
       }
-      // Enregistrer la connexion invité
       await enregistrerInvite(ip);
-      // Envoyer notification
       await envoyerCourriel(
-        '🌟 Sofia — Nouvel invité connecté',
-        '<h2>Un invité vient de se connecter à Sofia</h2>' +
+        '🌟 Sofia — Nouvel invite connecte',
+        '<h2>Un invite vient de se connecter a Sofia</h2>' +
         '<p><strong>Date et heure :</strong> ' + maintenant + '</p>' +
         '<p><strong>IP :</strong> ' + ip + '</p>' +
-        '<p><strong>Invités aujourd\'hui :</strong> ' + (nbInvites + 1) + ' / ' + MAX_INVITES_PAR_JOUR + '</p>'
+        '<p><strong>Invites aujourd\'hui :</strong> ' + (nbInvites + 1) + ' / ' + MAX_INVITES_PAR_JOUR + '</p>'
       );
       return { statusCode: 200, body: JSON.stringify({ valide: true, type: 'invite' }) };
     }
 
-    // === VÉRIFIER CODE SUPABASE (utilisateurs de confiance) ===
+    // === VERIFIER CODE SUPABASE ===
     if (action === 'verifier') {
       var users = await supabase('GET', 'utilisateurs', null,
-       'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=*'
+        'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=*'
       );
       if (users.length === 0) {
         return { statusCode: 200, body: JSON.stringify({ valide: false }) };
       }
       var user = users[0];
-      // Mettre à jour dernière connexion
       await supabase('PATCH', 'utilisateurs', {
         derniere_connexion: new Date().toISOString()
       }, 'id=eq.' + user.id);
-      // Fermer vieilles sessions
-      await supabase('PATCH', 'sessions', { en_ligne: false, fin: new Date().toISOString() },
-        'utilisateur_id=eq.' + user.id + '&en_ligne=eq.true'
-      );
-      // Créer nouvelle session
-      var session = await supabase('POST', 'sessions', {
-        utilisateur_id: user.id,
-        en_ligne: true
-      });
-      // Envoyer notification
+      try {
+        await supabase('PATCH', 'sessions', { en_ligne: false, fin: new Date().toISOString() },
+          'utilisateur_id=eq.' + user.id + '&en_ligne=eq.true'
+        );
+      } catch(e) {}
+      var session = [];
+      try {
+        session = await supabase('POST', 'sessions', {
+          utilisateur_id: user.id,
+          en_ligne: true
+        });
+      } catch(e) {}
       await envoyerCourriel(
         '✅ Sofia — ' + user.nom + ' vient de se connecter',
-        '<h2>' + user.nom + ' est maintenant connecté(e) à Sofia</h2>' +
+        '<h2>' + user.nom + ' est maintenant connecte(e) a Sofia</h2>' +
         '<p><strong>Date et heure :</strong> ' + maintenant + '</p>' +
         '<p><strong>IP :</strong> ' + ip + '</p>'
       );
@@ -147,81 +144,65 @@ exports.handler = async function(event) {
     if (action === 'connexion_admin') {
       await envoyerCourriel(
         '🔐 Sofia — Connexion administrateur',
-        '<h2>Connexion admin à Sofia</h2>' +
+        '<h2>Connexion admin a Sofia</h2>' +
         '<p><strong>Date et heure :</strong> ' + maintenant + '</p>' +
         '<p><strong>IP :</strong> ' + ip + '</p>'
       );
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
-    // === ENREGISTRER ACTIVITÉ ===
-    if (action === 'activite') {
-      await supabase('POST', 'activites', {
-        utilisateur_id: data.utilisateur_id,
-        type: data.type,
-        detail: data.detail || ''
+    // === AJOUTER UTILISATEUR ===
+    if (action === 'ajouter') {
+      var dejaPris = await supabase('GET', 'utilisateurs', null,
+        'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=id'
+      );
+      if (dejaPris.length > 0) {
+        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Code deja utilise.' }) };
+      }
+      var nouvel = await supabase('POST', 'utilisateurs', {
+        nom: data.nom,
+        code_acces: data.code.toUpperCase(),
+        cree_par: 'admin'
       });
+      return { statusCode: 200, body: JSON.stringify({ succes: true, utilisateur: nouvel[0] }) };
+    }
+
+    // === ENREGISTRER ACTIVITE ===
+    if (action === 'activite') {
+      try {
+        await supabase('POST', 'activites', {
+          utilisateur_id: data.utilisateur_id,
+          type: data.type,
+          detail: data.detail || ''
+        });
+      } catch(e) {}
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
 
     // === FIN SESSION ===
     if (action === 'fin_session') {
       if (data.session_id) {
-        await supabase('PATCH', 'sessions', {
-          fin: new Date().toISOString(),
-          en_ligne: false
-        }, 'id=eq.' + data.session_id);
+        try {
+          await supabase('PATCH', 'sessions', {
+            fin: new Date().toISOString(),
+            en_ligne: false
+          }, 'id=eq.' + data.session_id);
+        } catch(e) {}
       }
       return { statusCode: 200, body: JSON.stringify({ succes: true }) };
     }
-  // === AJOUTER UTILISATEUR ===
-    if (action === 'ajouter') {
-      var dejaPris = await supabase('GET', 'utilisateurs', null,
-        'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=id'
-      );
-      if (dejaPris.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Code déjà utilisé.' }) };
-      }
-      var nouvel = await supabase('POST', 'utilisateurs', {
-        nom: data.nom,
-        code_acces: data.code.toUpperCase(),
-        actif: true,
-        cree_par: 'admin'
-      });
-      return { statusCode: 200, body: JSON.stringify({ succes: true, utilisateur: nouvel[0] }) };
-    }
+
     // === LISTE UTILISATEURS (admin) ===
     if (action === 'liste') {
-      var limite = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-      await supabase('PATCH', 'sessions', { en_ligne: false },
-        'debut=lt.' + limite + '&en_ligne=eq.true'
-      );
       var users = await supabase('GET', 'utilisateurs', null,
-        'select=*&order=derniere_connexion.desc.nullslast'
+        'select=*&order=nom.asc'
       );
-      var sessions = await supabase('GET', 'sessions', null,
-        'en_ligne=eq.true&select=utilisateur_id'
-      );
-      var enLigne = sessions.map(function(s) { return s.utilisateur_id; });
-      users = users.map(function(u) {
-        u.en_ligne = enLigne.includes(u.id);
-        return u;
-      });
-      // Ajouter stats invités du jour
       var nbInvites = await compterInvitesDuJour();
       return { statusCode: 200, body: JSON.stringify({
         utilisateurs: users,
         invites_aujourd_hui: nbInvites,
         invites_max: MAX_INVITES_PAR_JOUR
       })};
-    }
-
-    // === HISTORIQUE ===
-    if (action === 'historique') {
-      var activites = await supabase('GET', 'activites', null,
-        'utilisateur_id=eq.' + data.utilisateur_id + '&select=*&order=date.desc&limit=50'
-      );
-      return { statusCode: 200, body: JSON.stringify({ activites: activites }) };
     }
 
     // === SUPPRIMER UTILISATEUR ===
@@ -236,7 +217,7 @@ exports.handler = async function(event) {
         'code_acces=ilike.' + encodeURIComponent(data.nouveau_code) + '&select=id'
       );
       if (dejaPris.length > 0) {
-        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Code déjà utilisé.' }) };
+        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Code deja utilise.' }) };
       }
       await supabase('PATCH', 'utilisateurs', {
         code_acces: data.nouveau_code.toUpperCase()
