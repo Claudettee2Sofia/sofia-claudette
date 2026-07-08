@@ -110,7 +110,7 @@ exports.handler = async function(event) {
     // === VÉRIFIER CODE SUPABASE (utilisateurs de confiance) ===
     if (action === 'verifier') {
       var users = await supabase('GET', 'utilisateurs', null,
-        'code_acces=ilike.' + encodeURIComponent(data.code) + '&actif=eq.true&select=*'
+       'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=*'
       );
       if (users.length === 0) {
         return { statusCode: 200, body: JSON.stringify({ valide: false }) };
