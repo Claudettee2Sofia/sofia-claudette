@@ -1573,27 +1573,26 @@ function verifierAcces() {
   fetch('/.netlify/functions/users', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ action: 'verifier_code', data: { code: code } })
+       body: JSON.stringify({ action: 'verifier_code', data: { code: code } })
   }).then(function(r) { return r.json(); }).then(function(d) {
     if (d.valide) {
       localStorage.setItem('sofia_utilisateur_id', d.utilisateur.id);
       localStorage.setItem('sofia_utilisateur_nom', d.utilisateur.nom);
-      localStorage.setItem('sofia_code_' + code, 'oui');
       utilisateurId = d.utilisateur.id;
-      input.value = '';
+      sessionId = d.session_id;
+      document.getElementById('accesInput').value = '';
       erreur.textContent = '';
+      document.getElementById('accesOverlay').style.display = 'none';
       lancerSofia();
     } else {
       erreur.textContent = 'Code incorrect. Réessayez.';
-      input.value = '';
+      document.getElementById('accesInput').value = '';
       setTimeout(function() { erreur.textContent = ''; }, 3000);
     }
   }).catch(function() {
-    // Si Supabase ne répond pas, essayer les codes locaux
-    erreur.textContent = 'Erreur réseau. Réessayez.';
+    erreur.textContent = 'Erreur reseau. Reessayez.';
     setTimeout(function() { erreur.textContent = ''; }, 3000);
   });
-}
 
 function verifierAccesAuDemarrage() {
   // Admin permanent
