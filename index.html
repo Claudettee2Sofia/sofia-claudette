@@ -2837,9 +2837,11 @@ function demanderEpicerie() {
     localStorage.setItem('sofia_epicerie', epicerie.nom);
     epicerieChoisie = epicerie.nom;
     showUserMessage('Circulaire ' + epicerie.nom + ' 🛒');
-    var msg = 'Voici la circulaire de la semaine de ' + epicerie.nom + ' ! Je vais l\'ouvrir pour vous. Voulez-vous aussi que je vous aide avec votre liste d\'epicerie ?';
+   var msg = 'Voici la circulaire de la semaine de ' + epicerie.nom + ' ! Je vais l\'ouvrir pour vous. Voulez-vous aussi que je vous aide avec votre liste d\'epicerie ?';
     showResponse(msg);
     window.open(epicerie.url, '_blank');
+    conversationHistory.push({role: 'assistant', content: msg});
+    conversationHistory.push({role: 'user', content: 'Je veux faire ma liste d\'epicerie pour ' + epicerie.nom + '. Aide-moi a organiser mes achats par categories.'});
     speakText(msg);
   } else {
     sendSuggestion('Aide-moi avec ma liste d\'epicerie.');
