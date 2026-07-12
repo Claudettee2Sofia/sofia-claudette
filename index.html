@@ -2490,6 +2490,14 @@ function getSofiaReply(type) {
       var reply = d.content[0].text;
       conversationHistory.push({role: 'assistant', content: reply});
       sauvegarderHistorique();
+      // Sauvegarder la liste d'épicerie si mentionnée
+      if (type === 'epicerie') {
+        var articles = reply.match(/[-•]\s*([^\n]+)/g);
+        if (articles && articles.length > 0) {
+          var liste = articles.map(function(a) { return a.replace(/^[-•]\s*/, '').trim(); });
+          sauvegarderListeEpicerie(liste);
+        }
+      }
       mettreAJourMemoire();
       showResponse(reply);
       speakText(reply);
@@ -2806,6 +2814,16 @@ html += '<a href="' + l.url + '" target="_blank" style="background:linear-gradie
   window.activitesLiens = [];
 }
 // === EPICERIE ===
+  var listeEpicerie = JSON.parse(localStorage.getItem('sofia_liste_epicerie') || '[]');
+
+function sauvegarderListeEpicerie(liste) {
+  listeEpicerie = liste;
+  localStorage.setItem('sofia_liste_epicerie', JSON.stringify(liste));
+}
+
+function obtenirListeEpicerie() {
+  return listeEpicerie;
+}
 var epicerieChoisie = localStorage.getItem('sofia_epicerie') || '';
 
 function demanderEpicerie() {
@@ -2841,7 +2859,11 @@ function demanderEpicerie() {
     showResponse(msg);
     window.open(epicerie.url, '_blank');
     conversationHistory.push({role: 'assistant', content: msg});
-    conversationHistory.push({role: 'user', content: 'Je veux faire ma liste d\'epicerie pour ' + epicerie.nom + '. Aide-moi a organiser mes achats par categories.'});
+   var listeExistante = obtenirListeEpicerie();
+var contenuListe = listeExistante.length > 0
+  ? 'Voici ma liste d\'epicerie existante: ' + listeExistante.join(', ') + '. Aide-moi a la completer ou la modifier pour ' + epicerie.nom + '.'
+  : 'Je veux faire ma liste d\'epicerie pour ' + epicerie.nom + '. Aide-moi a organiser mes achats par categories.';
+conversationHistory.push({role: 'user', content: contenuListe});
     speakText(msg);
   } else {
     sendSuggestion('Aide-moi avec ma liste d\'epicerie.');
