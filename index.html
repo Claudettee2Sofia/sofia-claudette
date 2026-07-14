@@ -3059,6 +3059,193 @@ conversationHistory.push({role: 'user', content: contenuListe});
     sendSuggestion('Aide-moi avec ma liste d\'epicerie.');
   }
 }
+  // === SANTE ===
+function ouvrirSante() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  document.getElementById('santeOverlay').style.display = 'flex';
+  document.getElementById('santeMenu').style.display = 'block';
+  document.getElementById('santeContenu').style.display = 'none';
+}
+
+function fermerSante() {
+  document.getElementById('santeOverlay').style.display = 'none';
+}
+
+function retourMenuSante() {
+  document.getElementById('santeMenu').style.display = 'block';
+  document.getElementById('santeContenu').style.display = 'none';
+}
+
+function ouvrirThemeSante(theme) {
+  document.getElementById('santeMenu').style.display = 'none';
+  document.getElementById('santeContenu').style.display = 'block';
+  document.getElementById('santeContenuInner').innerHTML = '<div class="sante-loading">✨ Sofia prépare vos informations santé...</div>';
+  fetch('/.netlify/functions/sante', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ theme: theme, profil: profil })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.type === 'ecran') {
+      afficherContenuSante(d.theme, d.data);
+    } else {
+      afficherReponseSanteVocale(d.texte);
+    }
+  }).catch(function() {
+    document.getElementById('santeContenuInner').innerHTML = '<div class="sante-loading">Désolée, réessayez dans un moment !</div>';
+  });
+}
+
+function poserQuestionSante() {
+  var question = document.getElementById('santeQuestion').value.trim();
+  if (!question) return;
+  document.getElementById('santeMenu').style.display = 'none';
+  document.getElementById('santeContenu').style.display = 'block';
+  document.getElementById('santeContenuInner').innerHTML = '<div class="sante-loading">✨ Sofia cherche la réponse...</div>';
+  fetch('/.netlify/functions/sante', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ theme: 'general', question: question, profil: profil })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    afficherReponseSanteVocale(d.texte);
+  }).catch(function() {
+    document.getElementById('santeContenuInner').innerHTML = '<div class="sante-loading">Désolée, réessayez dans un moment !</div>';
+  });
+}
+
+function afficherReponseSanteVocale(texte) {
+  var html = '<div class="sante-card" style="margin-top:8px">';
+  html += '<div class="sante-card-texte">' + texte.replace(/\n/g, '<br>') + '</div>';
+  html += '</div>';
+  document.getElementById('santeContenuInner').innerHTML = html;
+  fermerSante();
+  showResponse(texte);
+  speakText(texte);
+}
+
+function afficherContenuSante(theme, data) {
+  var html = '';
+
+  if (data.intro) {
+    html += '<div class="sante-intro">' + data.intro + '</div>';
+  }
+
+  // NUTRITION
+  if (theme === 'nutrition') {
+    if (data.conseils) {
+      html += '<div class="sante-section-titre">💡 Conseils nutritionnels</div>';
+      data.conseils.forEach(function(c) {
+        html += '<div class="sante-card">';
+        html += '<div class="sante-card-titre">' + c.icone + ' ' + c.titre + '</div>';
+        html += '<div class="sante-card-texte">' + c.conseil + '</div>';
+        html += '</div>';
+      });
+    }
+    if (data.recette_du_jour) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">🍽️ Recette du jour : ' + data.recette_du_jour.nom + '</div>';
+      html += '<div class="sante-card-texte">';
+      html += '<strong>Ingrédients :</strong> ' + data.recette_du_jour.ingredients.join(', ') + '<br>';
+      html += '<strong>Préparation :</strong> ' + data.recette_du_jour.preparation;
+      html += '</div></div>';
+    }
+    if (data.aliments_a_privilegier) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">✅ Aliments à privilégier</div>';
+      html += '<div class="sante-card-texte">';
+      data.aliments_a_privilegier.forEach(function(a) {
+        html += '<span class="sante-tag">' + a + '</span>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  // EXERCICE
+  else if (theme === 'exercice') {
+    if (data.exercices) {
+      html += '<div class="sante-section-titre">🏃 Exercices recommandés</div>';
+      data.exercices.forEach(function(e) {
+        html += '<div class="sante-card">';
+        html += '<div class="sante-card-titre">' + e.icone + ' ' + e.nom + ' <span style="font-size:12px;color:rgba(144,238,144,0.6);font-weight:400">(' + e.duree + ')</span></div>';
+        html += '<div class="sante-card-texte">' + e.description + '<br>';
+        html += '<span style="color:#90EE90;font-size:14px">✓ ' + e.benefice + '</span>';
+        if (e.attention) html += '<br><span style="color:#FFD700;font-size:13px">⚠️ ' + e.attention + '</span>';
+        html += '</div></div>';
+      });
+    }
+    if (data.routine_quotidienne) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">📅 Routine quotidienne suggérée</div>';
+      html += '<div class="sante-card-texte">' + data.routine_quotidienne + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // MEMOIRE
+  else if (theme === 'memoire') {
+    if (data.exercices) {
+      html += '<div class="sante-section-titre">🧠 Exercices mentaux</div>';
+      data.exercices.forEach(function(e) {
+        html += '<div class="sante-card">';
+        html += '<div class="sante-card-titre">' + e.icone + ' ' + e.nom + ' <span style="font-size:12px;color:rgba(144,238,144,0.6);font-weight:400">(' + e.duree + ')</span></div>';
+        html += '<div class="sante-card-texte">' + e.description + '</div>';
+        html += '</div>';
+      });
+    }
+    if (data.habitudes_benefiques) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">✅ Habitudes bénéfiques</div>';
+      html += '<div class="sante-card-texte">';
+      data.habitudes_benefiques.forEach(function(h) {
+        html += '• ' + h + '<br>';
+      });
+      html += '</div></div>';
+    }
+    if (data.signes_a_surveiller) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">👁️ Signes à surveiller</div>';
+      html += '<div class="sante-card-texte">';
+      data.signes_a_surveiller.forEach(function(s) {
+        html += '• ' + s + '<br>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  // MEDICAMENTS
+  else if (theme === 'medicaments') {
+    if (data.conseils) {
+      data.conseils.forEach(function(c) {
+        html += '<div class="sante-card">';
+        html += '<div class="sante-card-titre">' + c.icone + ' ' + c.titre + '</div>';
+        html += '<div class="sante-card-texte">' + c.conseil + '</div>';
+        html += '</div>';
+      });
+    }
+    if (data.astuces_pratiques) {
+      html += '<div class="sante-card">';
+      html += '<div class="sante-card-titre">💡 Astuces pratiques</div>';
+      html += '<div class="sante-card-texte">';
+      data.astuces_pratiques.forEach(function(a) {
+        html += '• ' + a + '<br>';
+      });
+      html += '</div></div>';
+    }
+  }
+
+  // Conseil Sofia
+  if (data.conseil_sofia) {
+    html += '<div class="sante-conseil-sofia">✨ ' + data.conseil_sofia + '</div>';
+  }
+
+  document.getElementById('santeContenuInner').innerHTML = html;
+
+  // Sofia parle le conseil
+  if (data.conseil_sofia) {
+    fermerSante();
+    showResponse(data.conseil_sofia);
+    speakText(data.conseil_sofia);
+  }
+}
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
 
