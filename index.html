@@ -1298,6 +1298,69 @@
     </div>
   </div>
 </div>
+  <!-- Modal Santé -->
+<div class="sante-overlay" id="santeOverlay" style="display:none">
+  <div class="sante-header">
+    <div class="sante-titre">🌿 Santé & Bien-être</div>
+    <button class="sante-fermer" onclick="fermerSante()">✕</button>
+  </div>
+
+  <!-- Menu principal -->
+  <div id="santeMenu">
+    <div class="sante-menu-grid">
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('nutrition')">
+        <div class="sante-menu-icone">🥗</div>
+        <div class="sante-menu-nom">Nutrition</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('exercice')">
+        <div class="sante-menu-icone">🏃</div>
+        <div class="sante-menu-nom">Exercice</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('memoire')">
+        <div class="sante-menu-icone">🧠</div>
+        <div class="sante-menu-nom">Mémoire</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('medicaments')">
+        <div class="sante-menu-icone">💊</div>
+        <div class="sante-menu-nom">Médicaments</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('sommeil')">
+        <div class="sante-menu-icone">😴</div>
+        <div class="sante-menu-nom">Sommeil</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('hydratation')">
+        <div class="sante-menu-icone">💧</div>
+        <div class="sante-menu-nom">Hydratation</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('tension')">
+        <div class="sante-menu-icone">❤️</div>
+        <div class="sante-menu-nom">Tension</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('bien_etre')">
+        <div class="sante-menu-icone">😌</div>
+        <div class="sante-menu-nom">Bien-être</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('dentaire')">
+        <div class="sante-menu-icone">🦷</div>
+        <div class="sante-menu-nom">Dentaire</div>
+      </div>
+      <div class="sante-menu-carte" onclick="ouvrirThemeSante('maladies')">
+        <div class="sante-menu-icone">🏥</div>
+        <div class="sante-menu-nom">Maladies</div>
+      </div>
+    </div>
+    <div class="sante-question-zone">
+      <input class="sante-input" id="santeQuestion" type="text" placeholder="Posez votre question santé à Sofia...">
+      <button class="sante-btn" onclick="poserQuestionSante()">Demander →</button>
+    </div>
+  </div>
+
+  <!-- Contenu du thème -->
+  <div id="santeContenu" style="display:none">
+    <button class="sante-retour" onclick="retourMenuSante()">← Retour</button>
+    <div id="santeContenuInner"></div>
+  </div>
+</div>
 <!-- Modal Urgence -->
 <div class="urgence-overlay" id="urgenceOverlay" style="display:none">
   <div class="urgence-header">
