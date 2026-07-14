@@ -3117,8 +3117,6 @@ function afficherReponseSanteVocale(texte) {
   html += '<div class="sante-card-texte">' + texte.replace(/\n/g, '<br>') + '</div>';
   html += '</div>';
   document.getElementById('santeContenuInner').innerHTML = html;
-  fermerSante();
-  showResponse(texte);
   speakText(texte);
 }
 
@@ -3239,10 +3237,8 @@ function afficherContenuSante(theme, data) {
 
   document.getElementById('santeContenuInner').innerHTML = html;
 
-  // Sofia parle le conseil
+   // Sofia parle le conseil sans fermer l'écran
   if (data.conseil_sofia) {
-    fermerSante();
-    showResponse(data.conseil_sofia);
     speakText(data.conseil_sofia);
   }
 }
