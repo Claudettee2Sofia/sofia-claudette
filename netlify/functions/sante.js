@@ -173,12 +173,71 @@ Génère des conseils sur la gestion des médicaments pour les aînés en JSON. 
     // === THEMES VOCAUX ===
     else if (theme === 'sommeil') {
       prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois. 
-Donne des conseils pratiques et bienveillants sur le sommeil pour les personnes âgées. 
-Parle directement à ${nom} de façon chaleureuse. 
+Donne des conseils pratiques et bienveillants sur le sommeil pour les personnes âgées.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Parle directement à ${nom} de façon chaleureuse en la vouvoyant.
 Inclus: conseils pour mieux dormir, routine du soir, quand consulter un médecin. 
 Sois rassurante et pratique. Maximum 150 mots.`;
       type = 'vocal';
     }
+
+    else if (theme === 'hydratation') {
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Donne des conseils pratiques sur l'hydratation à ${nom} en la vouvoyant.
+Inclus: quelle quantité boire, signes de déshydratation, astuces pour boire plus. 
+Sois chaleureuse et pratique. Maximum 150 mots.`;
+      type = 'vocal';
+    }
+
+    else if (theme === 'tension') {
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Explique simplement la tension artérielle à ${nom} en la vouvoyant.
+Inclus: chiffres normaux, habitudes saines, aliments à éviter, quand consulter. 
+Sois rassurante et simple. Maximum 150 mots.`;
+      type = 'vocal';
+    }
+
+    else if (theme === 'bien_etre') {
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Donne des conseils de bien-être mental et émotionnel à ${nom} en la vouvoyant.
+Inclus: gestion du stress, activités relaxantes, importance du lien social, exercices de respiration simples.
+Sois très chaleureuse et bienveillante. Maximum 150 mots.`;
+      type = 'vocal';
+    }
+
+    else if (theme === 'dentaire') {
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Donne des conseils de santé bucco-dentaire adaptés aux personnes âgées à ${nom} en la vouvoyant.
+Inclus: hygiène quotidienne, prothèses dentaires si applicable, signes à surveiller, fréquence des visites.
+Sois pratique et bienveillante. Maximum 150 mots.`;
+      type = 'vocal';
+    }
+
+    else if (theme === 'maladies') {
+      const maladie = question || 'maladies courantes chez les ainés';
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+Donne des informations claires et rassurantes sur ${maladie} à ${nom} en la vouvoyant.
+Inclus: signes à surveiller, habitudes préventives, quand consulter un médecin.
+IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic.
+Sois rassurante et pratique. Maximum 200 mots.`;
+      type = 'vocal';
+    }
+
+    else {
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
+${nom} a une question de santé: "${question}".
+Réponds de façon chaleureuse, simple et pratique en vouvoyant la personne.
+IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic ou traitement.
+Maximum 200 mots.`;
+      type = 'vocal';
+    }
+      
 
     else if (theme === 'hydratation') {
       prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
