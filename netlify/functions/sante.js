@@ -28,56 +28,58 @@ exports.handler = async function(event) {
     const nom = profil.prenom || 'vous';
 
     let prompt = '';
-    let type = 'vocal'; // vocal ou ecran
+    let type = 'vocal';
 
     // === NUTRITION ===
     if (theme === 'nutrition') {
       type = 'ecran';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Génère des conseils nutritionnels adaptés aux personnes âgées en JSON. Réponds UNIQUEMENT en JSON sans texte avant ou après:
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Genere des conseils nutritionnels adaptes aux personnes agees en JSON. Reponds UNIQUEMENT en JSON sans texte avant ou apres:
 {
-  "titre": "Nutrition santé",
-  "intro": "Introduction chaleureuse sur l'importance de bien manger après 70 ans en 2 phrases",
+  "titre": "Nutrition sante",
+  "intro": "Introduction chaleureuse sur l'importance de bien manger apres 70 ans en 2 phrases en vouvoyant",
   "conseils": [
-    {"titre": "Protéines", "icone": "🥩", "conseil": "Conseil pratique sur les protéines pour les aînés"},
-    {"titre": "Calcium", "icone": "🥛", "conseil": "Conseil sur le calcium et les os"},
-    {"titre": "Fibres", "icone": "🥦", "conseil": "Conseil sur les fibres et la digestion"},
-    {"titre": "Hydratation", "icone": "💧", "conseil": "Conseil sur l'hydratation"},
-    {"titre": "Vitamines", "icone": "🍊", "conseil": "Conseil sur les vitamines essentielles"}
+    {"titre": "Proteines", "icone": "🥩", "conseil": "Conseil pratique sur les proteines pour les aines en vouvoyant"},
+    {"titre": "Calcium", "icone": "🥛", "conseil": "Conseil sur le calcium et les os en vouvoyant"},
+    {"titre": "Fibres", "icone": "🥦", "conseil": "Conseil sur les fibres et la digestion en vouvoyant"},
+    {"titre": "Hydratation", "icone": "💧", "conseil": "Conseil sur l'hydratation en vouvoyant"},
+    {"titre": "Vitamines", "icone": "🍊", "conseil": "Conseil sur les vitamines essentielles en vouvoyant"}
   ],
   "recette_du_jour": {
     "nom": "Nom d'une recette simple et nutritive",
-    "ingredients": ["ingrédient 1", "ingrédient 2", "ingrédient 3", "ingrédient 4"],
-    "preparation": "Préparation simple en 2-3 phrases"
+    "ingredients": ["ingredient 1", "ingredient 2", "ingredient 3", "ingredient 4"],
+    "preparation": "Preparation simple en 2-3 phrases"
   },
   "aliments_a_privilegier": ["aliment 1", "aliment 2", "aliment 3", "aliment 4", "aliment 5"],
-  "conseil_sofia": "Un conseil personnalisé chaleureux pour ${nom}"
+  "conseil_sofia": "Un conseil personnalise chaleureux pour ${nom} en la vouvoyant"
 }`;
     }
 
     // === EXERCICE ===
     else if (theme === 'exercice') {
       type = 'ecran';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Génère des exercices adaptés aux personnes âgées à la maison en JSON. Réponds UNIQUEMENT en JSON sans texte avant ou après:
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Genere des exercices adaptes aux personnes agees a la maison en JSON. Reponds UNIQUEMENT en JSON sans texte avant ou apres:
 {
-  "titre": "Exercices à la maison",
-  "intro": "Introduction motivante sur l'importance de bouger après 70 ans en 2 phrases",
+  "titre": "Exercices a la maison",
+  "intro": "Introduction motivante sur l'importance de bouger apres 70 ans en 2 phrases en vouvoyant",
   "exercices": [
     {
       "nom": "Nom de l'exercice",
       "icone": "🦵",
       "duree": "5 minutes",
       "description": "Description simple et claire de l'exercice",
-      "benefice": "Bénéfice principal pour la santé",
-      "attention": "Précaution importante si nécessaire"
+      "benefice": "Benefice principal pour la sante",
+      "attention": "Precaution importante si necessaire"
     },
     {
       "nom": "Nom de l'exercice",
       "icone": "💪",
       "duree": "3 minutes",
       "description": "Description simple et claire de l'exercice",
-      "benefice": "Bénéfice principal pour la santé",
+      "benefice": "Benefice principal pour la sante",
       "attention": ""
     },
     {
@@ -85,7 +87,7 @@ Génère des exercices adaptés aux personnes âgées à la maison en JSON. Rép
       "icone": "🧘",
       "duree": "5 minutes",
       "description": "Description simple et claire de l'exercice",
-      "benefice": "Bénéfice principal pour la santé",
+      "benefice": "Benefice principal pour la sante",
       "attention": ""
     },
     {
@@ -93,7 +95,7 @@ Génère des exercices adaptés aux personnes âgées à la maison en JSON. Rép
       "icone": "🚶",
       "duree": "10 minutes",
       "description": "Description simple et claire de l'exercice",
-      "benefice": "Bénéfice principal pour la santé",
+      "benefice": "Benefice principal pour la sante",
       "attention": ""
     },
     {
@@ -101,23 +103,24 @@ Génère des exercices adaptés aux personnes âgées à la maison en JSON. Rép
       "icone": "⚖️",
       "duree": "5 minutes",
       "description": "Description simple et claire de l'exercice",
-      "benefice": "Bénéfice principal pour la santé",
-      "attention": "Faire près d'un mur pour l'équilibre"
+      "benefice": "Benefice principal pour la sante",
+      "attention": "Faire pres d'un mur pour l'equilibre"
     }
   ],
-  "routine_quotidienne": "Description d'une routine quotidienne de 20-30 minutes adaptée aux aînés",
-  "conseil_sofia": "Un conseil motivant et chaleureux pour ${nom}"
+  "routine_quotidienne": "Description d'une routine quotidienne de 20-30 minutes adaptee aux aines en vouvoyant",
+  "conseil_sofia": "Un conseil motivant et chaleureux pour ${nom} en la vouvoyant"
 }`;
     }
 
     // === MEMOIRE ===
     else if (theme === 'memoire') {
       type = 'ecran';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Génère des exercices de mémoire et conseils cognitifs en JSON. Réponds UNIQUEMENT en JSON sans texte avant ou après:
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Genere des exercices de memoire et conseils cognitifs en JSON. Reponds UNIQUEMENT en JSON sans texte avant ou apres:
 {
-  "titre": "Exercices de mémoire",
-  "intro": "Introduction rassurante sur la mémoire et le vieillissement en 2 phrases",
+  "titre": "Exercices de memoire",
+  "intro": "Introduction rassurante sur la memoire et le vieillissement en 2 phrases en vouvoyant",
   "exercices": [
     {"nom": "Nom de l'exercice", "icone": "🧩", "description": "Description de l'exercice mental", "duree": "5 min"},
     {"nom": "Nom de l'exercice", "icone": "📖", "description": "Description de l'exercice mental", "duree": "10 min"},
@@ -126,37 +129,38 @@ Génère des exercices de mémoire et conseils cognitifs en JSON. Réponds UNIQU
     {"nom": "Nom de l'exercice", "icone": "🌿", "description": "Description de l'exercice mental", "duree": "5 min"}
   ],
   "habitudes_benefiques": [
-    "Habitude bénéfique pour la mémoire 1",
-    "Habitude bénéfique pour la mémoire 2",
-    "Habitude bénéfique pour la mémoire 3",
-    "Habitude bénéfique pour la mémoire 4"
+    "Habitude benefique pour la memoire 1",
+    "Habitude benefique pour la memoire 2",
+    "Habitude benefique pour la memoire 3",
+    "Habitude benefique pour la memoire 4"
   ],
   "signes_a_surveiller": [
     "Signe normal du vieillissement",
-    "Signe qui mérite attention",
-    "Signe à signaler au médecin"
+    "Signe qui merite attention",
+    "Signe a signaler au medecin"
   ],
-  "conseil_sofia": "Un conseil bienveillant et rassurant pour ${nom}"
+  "conseil_sofia": "Un conseil bienveillant et rassurant pour ${nom} en la vouvoyant"
 }`;
     }
 
     // === MEDICAMENTS ===
     else if (theme === 'medicaments') {
       type = 'ecran';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Génère des conseils sur la gestion des médicaments pour les aînés en JSON. Réponds UNIQUEMENT en JSON sans texte avant ou après:
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Genere des conseils sur la gestion des medicaments pour les aines en JSON. Reponds UNIQUEMENT en JSON sans texte avant ou apres:
 {
-  "titre": "Gestion des médicaments",
-  "intro": "Introduction sur l'importance de bien gérer ses médicaments en 2 phrases",
+  "titre": "Gestion des medicaments",
+  "intro": "Introduction sur l'importance de bien gerer ses medicaments en 2 phrases en vouvoyant",
   "conseils": [
-    {"titre": "Horaires", "icone": "⏰", "conseil": "Conseil sur les horaires de prise"},
-    {"titre": "Stockage", "icone": "🏠", "conseil": "Conseil sur le stockage des médicaments"},
-    {"titre": "Interactions", "icone": "⚠️", "conseil": "Conseil sur les interactions médicamenteuses"},
-    {"titre": "Renouvellement", "icone": "📋", "conseil": "Conseil sur le renouvellement des ordonnances"},
-    {"titre": "Questions médecin", "icone": "👨‍⚕️", "conseil": "Questions importantes à poser au médecin"}
+    {"titre": "Horaires", "icone": "⏰", "conseil": "Conseil sur les horaires de prise en vouvoyant"},
+    {"titre": "Stockage", "icone": "🏠", "conseil": "Conseil sur le stockage des medicaments en vouvoyant"},
+    {"titre": "Interactions", "icone": "⚠️", "conseil": "Conseil sur les interactions medicamenteuses en vouvoyant"},
+    {"titre": "Renouvellement", "icone": "📋", "conseil": "Conseil sur le renouvellement des ordonnances en vouvoyant"},
+    {"titre": "Questions medecin", "icone": "👨‍⚕️", "conseil": "Questions importantes a poser au medecin"}
   ],
   "astuces_pratiques": [
-    "Astuce pratique 1 pour ne pas oublier ses médicaments",
+    "Astuce pratique 1 pour ne pas oublier ses medicaments",
     "Astuce pratique 2",
     "Astuce pratique 3",
     "Astuce pratique 4"
@@ -166,127 +170,74 @@ Génère des conseils sur la gestion des médicaments pour les aînés en JSON. 
     "Rappel important 2",
     "Rappel important 3"
   ],
-  "conseil_sofia": "Un conseil bienveillant pour ${nom} sur la gestion de ses médicaments"
+  "conseil_sofia": "Un conseil bienveillant pour ${nom} sur la gestion de ses medicaments en la vouvoyant"
 }`;
     }
 
     // === THEMES VOCAUX ===
     else if (theme === 'sommeil') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois. 
-Donne des conseils pratiques et bienveillants sur le sommeil pour les personnes âgées.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Parle directement à ${nom} de façon chaleureuse en la vouvoyant.
-Inclus: conseils pour mieux dormir, routine du soir, quand consulter un médecin. 
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Donne des conseils pratiques et bienveillants sur le sommeil pour les personnes agees.
+Parle directement a ${nom} de facon chaleureuse en la vouvoyant.
+Inclus: conseils pour mieux dormir, routine du soir, quand consulter un medecin.
 Sois rassurante et pratique. Maximum 150 mots.`;
       type = 'vocal';
     }
 
     else if (theme === 'hydratation') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Donne des conseils pratiques sur l'hydratation à ${nom} en la vouvoyant.
-Inclus: quelle quantité boire, signes de déshydratation, astuces pour boire plus. 
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Donne des conseils pratiques sur l'hydratation a ${nom} en la vouvoyant.
+Inclus: quelle quantite boire, signes de deshydratation, astuces pour boire plus.
 Sois chaleureuse et pratique. Maximum 150 mots.`;
       type = 'vocal';
     }
 
     else if (theme === 'tension') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Explique simplement la tension artérielle à ${nom} en la vouvoyant.
-Inclus: chiffres normaux, habitudes saines, aliments à éviter, quand consulter. 
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Explique simplement la tension arterielle a ${nom} en la vouvoyant.
+Inclus: chiffres normaux, habitudes saines, aliments a eviter, quand consulter.
 Sois rassurante et simple. Maximum 150 mots.`;
       type = 'vocal';
     }
 
     else if (theme === 'bien_etre') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Donne des conseils de bien-être mental et émotionnel à ${nom} en la vouvoyant.
-Inclus: gestion du stress, activités relaxantes, importance du lien social, exercices de respiration simples.
-Sois très chaleureuse et bienveillante. Maximum 150 mots.`;
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Donne des conseils de bien-etre mental et emotionnel a ${nom} en la vouvoyant.
+Inclus: gestion du stress, activites relaxantes, importance du lien social, exercices de respiration simples.
+Sois tres chaleureuse et bienveillante. Maximum 150 mots.`;
       type = 'vocal';
     }
 
     else if (theme === 'dentaire') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Donne des conseils de santé bucco-dentaire adaptés aux personnes âgées à ${nom} en la vouvoyant.
-Inclus: hygiène quotidienne, prothèses dentaires si applicable, signes à surveiller, fréquence des visites.
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Donne des conseils de sante bucco-dentaire adaptes aux personnes agees a ${nom} en la vouvoyant.
+Inclus: hygiene quotidienne, protheses dentaires si applicable, signes a surveiller, frequence des visites.
 Sois pratique et bienveillante. Maximum 150 mots.`;
       type = 'vocal';
     }
 
     else if (theme === 'maladies') {
-      const maladie = question || 'maladies courantes chez les ainés';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-Donne des informations claires et rassurantes sur ${maladie} à ${nom} en la vouvoyant.
-Inclus: signes à surveiller, habitudes préventives, quand consulter un médecin.
-IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic.
+      const maladie = question || 'maladies courantes chez les aines';
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+Donne des informations claires et rassurantes sur ${maladie} a ${nom} en la vouvoyant.
+Inclus: signes a surveiller, habitudes preventives, quand consulter un medecin.
+IMPORTANT: Rappelle toujours de consulter un medecin pour tout diagnostic.
 Sois rassurante et pratique. Maximum 200 mots.`;
       type = 'vocal';
     }
 
     else {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-IMPORTANT: Vouvoie toujours la personne (vous, votre, vos).
-${nom} a une question de santé: "${question}".
-Réponds de façon chaleureuse, simple et pratique en vouvoyant la personne.
-IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic ou traitement.
-Maximum 200 mots.`;
-      type = 'vocal';
-    }
-      
-
-    else if (theme === 'hydratation') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Donne des conseils pratiques sur l'hydratation pour ${nom}.
-Inclus: quelle quantité boire, signes de déshydratation, astuces pour boire plus. 
-Sois chaleureuse et pratique. Maximum 150 mots.`;
-      type = 'vocal';
-    }
-
-    else if (theme === 'tension') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Explique simplement la tension artérielle à ${nom}.
-Inclus: chiffres normaux, habitudes saines, aliments à éviter, quand consulter. 
-Sois rassurante et simple. Maximum 150 mots.`;
-      type = 'vocal';
-    }
-
-    else if (theme === 'bien_etre') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Donne des conseils de bien-être mental et émotionnel à ${nom}.
-Inclus: gestion du stress, activités relaxantes, importance du lien social, exercices de respiration simples.
-Sois très chaleureuse et bienveillante. Maximum 150 mots.`;
-      type = 'vocal';
-    }
-
-    else if (theme === 'dentaire') {
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Donne des conseils de santé bucco-dentaire adaptés aux personnes âgées à ${nom}.
-Inclus: hygiène quotidienne, prothèses dentaires si applicable, signes à surveiller, fréquence des visites.
-Sois pratique et bienveillante. Maximum 150 mots.`;
-      type = 'vocal';
-    }
-
-    else if (theme === 'maladies') {
-      const maladie = question || 'maladies courantes chez les ainés';
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-Donne des informations claires et rassurantes sur ${maladie} à ${nom}.
-Inclus: signes à surveiller, habitudes préventives, quand consulter un médecin.
-IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic.
-Sois rassurante et pratique. Maximum 200 mots.`;
-      type = 'vocal';
-    }
-
-    else {
-      // General
-      prompt = `Tu es Sofia, une assistante chaleureuse pour aînés québécois.
-${nom} a une question de santé: "${question}".
-Réponds de façon chaleureuse, simple et pratique.
-IMPORTANT: Rappelle toujours de consulter un médecin pour tout diagnostic ou traitement.
+      prompt = `Tu es Sofia, une assistante chaleureuse pour aines quebecois.
+IMPORTANT: Vouvoie toujours la personne (vous, votre, vos). Ne la tutoie jamais.
+${nom} a une question de sante: "${question}".
+Reponds de facon chaleureuse, simple et pratique en vouvoyant la personne.
+IMPORTANT: Rappelle toujours de consulter un medecin pour tout diagnostic ou traitement.
 Maximum 200 mots.`;
       type = 'vocal';
     }
