@@ -1204,6 +1204,39 @@
   text-align: center; padding: 40px 20px;
   font-size: 16px; color: rgba(144,238,144,0.5);
 }
+  .sante-reponse-bar {
+  position: sticky; bottom: 0;
+  width: 100%; max-width: 500px;
+  display: flex; gap: 8px; align-items: center;
+  padding: 12px 0 16px;
+  background: linear-gradient(180deg, transparent, rgba(10,18,5,0.95));
+  margin-top: 16px;
+}
+.sante-micro-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(100,200,100,0.2);
+  border: 1.5px solid rgba(100,200,100,0.4);
+  font-size: 20px; cursor: pointer; flex-shrink: 0;
+}
+.sante-micro-btn.active {
+  background: rgba(229,115,115,0.3);
+  border-color: rgba(229,115,115,0.6);
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+.sante-reponse-input {
+  flex: 1; background: rgba(100,200,100,0.1);
+  border: 1px solid rgba(100,200,100,0.3);
+  border-radius: 22px; padding: 10px 14px;
+  font-size: 15px; font-family: 'Quicksand', sans-serif;
+  color: #FFFFFF; outline: none; font-weight: 600;
+}
+.sante-reponse-input::placeholder { color: rgba(144,238,144,0.4); font-weight: 400; }
+.sante-envoyer-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  border: none; font-size: 18px; color: white;
+  cursor: pointer; flex-shrink: 0;
+}
   @media(min-width:768px){.orbit-container{width:min(58vh,430px);height:min(58vh,430px)}}
   @media(max-height:600px){.orbit-container{width:min(52vw,52vh,270px);height:min(52vw,52vh,270px)}.status-zone{margin-top:4px}.response-zone{max-height:16vh}}
 </style>
@@ -1482,10 +1515,19 @@
     </div>
   </div>
 
-  <!-- Contenu du thème -->
+ <!-- Contenu du thème -->
   <div id="santeContenu" style="display:none">
     <button class="sante-retour" onclick="retourMenuSante()">← Retour</button>
     <div id="santeContenuInner"></div>
+  </div>
+
+  <!-- Zone de réponse Santé -->
+  <div class="sante-reponse-bar" id="santeReponseBar">
+    <button class="sante-micro-btn" id="santeMicroBtn" onclick="toggleMicroSante()">🎙️</button>
+    <input class="sante-reponse-input" id="santeReponseInput" type="text" 
+      placeholder="Répondez à Sofia ou posez une question santé..."
+      onkeydown="if(event.key==='Enter') envoyerReponseSante()">
+    <button class="sante-envoyer-btn" onclick="envoyerReponseSante()">➤</button>
   </div>
 </div>
 <!-- Modal Urgence -->
@@ -2121,9 +2163,17 @@ function initRecognition() {
     document.getElementById('soleilIcone').textContent = '🎙️';
     document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
 
-    if (modeAttente === 'ville')   { obtenirMeteo(t); return; }
-    if (modeAttente === 'voyage')  { obtenirVoyage(t); return; }
-    if (modeAttente === 'ancetre') { obtenirAncetres(t); return; }
+   if (modeAttente==='ville')   { obtenirMeteo(t); return; }
+    if (modeAttente==='voyage')  { obtenirVoyage(t); return; }
+    if (modeAttente==='ancetre') { obtenirAncetres(t); return; }
+    if (modeAttente==='sante')   { 
+      modeAttente=null;
+      document.getElementById('santeMicroBtn').classList.remove('active');
+      document.getElementById('santeMicroBtn').textContent = '🎙️';
+      document.getElementById('santeReponseInput').value = t;
+      envoyerReponseSante();
+      return; 
+    }
 
     var tMin = t.toLowerCase();
     if (tMin.includes('météo') || tMin.includes('meteo') || tMin.includes('température')) { demanderMeteo(); return; }
@@ -3241,6 +3291,46 @@ function afficherContenuSante(theme, data) {
   if (data.conseil_sofia) {
     speakText(data.conseil_sofia);
   }
+}
+  function envoyerReponseSante() {
+  var texte = document.getElementById('santeReponseInput').value.trim();
+  if (!texte) return;
+  document.getElementById('santeReponseInput').value = '';
+  document.getElementById('santeContenuInner').innerHTML += 
+    '<div class="sante-card" style="background:rgba(100,200,100,0.05);margin-top:8px">' +
+    '<div style="font-size:14px;color:rgba(144,238,144,0.6);margin-bottom:4px">Vous :</div>' +
+    '<div class="sante-card-texte">' + texte + '</div></div>' +
+    '<div class="sante-loading" id="santeTyping">Sofia réfléchit... ✨</div>';
+  fetch('/.netlify/functions/sante', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ theme: 'general', question: texte, profil: profil })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    document.getElementById('santeTyping').remove();
+    document.getElementById('santeContenuInner').innerHTML +=
+      '<div class="sante-card" style="margin-top:8px">' +
+      '<div style="font-size:14px;color:#90EE90;margin-bottom:4px">Sofia :</div>' +
+      '<div class="sante-card-texte">' + (d.texte || '').replace(/\n/g,'<br>') + '</div></div>';
+    speakText(d.texte || '');
+    var zone = document.getElementById('santeContenu');
+    zone.scrollTop = zone.scrollHeight;
+  }).catch(function() {
+    if (document.getElementById('santeTyping')) document.getElementById('santeTyping').remove();
+  });
+}
+
+function toggleMicroSante() {
+  var btn = document.getElementById('santeMicroBtn');
+  if (isListening) {
+    stopListening();
+    btn.classList.remove('active');
+    btn.textContent = '🎙️';
+    return;
+  }
+  btn.classList.add('active');
+  btn.textContent = '⏹️';
+  modeAttente = 'sante';
+  startListening();
 }
 // === URGENCE ===
 var contactsUrgence = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
