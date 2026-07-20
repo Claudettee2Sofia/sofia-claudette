@@ -856,6 +856,57 @@
   .village-loading{width:100%;max-width:600px;padding:40px 20px;text-align:center;font-size:16px;color:rgba(200,216,240,0.35)}
   .btn-sofia-village{width:calc(100% - 40px);max-width:560px;background:linear-gradient(135deg,#3d7cf0,#2d5fcf);border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;font-family:'Quicksand',sans-serif;color:white;cursor:pointer;box-shadow:0 4px 15px rgba(61,124,240,0.3);margin:0 20px}
 
+  /* === ÉPICERIE === */
+  .epicerie-lien {
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(61,124,240,0.08);border:0.5px solid rgba(61,124,240,0.18);
+    border-radius:12px;padding:10px 6px;font-size:13px;font-weight:800;
+    color:var(--argent-pale);text-decoration:none;text-align:center;
+    transition:all 0.2s;
+  }
+  .epicerie-lien:active{background:rgba(61,124,240,0.2);}
+  .epicerie-micro {
+    width:44px;height:44px;border-radius:50%;flex-shrink:0;
+    background:rgba(61,124,240,0.1);border:1px solid rgba(61,124,240,0.25);
+    font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .epicerie-micro.active {
+    background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.4);
+    animation:dotPulse 1.2s ease-in-out infinite;
+  }
+  .epicerie-article {
+    display:flex;align-items:center;gap:10px;
+    background:rgba(61,124,240,0.06);border:0.5px solid rgba(61,124,240,0.15);
+    border-radius:12px;padding:10px 14px;
+  }
+  .epicerie-article.coche {
+    background:rgba(74,222,128,0.05);border-color:rgba(74,222,128,0.15);
+    opacity:0.6;
+  }
+  .epicerie-article.coche .epicerie-article-nom {
+    text-decoration:line-through;color:var(--texte-muted);
+  }
+  .epicerie-checkbox {
+    width:22px;height:22px;border-radius:6px;flex-shrink:0;cursor:pointer;
+    border:1.5px solid rgba(61,124,240,0.35);background:transparent;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+    transition:all 0.2s;
+  }
+  .epicerie-checkbox.coche {
+    background:rgba(74,222,128,0.2);border-color:rgba(74,222,128,0.5);
+  }
+  .epicerie-article-nom {
+    flex:1;font-size:15px;font-weight:600;color:var(--argent-pale);
+  }
+  .epicerie-article-cat {
+    font-size:10px;color:var(--texte-muted);text-transform:uppercase;letter-spacing:1px;
+  }
+  .epicerie-suppr {
+    background:none;border:none;font-size:16px;cursor:pointer;
+    color:rgba(200,216,240,0.2);padding:4px;flex-shrink:0;
+  }
+  .epicerie-suppr:hover{color:rgba(239,68,68,0.6);}
+
   @media(min-width:768px){.avatar-outer-ring{width:140px;height:140px}}
   @media(max-height:600px){.avatar-outer-ring{width:90px;height:90px}.response-zone{max-height:14vh}.modules-grid{gap:5px}}
 </style>
@@ -1104,6 +1155,53 @@
     <input class="sante-reponse-input" id="santeReponseInput" type="text" placeholder="Répondez à Sofia ou posez une question santé..." onkeydown="if(event.key==='Enter') envoyerReponseSante()">
     <button class="sante-envoyer-btn" onclick="envoyerReponseSante()">➤</button>
   </div>
+</div>
+
+<!-- MODAL ÉPICERIE -->
+<div class="module-overlay" id="epicerieOverlay" style="display:none">
+  <div class="module-header" style="max-width:500px;width:100%;padding:20px 0 12px">
+    <div class="module-titre">🛒 Liste d'épicerie</div>
+    <button class="module-fermer" onclick="fermerEpicerie()">✕</button>
+  </div>
+
+  <!-- Circulaires -->
+  <div style="width:100%;max-width:500px;margin-bottom:14px">
+    <div class="section-label" style="margin-bottom:8px">Circulaires de la semaine</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      <a href="https://cacirculaire.ca/iga-qc" target="_blank" class="epicerie-lien">IGA</a>
+      <a href="https://www.metro.ca/circulaire" target="_blank" class="epicerie-lien">Metro</a>
+      <a href="https://cacirculaire.ca/maxi" target="_blank" class="epicerie-lien">Maxi</a>
+      <a href="https://www.superc.ca/circulaire" target="_blank" class="epicerie-lien">Super C</a>
+      <a href="https://cacirculaire.ca/provigo" target="_blank" class="epicerie-lien">Provigo</a>
+      <a href="https://cacirculaire.ca/walmart-qc" target="_blank" class="epicerie-lien">Walmart</a>
+    </div>
+  </div>
+
+  <!-- Ajout article -->
+  <div style="width:100%;max-width:500px;margin-bottom:12px">
+    <div class="section-label" style="margin-bottom:8px">Ajouter un article</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="epicerie-micro" id="epicerieMicroBtn" onclick="toggleMicroEpicerie()" title="Dicter">🎙️</button>
+      <input class="field" id="epicerieInput" type="text" placeholder="Nom de l'article..." style="margin-bottom:0;flex:1"
+        onkeydown="if(event.key==='Enter')ajouterArticleEpicerie()">
+      <button onclick="ajouterArticleEpicerie()" style="background:linear-gradient(135deg,#3d7cf0,#2d5fcf);border:none;border-radius:12px;padding:11px 16px;font-size:15px;color:white;cursor:pointer;font-weight:700;white-space:nowrap">+ Ajouter</button>
+    </div>
+    <div style="font-size:11px;color:var(--texte-muted);margin-top:6px;text-align:center">
+      💡 Appuyez sur 🎙️ et dites un article à la fois — Sofia note chacun séparément
+    </div>
+  </div>
+
+  <!-- Compteur -->
+  <div style="width:100%;max-width:500px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div style="font-size:13px;color:var(--texte-muted)" id="epicerieCompteur">0 article</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="effacerCocheEpicerie()" style="background:rgba(61,124,240,0.1);border:0.5px solid rgba(61,124,240,0.2);border-radius:10px;padding:6px 12px;font-size:12px;color:var(--bleu-pale);cursor:pointer;font-weight:700">Effacer cochés</button>
+      <button onclick="viderListeEpicerie()" style="background:rgba(239,68,68,0.1);border:0.5px solid rgba(239,68,68,0.2);border-radius:10px;padding:6px 12px;font-size:12px;color:#fca5a5;cursor:pointer;font-weight:700">Tout effacer</button>
+    </div>
+  </div>
+
+  <!-- Liste articles -->
+  <div id="epicerieListe" style="width:100%;max-width:500px;display:flex;flex-direction:column;gap:6px;padding-bottom:20px"></div>
 </div>
 
 <!-- MODAL URGENCE ENRICHI -->
@@ -1586,6 +1684,7 @@ function initRecognition(){
     if(modeAttente==='voyage'){obtenirVoyage(t);return;}
     if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
     if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
+    if(modeAttente==='epicerie_article'){ajouterArticleParVoix(t);return;}
     if(modeAttente==='sante'){modeAttente=null;document.getElementById('santeMicroBtn').classList.remove('active');document.getElementById('santeMicroBtn').textContent='🎙️';document.getElementById('santeReponseInput').value=t;envoyerReponseSante();return;}
     var tMin=t.toLowerCase();
     if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){demanderMeteo();return;}
@@ -1796,25 +1895,184 @@ function demanderActivites(){
   getSofiaReply('activites');
 }
 
-// === ÉPICERIE ===
+// === ÉPICERIE — MODULE COMPLET ===
 var listeEpicerie=JSON.parse(localStorage.getItem('sofia_liste_epicerie')||'[]');
-function sauvegarderListeEpicerie(liste){listeEpicerie=liste;localStorage.setItem('sofia_liste_epicerie',JSON.stringify(liste));}
-var epicerieChoisie=localStorage.getItem('sofia_epicerie')||'';
+// Format: [{id, nom, categorie, coche}]
+
+function sauvegarderListeEpicerie(liste){
+  listeEpicerie=liste;
+  localStorage.setItem('sofia_liste_epicerie',JSON.stringify(liste));
+}
+
 function demanderEpicerie(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
-  var epiceries={'1':{nom:'IGA',url:'https://cacirculaire.ca/iga-qc'},'2':{nom:'Metro',url:'https://www.metro.ca/circulaire'},'3':{nom:'Maxi',url:'https://cacirculaire.ca/maxi'},'4':{nom:'Super C',url:'https://www.superc.ca/circulaire'},'5':{nom:'Provigo',url:'https://cacirculaire.ca/provigo'},'6':{nom:'Walmart',url:'https://cacirculaire.ca/walmart-qc'}};
-  var choix=prompt('Quelle épicerie fréquentez-vous ?\n\n1 - IGA\n2 - Metro\n3 - Maxi\n4 - Super C\n5 - Provigo\n6 - Walmart\n\nEntrez le numéro (ou Annuler pour la liste)');
-  if(choix===null){sendSuggestion('Aide-moi avec ma liste d\'épicerie.');return;}
-  var epicerie=epiceries[choix.trim()];
-  if(epicerie){
-    localStorage.setItem('sofia_epicerie',epicerie.nom);epicerieChoisie=epicerie.nom;
-    showUserMessage('Circulaire '+epicerie.nom+' 🛒');
-    var msg='Voici la circulaire de la semaine de '+epicerie.nom+' ! Je vais l\'ouvrir pour vous. Voulez-vous aussi que je vous aide avec votre liste d\'épicerie ?';
-    showResponse(msg);window.open(epicerie.url,'_blank');conversationHistory.push({role:'assistant',content:msg});
-    var listeExistante=listeEpicerie;
-    var contenuListe=listeExistante.length>0?'Voici ma liste d\'épicerie existante: '+listeExistante.join(', ')+'. Aide-moi à la compléter ou la modifier pour '+epicerie.nom+'.':'Je veux faire ma liste d\'épicerie pour '+epicerie.nom+'. Aide-moi à organiser mes achats par catégories.';
-    conversationHistory.push({role:'user',content:contenuListe});speakText(msg);
-  }else{sendSuggestion('Aide-moi avec ma liste d\'épicerie.');}
+  document.getElementById('epicerieOverlay').style.display='flex';
+  afficherListeEpicerie();
+}
+
+function fermerEpicerie(){
+  document.getElementById('epicerieOverlay').style.display='none';
+  if(modeAttente==='epicerie'){modeAttente=null;}
+}
+
+function afficherListeEpicerie(){
+  var liste=document.getElementById('epicerieListe');
+  var compteur=document.getElementById('epicerieCompteur');
+  var total=listeEpicerie.length;
+  var coches=listeEpicerie.filter(function(a){return a.coche;}).length;
+  compteur.textContent=total+' article'+(total>1?'s':'')+' — '+coches+' coché'+(coches>1?'s':'');
+
+  // Grouper par catégorie
+  var categories={};
+  listeEpicerie.forEach(function(a){
+    var cat=a.categorie||'Autres';
+    if(!categories[cat])categories[cat]=[];
+    categories[cat].push(a);
+  });
+
+  var html='';
+  // Articles non cochés d'abord, cochés ensuite
+  var nonCoches=listeEpicerie.filter(function(a){return !a.coche;});
+  var coches2=listeEpicerie.filter(function(a){return a.coche;});
+  var ordonnes=nonCoches.concat(coches2);
+
+  ordonnes.forEach(function(a){
+    html+='<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+a.id+'">'
+      +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" onclick="cocherArticle(\''+a.id+'\')">'+(a.coche?'✓':'')+'</div>'
+      +'<div style="flex:1">'
+      +'<div class="epicerie-article-nom">'+a.nom+'</div>'
+      +(a.categorie?'<div class="epicerie-article-cat">'+a.categorie+'</div>':'')
+      +'</div>'
+      +'<button class="epicerie-suppr" onclick="supprimerArticle(\''+a.id+'\')">✕</button>'
+      +'</div>';
+  });
+
+  if(ordonnes.length===0){
+    html='<div style="text-align:center;padding:30px 0;color:var(--texte-muted);font-size:14px">Votre liste est vide.<br>Dites un article à la fois à Sofia !</div>';
+  }
+
+  liste.innerHTML=html;
+}
+
+function ajouterArticleEpicerie(){
+  var input=document.getElementById('epicerieInput');
+  var texte=input.value.trim();
+  if(!texte)return;
+
+  // Détecter catégorie automatiquement
+  var categorie=detecterCategorie(texte);
+
+  var article={
+    id: Date.now().toString(),
+    nom: texte.charAt(0).toUpperCase()+texte.slice(1),
+    categorie: categorie,
+    coche: false
+  };
+
+  listeEpicerie.push(article);
+  sauvegarderListeEpicerie(listeEpicerie);
+  afficherListeEpicerie();
+  input.value='';
+  input.focus();
+}
+
+function detecterCategorie(texte){
+  var t=texte.toLowerCase();
+  if(/pomme|poire|banane|raisin|fraise|bleuet|framboise|melon|mangue|orange|citron|pamplemousse|cerise|kiwi|ananas|fruit/.test(t)) return '🍎 Fruits';
+  if(/carotte|brocoli|chou|laitue|tomate|concombre|poivron|oignon|ail|patate|pomme de terre|céleri|épinard|maïs|asperge|champignon|légume/.test(t)) return '🥦 Légumes';
+  if(/lait|fromage|beurre|yogourt|crème|œuf|oeuf/.test(t)) return '🥛 Produits laitiers';
+  if(/poulet|bœuf|boeuf|porc|agneau|veau|dinde|saucisse|jambon|bacon|viande/.test(t)) return '🥩 Viandes';
+  if(/saumon|thon|crevette|morue|tilapia|poisson|fruits de mer/.test(t)) return '🐟 Poissons';
+  if(/pain|baguette|croissant|muffin|gâteau|biscuit|farine|céréale|riz|pâte|spaghetti|macaroni/.test(t)) return '🍞 Boulangerie & grains';
+  if(/jus|eau|café|thé|boisson|vin|bière|sirop/.test(t)) return '🥤 Boissons';
+  if(/shampoo|savon|dentifrice|déodorant|rasoir|papier toilette|mouchoir/.test(t)) return '🧴 Hygiène';
+  if(/détergent|nettoyant|éponge|sac poubelle|pellicule/.test(t)) return '🧹 Ménage';
+  if(/sucre|sel|poivre|épice|sauce|huile|vinaigre|moutarde|ketchup|mayonnaise/.test(t)) return '🧂 Condiments';
+  if(/surgelé|congelé/.test(t)) return '❄️ Surgelés';
+  return '🛒 Autres';
+}
+
+function cocherArticle(id){
+  listeEpicerie=listeEpicerie.map(function(a){
+    if(a.id===id)a.coche=!a.coche;
+    return a;
+  });
+  sauvegarderListeEpicerie(listeEpicerie);
+  afficherListeEpicerie();
+}
+
+function supprimerArticle(id){
+  listeEpicerie=listeEpicerie.filter(function(a){return a.id!==id;});
+  sauvegarderListeEpicerie(listeEpicerie);
+  afficherListeEpicerie();
+}
+
+function effacerCocheEpicerie(){
+  listeEpicerie=listeEpicerie.filter(function(a){return !a.coche;});
+  sauvegarderListeEpicerie(listeEpicerie);
+  afficherListeEpicerie();
+}
+
+function viderListeEpicerie(){
+  if(confirm('Effacer toute la liste ?')){
+    listeEpicerie=[];
+    sauvegarderListeEpicerie([]);
+    afficherListeEpicerie();
+  }
+}
+
+// Micro épicerie — article par article
+var epicerieMicroActif=false;
+function toggleMicroEpicerie(){
+  var btn=document.getElementById('epicerieMicroBtn');
+  if(epicerieMicroActif){
+    epicerieMicroActif=false;
+    btn.classList.remove('active');
+    btn.textContent='🎙️';
+    modeAttente=null;
+    try{recognition.stop();}catch(e){}
+    return;
+  }
+  epicerieMicroActif=true;
+  btn.classList.add('active');
+  btn.textContent='⏹️';
+  modeAttente='epicerie_article';
+  startListening();
+}
+
+function ajouterArticleParVoix(texte){
+  // Vérifier si c'est une commande d'arrêt
+  var t=texte.toLowerCase().trim();
+  if(t==="c'est tout"||t==='terminé'||t==='terminer'||t==='fini'||t==='arrêter'||t==='stop'){
+    epicerieMicroActif=false;
+    var btn=document.getElementById('epicerieMicroBtn');
+    btn.classList.remove('active');
+    btn.textContent='🎙️';
+    modeAttente=null;
+    var msg='Parfait ! Votre liste est prête, avec '+listeEpicerie.filter(function(a){return !a.coche;}).length+' articles.';
+    speakText(msg);
+    return;
+  }
+
+  // Ajouter l'article
+  var categorie=detecterCategorie(texte);
+  var article={
+    id: Date.now().toString(),
+    nom: texte.charAt(0).toUpperCase()+texte.slice(1),
+    categorie: categorie,
+    coche: false
+  };
+  listeEpicerie.push(article);
+  sauvegarderListeEpicerie(listeEpicerie);
+  afficherListeEpicerie();
+
+  // Confirmation vocale courte
+  speakText('Noté !').then(function(){
+    if(epicerieMicroActif){
+      modeAttente='epicerie_article';
+      setTimeout(function(){startListening();},300);
+    }
+  });
 }
 
 // === SANTÉ ===
