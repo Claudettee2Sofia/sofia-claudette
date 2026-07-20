@@ -1581,6 +1581,7 @@ function initRecognition(){
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
     if(modeAttente==='ville'){obtenirMeteo(t);return;}
     if(modeAttente==='voyage'){obtenirVoyage(t);return;}
+    if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
     if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
     if(modeAttente==='sante'){modeAttente=null;document.getElementById('santeMicroBtn').classList.remove('active');document.getElementById('santeMicroBtn').textContent='🎙️';document.getElementById('santeReponseInput').value=t;envoyerReponseSante();return;}
     var tMin=t.toLowerCase();
@@ -1628,13 +1629,23 @@ function obtenirMeteo(ville){
   getSofiaReply('meteo');
 }
 
-// === NOUVELLES (via recherche web) ===
+// === NOUVELLES — demander le sujet d'abord ===
 function demanderNouvelles(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
-  showUserMessage('Nouvelles du jour 📰');setStatus('Sofia cherche les nouvelles...');setSearching(true);showTyping();
-  var prompt='Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui au Québec et au Canada. Inclus aussi une ou deux nouvelles du monde. Explique chaque nouvelle en 2-3 phrases simples et accessibles.';
+  showUserMessage('Nouvelles 📰');
+  var prenom=profil.prenom||'';
+  var msg=(prenom?prenom+', vous':' Vous')+' voulez les nouvelles du Québec, du Canada, ou d\'ailleurs ?';
+  showResponse(msg);
+  speakText(msg);
+  modeAttente='nouvelles';
+}
+
+function obtenirNouvelles(sujet){
+  modeAttente=null;
+  showUserMessage(sujet);
+  var prompt='Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui sur le sujet suivant : '+sujet+'. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
   conversationHistory.push({role:'user',content:prompt});
-  enregistrerActivite('nouvelles','');
+  enregistrerActivite('nouvelles',sujet);
   getSofiaReply('nouvelles');
 }
 
@@ -1993,6 +2004,7 @@ function sendMessage(){
   showUserMessage(t);i.value='';i.style.height='auto';
   if(modeAttente==='ville'){obtenirMeteo(t);return;}
   if(modeAttente==='voyage'){obtenirVoyage(t);return;}
+  if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
   if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
   modeAttente=null;conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();
 }
