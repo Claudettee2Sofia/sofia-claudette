@@ -2014,25 +2014,54 @@ function getSofiaReply(type){
   var messagesLimites=conversationHistory.slice(-20);
 
   if(needsSearch){
-    // Phase 1 — intro immédiate sans recherche
+    // Phase 1 — intro immédiate + Phase 2 recherche web en parallèle
+    var introTexte='';
+    var rechercheTerminee=false;
+    var introTerminee=false;
+    var reponseEnAttente=null;
+
+    function jouerReponseFinale(){
+      if(rechercheTerminee&&introTerminee&&reponseEnAttente){
+        setSearching(false);
+        var reply=reponseEnAttente;
+        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
+        mettreAJourMemoire();showResponse(reply);speakText(reply);
+        document.getElementById('sendBtn').disabled=false;
+      }
+    }
+
+    // Intro immédiate
     fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type,introSeulement:true})})
     .then(function(r){return r.json();}).then(function(d){
       if(d.content&&d.content[0]&&d.introOnly){
-        var intro=d.content[0].text;
+        introTexte=d.content[0].text;
         showTyping();
-        speakText(intro);
+        // Attendre la fin de la voix avant de jouer la vraie réponse
+        speakText(introTexte).then(function(){
+          introTerminee=true;
+          jouerReponseFinale();
+        });
+      } else {
+        introTerminee=true;
+        jouerReponseFinale();
       }
-      // Phase 2 — vraie recherche web en parallèle
-      return fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type})});
-    }).then(function(r){return r.json();}).then(function(d){
-      setSearching(false);
+    }).catch(function(){introTerminee=true;jouerReponseFinale();});
+
+    // Recherche web en parallèle
+    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type})})
+    .then(function(r){return r.json();}).then(function(d){
       if(d.content&&d.content[0]){
-        var reply=d.content[0].text;
-        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-        mettreAJourMemoire();showResponse(reply);speakText(reply);
-      }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");}
-    }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");})
-    .then(function(){document.getElementById('sendBtn').disabled=false;});
+        reponseEnAttente=d.content[0].text;
+      }else{
+        reponseEnAttente="Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?";
+      }
+      rechercheTerminee=true;
+      jouerReponseFinale();
+    }).catch(function(){
+      reponseEnAttente="Je suis désolée, réessayons !";
+      rechercheTerminee=true;
+      jouerReponseFinale();
+    });
   } else {
     // Conversation normale — un seul appel sans recherche web
     showTyping();
@@ -2050,25 +2079,42 @@ function getSofiaReply(type){
   }
 }
 
-// === TÉLÉ CE SOIR ===
+// === TÉLÉ CE SOIR — liens directs ===
 function demanderTele(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
   showUserMessage('Télé ce soir 📺');
-  var ville=profil.ville||'Québec';
-  var prompt='Quelles sont les émissions intéressantes ce soir sur TVA, Radio-Canada, V et Noovo ? Donne les émissions du soir à partir de 19h, avec l\'heure et une courte description. Parle comme si tu suggérais à une amie ce qu\'il y a de bon ce soir.';
-  conversationHistory.push({role:'user',content:prompt});
+  var prenom=profil.prenom||'';
+  var msg=(prenom?prenom+', voici':'Voici')+' les horaires de ce soir. Choisissez votre chaîne !';
+  var html='<div class="response-bubble"><div class="response-label">Sofia</div>'
+    +'<div style="margin-bottom:10px">'+msg+'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<a href="https://ici.radio-canada.ca/tele/horaire" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">📺</span> Radio-Canada — Horaire ce soir</a>'
+    +'<a href="https://www.tva.ca/horaire" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">📺</span> TVA — Horaire ce soir</a>'
+    +'<a href="https://noovo.ca/emissions" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">📺</span> Noovo — Horaire ce soir</a>'
+    +'<a href="https://www.tvhebdo.com/horaire-television/chaines" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">📋</span> TV Hebdo — Toutes les chaînes</a>'
+    +'</div></div>';
+  document.getElementById('responseZone').innerHTML=html;
+  speakText(msg);
   enregistrerActivite('tele','');
-  getSofiaReply('tele');
 }
 
-// === FILMS ===
+// === FILMS — liens directs ===
 function demanderFilms(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
   showUserMessage('Films 🍿');
-  var prompt='Quels sont les bons films disponibles en ce moment sur Tou.tv et Club Illico ? Suggère 3 ou 4 films ou séries québécoises ou françaises, avec une courte description de chacun. Parle chaleureusement comme si tu recommandais à une amie.';
-  conversationHistory.push({role:'user',content:prompt});
+  var prenom=profil.prenom||'';
+  var msg=(prenom?prenom+', voici':'Voici')+' où trouver de beaux films ce soir !';
+  var html='<div class="response-bubble"><div class="response-label">Sofia</div>'
+    +'<div style="margin-bottom:10px">'+msg+'</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<a href="https://ici.tou.tv" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">🍿</span> Tou.tv — Films et séries gratuits</a>'
+    +'<a href="https://www.clubillico.com" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">🎬</span> Club Illico — Québec et séries</a>'
+    +'<a href="https://www.crave.ca" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">🎥</span> Crave — Films récents</a>'
+    +'<a href="https://www.netflix.com" target="_blank" style="display:flex;align-items:center;gap:10px;background:rgba(61,124,240,0.12);border:0.5px solid rgba(61,124,240,0.25);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--argent-pale);font-size:14px;font-weight:700"><span style="font-size:20px">▶️</span> Netflix</a>'
+    +'</div></div>';
+  document.getElementById('responseZone').innerHTML=html;
+  speakText(msg);
   enregistrerActivite('films','');
-  getSofiaReply('films');
 }
 
 // === TOUT ===
