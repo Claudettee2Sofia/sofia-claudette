@@ -11,6 +11,7 @@ exports.handler = async function(event) {
                     : type === 'voyage'    ? 700
                     : type === 'meteo'     ? 600
                     : type === 'ancetres'  ? 800
+                    : type === 'activites' ? 800
                     : 400;
 
     // Garder seulement les 20 derniers messages
@@ -35,12 +36,27 @@ exports.handler = async function(event) {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'web-search-2025-03-05'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: maxTokens,
+        tools: [
+          {
+            type: 'web_search_20250305',
+            name: 'web_search',
+            max_uses: 3
+          }
+        ],
         system: `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
+
+Tu as accès à la recherche web en temps réel. Utilise-la automatiquement pour:
+- La météo de n'importe quelle ville
+- Les nouvelles du jour (Québec, Canada, monde)
+- Les activités et événements locaux
+- Les prix, horaires, informations pratiques
+- Toute question nécessitant une information actuelle
 
 RÈGLES ABSOLUES POUR LA VOIX:
 - Écris exactement comme tu parlerais à voix haute — jamais comme un texte
@@ -76,11 +92,25 @@ LIMITES:
     });
 
     const data = await response.json();
+
+    // Extraire le texte final même si Claude a utilisé web_search
+    if (data.content && data.content.length > 0) {
+      const texteBlocs = data.content.filter(b => b.type === 'text');
+      if (texteBlocs.length > 0) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: texteBlocs })
+        };
+      }
+    }
+
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     };
+
   } catch (error) {
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
