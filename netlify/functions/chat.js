@@ -94,16 +94,24 @@ LIMITES:
     const data = await response.json();
 
     // Extraire le texte final même si Claude a utilisé web_search
-    if (data.content && data.content.length > 0) {
-      const texteBlocs = data.content.filter(b => b.type === 'text');
-      if (texteBlocs.length > 0) {
-        return {
-          statusCode: 200,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: texteBlocs })
-        };
-      }
-    }
+   if (data.content && data.content.length > 0) {
+  const texteFinal = data.content
+    .filter(b => b.type === 'text')
+    .map(b => b.text)
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (texteFinal.length > 0) {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: [{ type: 'text', text: texteFinal }] })
+    };
+  }
+}
+
+Commit et dans 2 minutes Sofia donnera la météo complète d'une seule voix, sans coupures ! 🚀
 
     return {
       statusCode: 200,
