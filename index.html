@@ -1584,7 +1584,11 @@ function initRecognition(){
     if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
     if(modeAttente==='sante'){modeAttente=null;document.getElementById('santeMicroBtn').classList.remove('active');document.getElementById('santeMicroBtn').textContent='🎙️';document.getElementById('santeReponseInput').value=t;envoyerReponseSante();return;}
     var tMin=t.toLowerCase();
-    if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){demanderMeteo();return;}
+   if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){
+  var villeDetectee = t.replace(/météo|meteo|météo à|meteo a|température|sofia|quelle est la|aujourd'hui|s'il vous plaît/gi,'').trim();
+  if(villeDetectee.length > 2){ obtenirMeteo(villeDetectee); } else { demanderMeteo(); }
+  return;
+}
     if(tMin.includes('nouvelle')||tMin.includes('actualité')||tMin.includes('journal')){demanderNouvelles();return;}
     if(tMin.includes('voyage')||tMin.includes('destination')){demanderVoyage();return;}
     if(tMin.includes('ancêtre')||tMin.includes('ancetre')||tMin.includes('généalogie')){demanderAncetres();return;}
