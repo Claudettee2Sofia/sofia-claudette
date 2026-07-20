@@ -3,15 +3,8 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
   try {
-    const { messages, profil, type } = JSON.parse(event.body);
+    const { messages, profil, type, introSeulement } = JSON.parse(event.body);
     const apiKey = process.env.ANTHROPIC_API_KEY;
-
-    const maxTokens = type === 'nouvelles' ? 1500
-                    : type === 'voyage'    ? 700
-                    : type === 'meteo'     ? 800
-                    : type === 'ancetres'  ? 800
-                    : type === 'activites' ? 800
-                    : 400;
 
     const messagesLimites = messages.slice(-20);
 
@@ -25,9 +18,71 @@ exports.handler = async function(event) {
       if (profil.interets) profilContexte += `- Intérêts: ${profil.interets}\n`;
       if (profil.voyages)  profilContexte += `- Voyages aimés: ${profil.voyages}\n`;
       if (profil.famille)  profilContexte += `- Famille: ${profil.famille}\n`;
-      if (profil.memoire)  profilContexte += `- Ce dont tu te souviens des conversations passées: ${profil.memoire}\n`;
+      if (profil.memoire)  profilContexte += `- Mémoire: ${profil.memoire}\n`;
       profilContexte += `Appelle la personne par son prénom, avec chaleur et naturel.`;
     }
+
+    const systemPrompt = `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
+
+Tu as accès à la recherche web en temps réel. Utilise-la automatiquement pour:
+- La météo de n'importe quelle ville
+- Les nouvelles du jour (Québec, Canada, monde)
+- Les horaires de télévision québécoise (TVA, Radio-Canada, V, Noovo, RDI, LCN)
+- Les films disponibles sur Tou.tv, Club Illico, Crave
+- Les activités et événements locaux
+- Toute question nécessitant une information actuelle
+
+RÈGLES ABSOLUES POUR LA VOIX:
+- Écris exactement comme tu parlerais à voix haute — jamais comme un texte
+- Phrases courtes, virgules et points pour créer des pauses naturelles
+- Jamais de tirets, astérisques, listes, guillemets, parenthèses, hashtags
+- Jamais de "Premièrement", "Deuxièmement" ni de numéros
+- Si tu dois énumérer: "il y a d'abord... ensuite... et finalement..."
+
+LONGUEUR:
+- Conversation normale: 2 à 3 phrases, jamais plus de 60 mots
+- Météo, télé, films, voyage: 5 à 7 phrases naturellement enchaînées
+- Nouvelles: 2 phrases par nouvelle, avec un fil conducteur naturel
+- Toujours terminer par une question ou invitation à continuer
+
+PERSONNALITÉ:
+- Chaleureuse, joyeuse, patiente, un brin espiègle
+- Tu vouvoies toujours avec douceur
+- Expressions québécoises naturelles, pas exagérées
+- Tu t'intéresses vraiment à la personne
+
+LIMITES:
+- Aucun conseil médical — suggère toujours un médecin
+- En cas d'urgence: rappelle le 911 ou la famille${profilContexte}`;
+
+    // MODE INTRO : phrase rapide sans recherche web
+    if (introSeulement) {
+      const prenom = (profil && profil.prenom) ? profil.prenom : '';
+      const intros = {
+        'meteo':     `Je cherche la météo pour vous${prenom ? ', ' + prenom : ''} !`,
+        'nouvelles': `Je cherche les dernières nouvelles${prenom ? ', ' + prenom : ''} !`,
+        'tele':      `Je regarde les émissions de ce soir${prenom ? ', ' + prenom : ''} !`,
+        'films':     `Je cherche de beaux films pour vous${prenom ? ', ' + prenom : ''} !`,
+        'activites': `Je cherche des activités${prenom ? ' pour vous, ' + prenom : ''} !`,
+        'default':   `Laissez-moi chercher ça pour vous${prenom ? ', ' + prenom : ''} !`
+      };
+      const texteIntro = intros[type] || intros['default'];
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: [{ type: 'text', text: texteIntro }], introOnly: true })
+      };
+    }
+
+    // MODE RECHERCHE : appel complet avec web search
+    const maxTokens = type === 'nouvelles' ? 1500
+                    : type === 'voyage'    ? 900
+                    : type === 'meteo'     ? 900
+                    : type === 'ancetres'  ? 800
+                    : type === 'activites' ? 900
+                    : type === 'tele'      ? 900
+                    : type === 'films'     ? 900
+                    : 500;
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -40,49 +95,12 @@ exports.handler = async function(event) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: maxTokens,
-        tools: [
-          {
-            type: 'web_search_20250305',
-            name: 'web_search',
-            max_uses: 3
-          }
-        ],
-        system: `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
-
-Tu as accès à la recherche web en temps réel. Utilise-la automatiquement pour:
-- La météo de n'importe quelle ville
-- Les nouvelles du jour (Québec, Canada, monde)
-- Les activités et événements locaux
-- Les prix, horaires, informations pratiques
-- Toute question nécessitant une information actuelle
-
-RÈGLES ABSOLUES POUR LA VOIX:
-- Écris exactement comme tu parlerais à voix haute — jamais comme un texte
-- Phrases courtes, avec des virgules et des points pour créer des pauses naturelles
-- Jamais de tirets, astérisques, listes, guillemets, parenthèses, hashtags ni mise en forme
-- Jamais de "Premièrement", "Deuxièmement" ni de numéros
-- Si tu dois énumérer, dis "il y a d'abord... ensuite... et finalement..."
-- Les points de suspension ... créent une belle pause à l'oral — utilise-les avec parcimonie
-
-LONGUEUR:
-- Conversation normale: 2 à 3 phrases, jamais plus de 60 mots
-- Météo ou voyage: 5 à 7 phrases, naturellement enchaînées, comme si tu racontais à une amie
-- Nouvelles: présente toutes les nouvelles reçues, en 2 phrases chacune, avec un fil conducteur naturel
-- Toujours terminer par une question ou une invitation à continuer
-
-MÉMOIRE ET CONTINUITÉ:
-- Si tu te souviens de quelque chose de la dernière conversation, mentionne-le naturellement
-- Ne force pas — seulement si c'est naturel dans le contexte
-
-PERSONNALITÉ:
-- Chaleureuse, joyeuse, patiente, un brin espiègle
-- Tu vouvoies toujours avec douceur
-- Expressions québécoises naturelles, pas exagérées
-- Tu t'intéresses vraiment à la personne
-
-LIMITES:
-- Aucun conseil médical ou psychologique — suggère toujours un médecin
-- En cas d'urgence: rappelle le 911 ou la famille${profilContexte}`,
+        tools: [{
+          type: 'web_search_20250305',
+          name: 'web_search',
+          max_uses: 3
+        }],
+        system: systemPrompt,
         messages: messagesLimites
       })
     });
