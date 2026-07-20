@@ -6,28 +6,26 @@ exports.handler = async function(event) {
     const { messages, profil, type } = JSON.parse(event.body);
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
-    // max_tokens selon le type de requête
     const maxTokens = type === 'nouvelles' ? 1500
                     : type === 'voyage'    ? 700
-                    : type === 'meteo'     ? 600
+                    : type === 'meteo'     ? 800
                     : type === 'ancetres'  ? 800
                     : type === 'activites' ? 800
                     : 400;
 
-    // Garder seulement les 20 derniers messages
     const messagesLimites = messages.slice(-20);
 
     let profilContexte = '';
     if (profil && profil.prenom) {
       profilContexte = '\n\nPROFIL:\n';
-      if (profil.prenom)      profilContexte += `- Prénom: ${profil.prenom}\n`;
-      if (profil.statut)      profilContexte += `- Statut: ${profil.statut}\n`;
-      if (profil.enfants)     profilContexte += `- Enfants: ${profil.enfants}\n`;
-      if (profil.ville)       profilContexte += `- Ville: ${profil.ville}\n`;
-      if (profil.interets)    profilContexte += `- Intérêts: ${profil.interets}\n`;
-      if (profil.voyages)     profilContexte += `- Voyages aimés: ${profil.voyages}\n`;
-      if (profil.famille)     profilContexte += `- Famille: ${profil.famille}\n`;
-      if (profil.memoire)     profilContexte += `- Ce dont tu te souviens des conversations passées: ${profil.memoire}\n`;
+      if (profil.prenom)   profilContexte += `- Prénom: ${profil.prenom}\n`;
+      if (profil.statut)   profilContexte += `- Statut: ${profil.statut}\n`;
+      if (profil.enfants)  profilContexte += `- Enfants: ${profil.enfants}\n`;
+      if (profil.ville)    profilContexte += `- Ville: ${profil.ville}\n`;
+      if (profil.interets) profilContexte += `- Intérêts: ${profil.interets}\n`;
+      if (profil.voyages)  profilContexte += `- Voyages aimés: ${profil.voyages}\n`;
+      if (profil.famille)  profilContexte += `- Famille: ${profil.famille}\n`;
+      if (profil.memoire)  profilContexte += `- Ce dont tu te souviens des conversations passées: ${profil.memoire}\n`;
       profilContexte += `Appelle la personne par son prénom, avec chaleur et naturel.`;
     }
 
@@ -74,7 +72,6 @@ LONGUEUR:
 
 MÉMOIRE ET CONTINUITÉ:
 - Si tu te souviens de quelque chose de la dernière conversation, mentionne-le naturellement
-- Par exemple: "La dernière fois vous parliez de votre jardin... comment ça se passe ?"
 - Ne force pas — seulement si c'est naturel dans le contexte
 
 PERSONNALITÉ:
@@ -82,7 +79,6 @@ PERSONNALITÉ:
 - Tu vouvoies toujours avec douceur
 - Expressions québécoises naturelles, pas exagérées
 - Tu t'intéresses vraiment à la personne
-- Parfois tu prends l'initiative: une anecdote, une question sur sa journée
 
 LIMITES:
 - Aucun conseil médical ou psychologique — suggère toujours un médecin
@@ -93,25 +89,23 @@ LIMITES:
 
     const data = await response.json();
 
-    // Extraire le texte final même si Claude a utilisé web_search
-   if (data.content && data.content.length > 0) {
-  const texteFinal = data.content
-    .filter(b => b.type === 'text')
-    .map(b => b.text)
-    .join('')
-    .replace(/\s+/g, ' ')
-    .trim();
+    // Assembler tous les blocs texte en une seule réponse propre
+    if (data.content && data.content.length > 0) {
+      const texteFinal = data.content
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join('')
+        .replace(/\s+/g, ' ')
+        .trim();
 
-  if (texteFinal.length > 0) {
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: [{ type: 'text', text: texteFinal }] })
-    };
-  }
-}
-
-Commit et dans 2 minutes Sofia donnera la météo complète d'une seule voix, sans coupures ! 🚀
+      if (texteFinal.length > 0) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: [{ type: 'text', text: texteFinal }] })
+        };
+      }
+    }
 
     return {
       statusCode: 200,
