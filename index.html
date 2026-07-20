@@ -1543,11 +1543,14 @@ function speakText(t){
   return fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c,compagnon:compagnon})})
   .then(function(r){if(!r.ok)throw new Error('failed');return r.blob();})
   .then(function(b){
-    var url=URL.createObjectURL(b);var a=new Audio();
-    a.onended=function(){URL.revokeObjectURL(url);onSpeakEnd();};
-    a.onerror=function(){URL.revokeObjectURL(url);onSpeakEnd();};
-    a.src=url;a.load();
-    var p=a.play();if(p!==undefined){p.catch(function(err){URL.revokeObjectURL(url);onSpeakEnd();});}
+    return new Promise(function(resolve){
+      var url=URL.createObjectURL(b);var a=new Audio();
+      a.onended=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
+      a.onerror=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
+      a.src=url;a.load();
+      var p=a.play();
+      if(p!==undefined){p.catch(function(err){URL.revokeObjectURL(url);onSpeakEnd();resolve();});}
+    });
   }).catch(function(){onSpeakEnd();});
 }
 function onSpeakEnd(){
