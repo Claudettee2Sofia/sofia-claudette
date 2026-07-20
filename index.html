@@ -1222,13 +1222,17 @@
 
   <!-- Grille modules -->
   <div class="modules-grid">
-    <div class="module-tile" onclick="demanderMeteo()">
-      <div class="module-icone">🌤️</div>
-      <div class="module-nom">Météo</div>
-    </div>
     <div class="module-tile" onclick="demanderNouvelles()">
       <div class="module-icone">📰</div>
       <div class="module-nom">Nouvelles</div>
+    </div>
+    <div class="module-tile" onclick="demanderTele()">
+      <div class="module-icone">📺</div>
+      <div class="module-nom">Télé ce soir</div>
+    </div>
+    <div class="module-tile" onclick="demanderFilms()">
+      <div class="module-icone">🍿</div>
+      <div class="module-nom">Films</div>
     </div>
     <div class="module-tile" onclick="demanderEpicerie()">
       <div class="module-icone">🛒</div>
@@ -1246,11 +1250,7 @@
       <div class="module-icone">✈️</div>
       <div class="module-nom">Voyage</div>
     </div>
-    <div class="module-tile" onclick="demanderActivites()">
-      <div class="module-icone">🎭</div>
-      <div class="module-nom">Activités</div>
-    </div>
-    <div class="module-tile special" onclick="sendSuggestion('Sofia, qu\'est-ce que tu peux faire pour moi aujourd\'hui ?')">
+    <div class="module-tile special" onclick="demanderTout()">
       <div class="module-icone">💬</div>
       <div class="module-nom">Tout</div>
     </div>
@@ -1584,11 +1584,7 @@ function initRecognition(){
     if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
     if(modeAttente==='sante'){modeAttente=null;document.getElementById('santeMicroBtn').classList.remove('active');document.getElementById('santeMicroBtn').textContent='🎙️';document.getElementById('santeReponseInput').value=t;envoyerReponseSante();return;}
     var tMin=t.toLowerCase();
-   if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){
-  var villeDetectee = t.replace(/météo|meteo|météo à|meteo a|température|sofia|quelle est la|aujourd'hui|s'il vous plaît/gi,'').trim();
-  if(villeDetectee.length > 2){ obtenirMeteo(villeDetectee); } else { demanderMeteo(); }
-  return;
-}
+    if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){demanderMeteo();return;}
     if(tMin.includes('nouvelle')||tMin.includes('actualité')||tMin.includes('journal')){demanderNouvelles();return;}
     if(tMin.includes('voyage')||tMin.includes('destination')){demanderVoyage();return;}
     if(tMin.includes('ancêtre')||tMin.includes('ancetre')||tMin.includes('généalogie')){demanderAncetres();return;}
@@ -1778,12 +1774,9 @@ function genealogieEffacer(){
 // === ACTIVITÉS (via recherche web) ===
 function demanderActivites(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
-  var villeDefaut=profil.ville||'Québec';
-  var choix=prompt('Pour quelle ville voulez-vous des activités ?\n\nAppuyez sur OK pour '+villeDefaut+', ou entrez une autre ville.');
-  if(choix===null)return;
-  var ville=choix.trim()||villeDefaut;
-  showUserMessage('Activités à '+ville+' 🎭');setStatus('Sofia cherche les activités...');setSearching(true);showTyping();
-  var prompt='Quelles sont les activités culturelles, sorties et événements à faire à '+ville+' en ce moment ? Inclus des suggestions pour les aînés : spectacles, expositions, activités de plein air, centres communautaires. Sois chaleureuse et enthousiaste !';
+  var ville=profil.ville||'Québec';
+  showUserMessage('Activités à '+ville+' 🎭');
+  var prompt='Quelles sont les activités culturelles, sorties et événements à faire à '+ville+' cette semaine ? Spectacles, expositions, activités de plein air, événements communautaires. Suggère 3 ou 4 options concrètes avec une phrase de description chacune. Sois chaleureuse et enthousiaste !';
   conversationHistory.push({role:'user',content:prompt});
   enregistrerActivite('activites',ville);
   getSofiaReply('activites');
@@ -2004,7 +1997,7 @@ function sendMessage(){
   modeAttente=null;conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();
 }
 
-// === APPEL CLAUDE AVEC RECHERCHE WEB ===
+// === APPEL CLAUDE AVEC DOUBLE PHASE (intro immédiate + recherche) ===
 function getSofiaReply(type){
   arreterVADLoop();clearTimeout(autoRestartTimer);
   try{if(recognition)recognition.stop();}catch(e){}
@@ -2013,19 +2006,78 @@ function getSofiaReply(type){
   document.getElementById('soleilIcone').textContent='⏳';
   document.getElementById('soleilTexte').textContent='Attends...';
   document.getElementById('sendBtn').disabled=true;
-  setStatus('Sofia réfléchit...');setSearching(true);showTyping();
+  setStatus('Sofia réfléchit...');setSearching(true);
+
+  var typesAvecRecherche=['meteo','nouvelles','tele','films','activites','urgence'];
+  var needsSearch=typesAvecRecherche.indexOf(type||'')!==-1;
+
   var messagesLimites=conversationHistory.slice(-20);
-  fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type||'conversation',webSearch:true})})
-  .then(function(r){return r.json();}).then(function(d){
-    setSearching(false);
-    if(d.content&&d.content[0]){
-      var reply=d.content[0].text;
-      conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-      if(type==='epicerie'){var articles=reply.match(/[-•]\s*([^\n]+)/g);if(articles&&articles.length>0){var liste=articles.map(function(a){return a.replace(/^[-•]\s*/,'').trim();});sauvegarderListeEpicerie(liste);}}
-      mettreAJourMemoire();showResponse(reply);speakText(reply);
-    }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");if(isEcouteActive)setTimeout(function(){startListening();},1000);}
-  }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");if(isEcouteActive)setTimeout(function(){startListening();},1000);})
-  .then(function(){document.getElementById('sendBtn').disabled=false;});
+
+  if(needsSearch){
+    // Phase 1 — intro immédiate sans recherche
+    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type,introSeulement:true})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.content&&d.content[0]&&d.introOnly){
+        var intro=d.content[0].text;
+        showTyping();
+        speakText(intro);
+      }
+      // Phase 2 — vraie recherche web en parallèle
+      return fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type})});
+    }).then(function(r){return r.json();}).then(function(d){
+      setSearching(false);
+      if(d.content&&d.content[0]){
+        var reply=d.content[0].text;
+        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
+        mettreAJourMemoire();showResponse(reply);speakText(reply);
+      }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");}
+    }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");})
+    .then(function(){document.getElementById('sendBtn').disabled=false;});
+  } else {
+    // Conversation normale — un seul appel sans recherche web
+    showTyping();
+    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type||'conversation'})})
+    .then(function(r){return r.json();}).then(function(d){
+      setSearching(false);
+      if(d.content&&d.content[0]){
+        var reply=d.content[0].text;
+        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
+        if(type==='epicerie'){var articles=reply.match(/[-•]\s*([^\n]+)/g);if(articles&&articles.length>0){var liste=articles.map(function(a){return a.replace(/^[-•]\s*/,'').trim();});sauvegarderListeEpicerie(liste);}}
+        mettreAJourMemoire();showResponse(reply);speakText(reply);
+      }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");if(isEcouteActive)setTimeout(function(){startListening();},1000);}
+    }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");if(isEcouteActive)setTimeout(function(){startListening();},1000);})
+    .then(function(){document.getElementById('sendBtn').disabled=false;});
+  }
+}
+
+// === TÉLÉ CE SOIR ===
+function demanderTele(){
+  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+  showUserMessage('Télé ce soir 📺');
+  var ville=profil.ville||'Québec';
+  var prompt='Quelles sont les émissions intéressantes ce soir sur TVA, Radio-Canada, V et Noovo ? Donne les émissions du soir à partir de 19h, avec l\'heure et une courte description. Parle comme si tu suggérais à une amie ce qu\'il y a de bon ce soir.';
+  conversationHistory.push({role:'user',content:prompt});
+  enregistrerActivite('tele','');
+  getSofiaReply('tele');
+}
+
+// === FILMS ===
+function demanderFilms(){
+  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+  showUserMessage('Films 🍿');
+  var prompt='Quels sont les bons films disponibles en ce moment sur Tou.tv et Club Illico ? Suggère 3 ou 4 films ou séries québécoises ou françaises, avec une courte description de chacun. Parle chaleureusement comme si tu recommandais à une amie.';
+  conversationHistory.push({role:'user',content:prompt});
+  enregistrerActivite('films','');
+  getSofiaReply('films');
+}
+
+// === TOUT ===
+function demanderTout(){
+  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+  var prenom=profil.prenom||'';
+  var msg=(prenom?prenom+', que':'Que')+' voulez-vous savoir ?';
+  showResponse(msg);
+  speakText(msg);
 }
 
 // === PING SESSION ===
