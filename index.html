@@ -2085,7 +2085,6 @@ function demanderMeteo() {
   var msg = 'Pour quelle ville voulez-vous la météo ?';
   showResponse(msg); modeAttente='ville'; speakText(msg);
 }
-javascript
 function obtenirMeteo(ville) {
   if (!ville || ville.trim().length < 2) return;
   modeAttente = null;
