@@ -1396,10 +1396,7 @@ function jouerFileAudio() {
 
   var item = audioQueue.shift();
 
-  // Activer l'état "parle" visuellement
   isSpeaking = true;
-  try { if (recognition) recognition.stop(); } catch(e) {}
-  isListening = false;
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleil').classList.add('speaking');
   document.getElementById('soleilIcone').textContent = '🔊';
@@ -1411,36 +1408,47 @@ function jouerFileAudio() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: item.texte, compagnon: compagnon })
   })
-  .then(function(r) {
-    if (!r.ok) throw new Error('voice failed');
-    return r.blob();
-  })
+  .then(function(r) { return r.blob(); })
   .then(function(b) {
-    return new Promise(function(resolve) {
-      var url = URL.createObjectURL(b);
-      var a = new Audio();
-      a.onended = function() { URL.revokeObjectURL(url); resolve(); };
-      a.onerror = function() { URL.revokeObjectURL(url); resolve(); };
-      a.src = url;
-      a.load();
-      var p = a.play();
-      if (p !== undefined) {
-        p.catch(function() { URL.revokeObjectURL(url); resolve(); });
-      }
-    });
-  })
-  .catch(function() { /* silence en cas d'erreur réseau */ })
-  .then(function() {
-    isPlayingQueue = false;
-    if (audioQueue.length > 0) {
-      // Phrase suivante immédiatement, sans pause
-      jouerFileAudio();
-    } else {
-      // File vide
-      if (item.estDerniere) {
+    var url = URL.createObjectURL(b);
+    var a = new Audio();
+    a.src = url;
+    a.load();
+    a.onended = function() {
+      URL.revokeObjectURL(url);
+      isPlayingQueue = false;
+      isSpeaking = false;
+      if (audioQueue.length > 0) {
+        jouerFileAudio();
+      } else if (item.estDerniere) {
         onSpeakEnd();
       }
-      // Sinon on attend que d'autres phrases arrivent (cas streaming futur)
+    };
+    a.onerror = function() {
+      URL.revokeObjectURL(url);
+      isPlayingQueue = false;
+      isSpeaking = false;
+      if (audioQueue.length > 0) {
+        jouerFileAudio();
+      } else {
+        onSpeakEnd();
+      }
+    };
+    a.play().catch(function(err) {
+      console.log('Audio play error:', err);
+      isPlayingQueue = false;
+      isSpeaking = false;
+      onSpeakEnd();
+    });
+  })
+  .catch(function(err) {
+    console.log('Voice fetch error:', err);
+    isPlayingQueue = false;
+    isSpeaking = false;
+    if (audioQueue.length > 0) {
+      jouerFileAudio();
+    } else {
+      onSpeakEnd();
     }
   });
 }
@@ -1457,6 +1465,9 @@ function speakText(t) {
     .trim();
   if (!c) return Promise.resolve();
 
+  audioQueue = [];
+  isPlayingQueue = false;
+
   var phrases = decouper(c);
   if (phrases.length === 0) return Promise.resolve();
 
@@ -1470,7 +1481,6 @@ function speakText(t) {
   jouerFileAudio();
   return Promise.resolve();
 }
-
 function onSpeakEnd() {
   isSpeaking = false;
   document.getElementById('soleil').classList.remove('speaking');
