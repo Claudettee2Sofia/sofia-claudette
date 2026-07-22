@@ -2281,62 +2281,57 @@ function getSofiaReply(type){
   document.getElementById('sendBtn').disabled=true;
   setStatus('Sofia réfléchit...');setSearching(true);
 
-  var typesAvecRecherche=['meteo','nouvelles','tele','films','activites','urgence'];
+  var typesAvecRecherche=['meteo','nouvelles','activites','urgence'];
   var needsSearch=typesAvecRecherche.indexOf(type||'')!==-1;
-
   var messagesLimites=conversationHistory.slice(-20);
 
   if(needsSearch){
-    // Phase 1 — intro immédiate + Phase 2 recherche web en parallèle
-    var introTexte='';
-    var rechercheTerminee=false;
-    var introTerminee=false;
-    var reponseEnAttente=null;
+    // Intro instantanée via voix du navigateur
+    var prenom=profil.prenom||'';
+    var intros={
+      'meteo':     'Je cherche la météo'+(prenom?', '+prenom:'')+' !',
+      'nouvelles': 'Je cherche les nouvelles'+(prenom?', '+prenom:'')+' !',
+      'activites': 'Je cherche des activités'+(prenom?', '+prenom:'')+' !',
+      'default':   'Je cherche ça pour vous'+(prenom?', '+prenom:'')+' !'
+    };
+    var texteIntro=intros[type]||intros['default'];
+    showTyping();
 
-    function jouerReponseFinale(){
-      if(rechercheTerminee&&introTerminee&&reponseEnAttente){
-        setSearching(false);
-        var reply=reponseEnAttente;
-        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-        mettreAJourMemoire();showResponse(reply);speakText(reply);
-        document.getElementById('sendBtn').disabled=false;
-      }
-    }
+    // Jouer intro immédiatement avec voix navigateur (sans délai réseau)
+    var utterance=new SpeechSynthesisUtterance(texteIntro);
+    utterance.lang='fr-CA';
+    utterance.rate=0.95;
+    utterance.pitch=1.1;
+    // Chercher une voix française
+    var voixFR=window.speechSynthesis.getVoices().filter(function(v){return v.lang.startsWith('fr');});
+    if(voixFR.length>0)utterance.voice=voixFR[0];
+    window.speechSynthesis.speak(utterance);
 
-    // Intro immédiate
-    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type,introSeulement:true})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(d.content&&d.content[0]&&d.introOnly){
-        introTexte=d.content[0].text;
-        showTyping();
-        // Attendre la fin de la voix avant de jouer la vraie réponse
-        speakText(introTexte).then(function(){
-          introTerminee=true;
-          jouerReponseFinale();
-        });
-      } else {
-        introTerminee=true;
-        jouerReponseFinale();
-      }
-    }).catch(function(){introTerminee=true;jouerReponseFinale();});
-
-    // Recherche web en parallèle
+    // Lancer la recherche en parallèle
     fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type})})
     .then(function(r){return r.json();}).then(function(d){
-      if(d.content&&d.content[0]){
-        reponseEnAttente=d.content[0].text;
-      }else{
-        reponseEnAttente="Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?";
-      }
-      rechercheTerminee=true;
-      jouerReponseFinale();
+      setSearching(false);
+      // Attendre que l'intro soit finie avant de jouer la vraie réponse
+      var attendre=setInterval(function(){
+        if(!window.speechSynthesis.speaking){
+          clearInterval(attendre);
+          if(d.content&&d.content[0]){
+            var reply=d.content[0].text;
+            conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
+            mettreAJourMemoire();showResponse(reply);speakText(reply);
+          }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");}
+          document.getElementById('sendBtn').disabled=false;
+        }
+      },200);
     }).catch(function(){
-      reponseEnAttente="Je suis désolée, réessayons !";
-      rechercheTerminee=true;
-      jouerReponseFinale();
+      setSearching(false);
+      window.speechSynthesis.cancel();
+      showResponse("Je suis désolée, réessayons !");
+      document.getElementById('sendBtn').disabled=false;
     });
+
   } else {
-    // Conversation normale — un seul appel sans recherche web
+    // Conversation normale — un seul appel
     showTyping();
     fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type||'conversation'})})
     .then(function(r){return r.json();}).then(function(d){
@@ -2344,7 +2339,6 @@ function getSofiaReply(type){
       if(d.content&&d.content[0]){
         var reply=d.content[0].text;
         conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-        if(type==='epicerie'){var articles=reply.match(/[-•]\s*([^\n]+)/g);if(articles&&articles.length>0){var liste=articles.map(function(a){return a.replace(/^[-•]\s*/,'').trim();});sauvegarderListeEpicerie(liste);}}
         mettreAJourMemoire();showResponse(reply);speakText(reply);
       }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");if(isEcouteActive)setTimeout(function(){startListening();},1000);}
     }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");if(isEcouteActive)setTimeout(function(){startListening();},1000);})
