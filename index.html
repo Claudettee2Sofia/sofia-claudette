@@ -2044,15 +2044,21 @@ function startListening() {
   }
 }
 function stopListening() {
-  isListening=false; modeAttente=null; clearTimeout(autoRestartTimer);
+  isListening = false;
+  modeAttente = null;
+  audioQueue = [];
+  isPlayingQueue = false;
+  clearTimeout(autoRestartTimer);
   document.getElementById('soleil').classList.remove('listening');
-  document.getElementById('soleilIcone').textContent='🎙️';
-  document.getElementById('soleilTexte').textContent='Appuyez';
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = 'Appuyez';
   setStatus('Appuyez sur Sofia ou posez votre question ✨');
   try { recognition.stop(); } catch(e) {}
 }
 function toggleVoice() {
   if (isSpeaking) return;
+  // Réinitialiser modeAttente au cas où il serait bloqué
+  modeAttente = null;
   if (isListening) { stopListening(); } else { startListening(); }
 }
 function toggleEcoute() {
