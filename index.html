@@ -1627,30 +1627,98 @@ function setSearching(on){
   else{dot.classList.remove('searching');label.textContent='En ligne';}
 }
 
-// === VOIX ===
-function speakText(t){
-  var c=t.replace(/<br\s*\/?>/gi,'. ').replace(/[\u{1F300}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();
-  if(!c)return Promise.resolve();
-  isSpeaking=true;
-  try{if(recognition)recognition.stop();}catch(e){}
-  isListening=false;
+// === FILE AUDIO (streaming simulé) ===
+var audioQueue = [];
+var isPlayingQueue = false;
+
+function jouerFileAudio() {
+  if (isPlayingQueue || audioQueue.length === 0) return;
+  isPlayingQueue = true;
+  var item = audioQueue.shift();
+
+  isSpeaking = true;
+  try { if (recognition) recognition.stop(); } catch(e) {}
+  isListening = false;
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleil').classList.add('speaking');
-  document.getElementById('soleilIcone').textContent='🔊';
-  document.getElementById('soleilTexte').textContent='Parle...';
+  document.getElementById('soleilIcone').textContent = '🔊';
+  document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
-  return fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c,compagnon:compagnon})})
-  .then(function(r){if(!r.ok)throw new Error('failed');return r.blob();})
-  .then(function(b){
-    return new Promise(function(resolve){
-      var url=URL.createObjectURL(b);var a=new Audio();
-      a.onended=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
-      a.onerror=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
-      a.src=url;a.load();
-      var p=a.play();
-      if(p!==undefined){p.catch(function(err){URL.revokeObjectURL(url);onSpeakEnd();resolve();});}
+
+  fetch('/.netlify/functions/voice', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: item.texte, compagnon: compagnon })
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error('voice failed');
+    return r.blob();
+  })
+  .then(function(b) {
+    return new Promise(function(resolve) {
+      var url = URL.createObjectURL(b);
+      var a = new Audio();
+      a.onended = function() { URL.revokeObjectURL(url); resolve(); };
+      a.onerror = function() { URL.revokeObjectURL(url); resolve(); };
+      a.src = url; a.load();
+      var p = a.play();
+      if (p !== undefined) { p.catch(function() { URL.revokeObjectURL(url); resolve(); }); }
     });
-  }).catch(function(){onSpeakEnd();return Promise.resolve();});
+  })
+  .catch(function() { /* silence en cas d'erreur */ })
+  .then(function() {
+    isPlayingQueue = false;
+    if (audioQueue.length > 0) {
+      // Phrase suivante sans pause
+      jouerFileAudio();
+    } else {
+      // File vide — fin de la réponse
+      if (item.estDerniere) {
+        onSpeakEnd();
+      } else {
+        isPlayingQueue = false;
+      }
+    }
+  });
+}
+
+function speakText(t) {
+  var c = t
+    .replace(/<br\s*\/?>/gi, '. ')
+    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!c) return Promise.resolve();
+
+  // Découper en phrases naturelles (. ! ? avec majuscule après)
+  var phrases = decouper(c);
+  if (phrases.length === 0) return Promise.resolve();
+
+  phrases.forEach(function(phrase, i) {
+    var estDerniere = (i === phrases.length - 1);
+    audioQueue.push({ texte: phrase, estDerniere: estDerniere });
+  });
+
+  jouerFileAudio();
+  return Promise.resolve();
+}
+
+function decouper(texte) {
+  // Découper sur . ! ? en gardant la ponctuation, minimum 20 chars par phrase
+  var morceaux = texte.match(/[^.!?]+[.!?]+/g) || [texte];
+  var phrases = [];
+  var tampon = '';
+  morceaux.forEach(function(m) {
+    var s = m.trim();
+    if (!s) return;
+    tampon = tampon ? tampon + ' ' + s : s;
+    if (tampon.length >= 30) {
+      phrases.push(tampon);
+      tampon = '';
+    }
+  });
+  if (tampon) phrases.push(tampon);
+  return phrases.filter(function(p) { return p.length > 2; });
 }
 function onSpeakEnd(){
   isSpeaking=false;
@@ -2271,82 +2339,157 @@ function sendMessage(){
   modeAttente=null;conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();
 }
 
-// === APPEL CLAUDE AVEC DOUBLE PHASE (intro immédiate + recherche) ===
-function getSofiaReply(type){
-  arreterVADLoop();clearTimeout(autoRestartTimer);
-  try{if(recognition)recognition.stop();}catch(e){}
-  isListening=false;modeAttente=null;
+// === APPEL CLAUDE AVEC PIPELINE AUDIO RAPIDE ===
+function getSofiaReply(type) {
+  arreterVADLoop(); clearTimeout(autoRestartTimer);
+  try { if (recognition) recognition.stop(); } catch(e) {}
+  isListening = false; modeAttente = null;
+  audioQueue = []; isPlayingQueue = false;
   document.getElementById('soleil').classList.remove('listening');
-  document.getElementById('soleilIcone').textContent='⏳';
-  document.getElementById('soleilTexte').textContent='Attends...';
-  document.getElementById('sendBtn').disabled=true;
-  setStatus('Sofia réfléchit...');setSearching(true);
+  document.getElementById('soleilIcone').textContent = '⏳';
+  document.getElementById('soleilTexte').textContent = 'Attends...';
+  document.getElementById('sendBtn').disabled = true;
+  setStatus('Sofia réfléchit...'); setSearching(true);
 
-  var typesAvecRecherche=['meteo','nouvelles','activites','urgence'];
-  var needsSearch=typesAvecRecherche.indexOf(type||'')!==-1;
-  var messagesLimites=conversationHistory.slice(-20);
+  var typesAvecRecherche = ['meteo', 'nouvelles', 'activites', 'urgence'];
+  var needsSearch = typesAvecRecherche.indexOf(type || '') !== -1;
+  var messagesLimites = conversationHistory.slice(-20);
+  var prenom = profil.prenom || '';
 
-  if(needsSearch){
-    // Intro instantanée via voix du navigateur
-    var prenom=profil.prenom||'';
-    var intros={
-      'meteo':     'Je cherche la météo'+(prenom?', '+prenom:'')+' !',
-      'nouvelles': 'Je cherche les nouvelles'+(prenom?', '+prenom:'')+' !',
-      'activites': 'Je cherche des activités'+(prenom?', '+prenom:'')+' !',
-      'default':   'Je cherche ça pour vous'+(prenom?', '+prenom:'')+' !'
+  if (needsSearch) {
+    var intros = {
+      'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + ' !',
+      'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + ' !',
+      'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + ' !',
+      'default':   'Laissez-moi chercher ça' + (prenom ? ', ' + prenom : '') + ' !'
     };
-    var texteIntro=intros[type]||intros['default'];
+    var texteIntro = intros[type] || intros['default'];
     showTyping();
 
-    // Jouer intro immédiatement avec voix navigateur (sans délai réseau)
-    var utterance=new SpeechSynthesisUtterance(texteIntro);
-    utterance.lang='fr-CA';
-    utterance.rate=0.95;
-    utterance.pitch=1.1;
-    // Chercher une voix française
-    var voixFR=window.speechSynthesis.getVoices().filter(function(v){return v.lang.startsWith('fr');});
-    if(voixFR.length>0)utterance.voice=voixFR[0];
-    window.speechSynthesis.speak(utterance);
+    // APPEL 1 : intro immédiate via ElevenLabs
+    var promiseIntro = fetch('/.netlify/functions/voice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: texteIntro, compagnon: compagnon })
+    }).then(function(r) { return r.blob(); });
 
-    // Lancer la recherche en parallèle
-    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type})})
-    .then(function(r){return r.json();}).then(function(d){
-      setSearching(false);
-      // Attendre que l'intro soit finie avant de jouer la vraie réponse
-      var attendre=setInterval(function(){
-        if(!window.speechSynthesis.speaking){
-          clearInterval(attendre);
-          if(d.content&&d.content[0]){
-            var reply=d.content[0].text;
-            conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-            mettreAJourMemoire();showResponse(reply);speakText(reply);
-          }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");}
-          document.getElementById('sendBtn').disabled=false;
+    // APPEL 2 : Claude + web search en parallèle
+    var promiseClaude = fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type })
+    }).then(function(r) { return r.json(); });
+
+    // Jouer l'intro dès qu'elle arrive (~400ms)
+    promiseIntro.then(function(blobIntro) {
+      isSpeaking = true;
+      document.getElementById('soleil').classList.add('speaking');
+      document.getElementById('soleilIcone').textContent = '🔊';
+      document.getElementById('soleilTexte').textContent = 'Parle...';
+      setStatus('Sofia vous parle...');
+      var url = URL.createObjectURL(blobIntro);
+      var a = new Audio();
+      a.src = url; a.load();
+      a.play().catch(function() {});
+
+      // Dès que Claude répond, mettre les phrases en file d'attente
+      promiseClaude.then(function(d) {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+
+        if (d.content && d.content[0]) {
+          var reply = d.content[0].text;
+          conversationHistory.push({ role: 'assistant', content: reply });
+          sauvegarderHistorique(); mettreAJourMemoire();
+          showResponse(reply);
+
+          var phrases = decouper(
+            reply.replace(/<br\s*\/?>/gi, '. ')
+                 .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+                 .replace(/\s+/g, ' ').trim()
+          );
+
+          // Mettre toutes les phrases en file AVANT que l'intro se termine
+          phrases.forEach(function(phrase, i) {
+            audioQueue.push({ texte: phrase, estDerniere: (i === phrases.length - 1) });
+          });
+
+          // Quand l'intro finit, démarrer immédiatement la file
+          a.onended = function() {
+            URL.revokeObjectURL(url);
+            isPlayingQueue = false;
+            isSpeaking = false;
+            jouerFileAudio();
+          };
+          a.onerror = function() {
+            URL.revokeObjectURL(url);
+            isPlayingQueue = false;
+            isSpeaking = false;
+            jouerFileAudio();
+          };
+
+        } else {
+          a.onended = function() {
+            URL.revokeObjectURL(url);
+            showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+            onSpeakEnd();
+          };
         }
-      },200);
-    }).catch(function(){
-      setSearching(false);
-      window.speechSynthesis.cancel();
-      showResponse("Je suis désolée, réessayons !");
-      document.getElementById('sendBtn').disabled=false;
+      }).catch(function() {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+        a.onended = function() {
+          URL.revokeObjectURL(url);
+          showResponse("Je suis désolée, réessayons !");
+          onSpeakEnd();
+        };
+      });
+    }).catch(function() {
+      // Intro échouée — attendre Claude seul
+      promiseClaude.then(function(d) {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+        if (d.content && d.content[0]) {
+          var reply = d.content[0].text;
+          conversationHistory.push({ role: 'assistant', content: reply });
+          sauvegarderHistorique(); mettreAJourMemoire();
+          showResponse(reply); speakText(reply);
+        } else {
+          showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+        }
+      });
     });
 
   } else {
-    // Conversation normale — un seul appel
+    // === CONVERSATION NORMALE — un seul appel ===
     showTyping();
-    fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messagesLimites,profil:profil,type:type||'conversation'})})
-    .then(function(r){return r.json();}).then(function(d){
+    fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
       setSearching(false);
-      if(d.content&&d.content[0]){
-        var reply=d.content[0].text;
-        conversationHistory.push({role:'assistant',content:reply});sauvegarderHistorique();
-        mettreAJourMemoire();showResponse(reply);speakText(reply);
-      }else{showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");if(isEcouteActive)setTimeout(function(){startListening();},1000);}
-    }).catch(function(){setSearching(false);showResponse("Je suis désolée, réessayons !");if(isEcouteActive)setTimeout(function(){startListening();},1000);})
-    .then(function(){document.getElementById('sendBtn').disabled=false;});
+      document.getElementById('sendBtn').disabled = false;
+      if (d.content && d.content[0]) {
+        var reply = d.content[0].text;
+        conversationHistory.push({ role: 'assistant', content: reply });
+        sauvegarderHistorique(); mettreAJourMemoire();
+        showResponse(reply); speakText(reply);
+      } else {
+        showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+        if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+      }
+    })
+    .catch(function() {
+      setSearching(false);
+      document.getElementById('sendBtn').disabled = false;
+      showResponse("Je suis désolée, réessayons !");
+      if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+    });
   }
 }
-
 // === TÉLÉ CE SOIR — liens directs ===
 function demanderTele(){
   if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
