@@ -41,12 +41,10 @@
     min-height: 100%;
   }
 
-  /* === ÉTOILES === */
   .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
   .star { position: absolute; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
   @keyframes twinkle { 0%,100%{opacity:0.1}50%{opacity:0.6} }
 
-  /* === BARRE HAUTE === */
   .top-bar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -124,7 +122,6 @@
   }
   .admin-btn:hover { background: rgba(61,124,240,0.18); color: rgba(61,124,240,0.6); }
 
-  /* === ZONE PRINCIPALE === */
   .main-zone {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; justify-content: flex-start;
@@ -133,7 +130,6 @@
     min-height: 0; overflow-y: auto;
   }
 
-  /* === AVATAR SOFIA === */
   .avatar-zone {
     display: flex; flex-direction: column; align-items: center;
     margin-bottom: 14px; flex-shrink: 0;
@@ -210,7 +206,6 @@
     font-size: 11px; color: var(--texte-muted); margin-top: 3px; letter-spacing: 0.5px;
   }
 
-  /* === BADGE RECHERCHE WEB === */
   .web-badge {
     display: flex; align-items: center; gap: 6px;
     background: rgba(61,124,240,0.08);
@@ -226,7 +221,6 @@
     animation: dotPulse 2s ease-in-out infinite;
   }
 
-  /* === GRILLE MODULES === */
   .modules-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -256,14 +250,12 @@
     text-align: center;
   }
 
-  /* === STATUT === */
   .status-zone { margin: 4px 0; text-align: center; min-height: 18px; }
   .status-text {
     font-size: clamp(11px,3vw,14px); font-weight: 600;
     color: var(--texte-muted);
   }
 
-  /* === ZONE RÉPONSE === */
   .response-zone {
     width: 100%; max-width: 500px;
     flex-shrink: 1; overflow-y: auto;
@@ -304,7 +296,6 @@
   .td:nth-child(2){animation-delay:0.2s}.td:nth-child(3){animation-delay:0.4s}
   @keyframes tdB { 0%,60%,100%{transform:translateY(0);opacity:0.3}30%{transform:translateY(-7px);opacity:1} }
 
-  /* === BARRE BASSE === */
   .bottom-bar {
     z-index: 10;
     background: rgba(5,13,26,0.7);
@@ -351,7 +342,6 @@
     background: rgba(5,13,26,0.5); font-style: italic;
   }
 
-  /* === BOUTON JE VAIS BIEN === */
   .bien-btn {
     position: fixed; bottom: 80px; left: 10px; z-index: 100;
     background: rgba(74,222,128,0.1);
@@ -366,11 +356,6 @@
   .bien-btn:hover { background: rgba(74,222,128,0.18); color: #4ade80; }
   .bien-btn.done { background: rgba(74,222,128,0.18); color: #4ade80; border-color: rgba(74,222,128,0.4); }
 
-  /* ===========================
-     OVERLAYS / MODALS
-  =========================== */
-
-  /* Base overlay */
   .overlay-base {
     position: fixed; inset: 0; z-index: 400;
     background: rgba(5,13,26,0.97);
@@ -397,7 +382,6 @@
     display: flex; align-items: center; justify-content: center;
   }
 
-  /* Inputs génériques */
   .field {
     width: 100%; background: rgba(61,124,240,0.1);
     border: 1px solid rgba(61,124,240,0.25);
@@ -431,7 +415,6 @@
     margin-bottom: 10px;
   }
 
-  /* === MODAL ACCÈS === */
   .acces-overlay {
     position: fixed; inset: 0; z-index: 500;
     background: rgba(5,13,26,0.98);
@@ -475,7 +458,6 @@
   .acces-erreur{font-size:13px;color:#ef4444;min-height:18px;margin-top:4px}
   .acces-indice{font-size:11px;color:rgba(200,216,240,0.25);margin-top:16px;font-style:italic}
 
-  /* === MODAL CHOIX COMPAGNON === */
   .choix-overlay {
     position: fixed; inset: 0; z-index: 450;
     background: rgba(5,13,26,0.97);
@@ -513,7 +495,6 @@
     color:white;cursor:pointer;box-shadow:0 4px 15px rgba(61,124,240,0.4);
   }
 
-  /* === PROFIL === */
   .profil-overlay {
     position: fixed; inset: 0; z-index: 420;
     background: rgba(5,13,26,0.95); backdrop-filter: blur(12px);
@@ -542,7 +523,6 @@
   }
   .profil-passer{margin-top:12px;font-size:12px;color:rgba(61,124,240,0.35);cursor:pointer;text-decoration:underline;display:block}
 
-  /* === ADMIN === */
   .admin-overlay{
     position:fixed;inset:0;z-index:500;
     background:rgba(5,13,26,0.98);backdrop-filter:blur(12px);
@@ -586,7 +566,6 @@
   }
   .admin-form-titre{font-size:12px;font-weight:800;color:rgba(200,216,240,0.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
 
-  /* === MODULE URGENCE === */
   .urgence-overlay{
     position:fixed;inset:0;z-index:400;
     background:rgba(5,13,26,0.97);backdrop-filter:blur(12px);
@@ -614,7 +593,6 @@
   }
   @keyframes pulse911{0%,100%{box-shadow:0 0 30px rgba(239,68,68,0.4)}50%{box-shadow:0 0 55px rgba(239,68,68,0.7),0 0 0 8px rgba(239,68,68,0.1)}}
 
-  /* Numéros utiles pré-remplis */
   .utiles-grid{
     width:100%;max-width:440px;
     display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;
@@ -632,7 +610,6 @@
   .utile-card.rouge .utile-numero{color:#fca5a5}
   .utile-desc{font-size:10px;color:var(--texte-muted);margin-top:2px}
 
-  /* Contacts personnels */
   .contact-card{
     width:100%;max-width:440px;
     background:rgba(61,124,240,0.07);border:0.5px solid rgba(61,124,240,0.18);
@@ -667,7 +644,6 @@
     border-radius:10px;padding:9px 10px;font-size:15px;cursor:pointer;color:#ef4444;
   }
 
-  /* Formulaire ajout contact */
   .ajout-form{
     width:100%;max-width:440px;
     background:rgba(61,124,240,0.05);border:0.5px solid rgba(61,124,240,0.12);
@@ -694,9 +670,6 @@
     font-family:'Quicksand',sans-serif;color:white;cursor:pointer;
     box-shadow:0 4px 15px rgba(61,124,240,0.3);
   }
-
-  /* === MODULES INCHANGÉS (genealogie, activites, etc.) === */
-  /* On garde les styles fonctionnels existants, adaptés en bleu nuit */
 
   .module-overlay{
     position:fixed;inset:0;z-index:300;
@@ -726,7 +699,6 @@
   .module-card-titre{font-size:17px;font-weight:800;color:var(--bleu-pale);margin-bottom:6px;display:flex;align-items:center;gap:8px}
   .module-card-texte{font-size:15px;color:var(--argent-pale);line-height:1.6}
 
-  /* Généalogie — étapes */
   .genealogie-etapes{width:100%;max-width:500px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;gap:0}
   .genealogie-etape{
     width:32px;height:32px;border-radius:50%;
@@ -782,7 +754,6 @@
   .genealogie-checkbox-row{display:flex;align-items:center;gap:10px;margin-top:6px;padding:10px 0}
   .genealogie-label{font-size:14px;color:var(--argent-pale);cursor:pointer}
 
-  /* Santé */
   .sante-overlay{
     position:fixed;inset:0;z-index:300;
     background:linear-gradient(180deg,#050d1a 0%,#071a0f 40%,#050d1a 100%);
@@ -817,7 +788,6 @@
   .sante-reponse-input::placeholder{color:rgba(74,222,128,0.3);font-weight:400}
   .sante-envoyer-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#15803d);border:none;font-size:18px;color:white;cursor:pointer;flex-shrink:0}
 
-  /* Voyage */
   .voyage-overlay{position:fixed;inset:0;z-index:300;background:linear-gradient(180deg,#050d1a 0%,#0a1628 30%,#050d1a 100%);display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:0 0 40px;animation:fadeIn 0.3s ease}
   .voyage-photo{width:100%;height:220px;object-fit:cover;display:block}
   .voyage-photo-credit{font-size:10px;color:rgba(200,216,240,0.25);text-align:right;padding:4px 16px 0;width:100%}
@@ -845,7 +815,6 @@
   .coup-coeur-nom{font-size:16px;font-weight:700;color:var(--argent-pale)}
   .btn-retirer-coeur{background:none;border:none;font-size:18px;cursor:pointer;color:rgba(200,216,240,0.35)}
 
-  /* Village */
   .village-overlay{position:fixed;inset:0;z-index:400;background:linear-gradient(180deg,#050d1a 0%,#0a1628 40%,#050d1a 100%);display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:0 0 40px;animation:fadeIn 0.3s ease}
   .village-photos{width:100%;display:flex;gap:3px;height:200px;overflow:hidden}
   .village-photo-img{flex:1;object-fit:cover;display:block;min-width:0}
@@ -856,7 +825,6 @@
   .village-loading{width:100%;max-width:600px;padding:40px 20px;text-align:center;font-size:16px;color:rgba(200,216,240,0.35)}
   .btn-sofia-village{width:calc(100% - 40px);max-width:560px;background:linear-gradient(135deg,#3d7cf0,#2d5fcf);border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;font-family:'Quicksand',sans-serif;color:white;cursor:pointer;box-shadow:0 4px 15px rgba(61,124,240,0.3);margin:0 20px}
 
-  /* === ÉPICERIE === */
   .epicerie-lien {
     display:flex;align-items:center;justify-content:center;
     background:rgba(61,124,240,0.08);border:0.5px solid rgba(61,124,240,0.18);
@@ -1163,8 +1131,6 @@
     <div class="module-titre">🛒 Liste d'épicerie</div>
     <button class="module-fermer" onclick="fermerEpicerie()">✕</button>
   </div>
-
-  <!-- Circulaires -->
   <div style="width:100%;max-width:500px;margin-bottom:14px">
     <div class="section-label" style="margin-bottom:8px">Circulaires de la semaine</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
@@ -1176,8 +1142,6 @@
       <a href="https://cacirculaire.ca/walmart-qc" target="_blank" class="epicerie-lien">Walmart</a>
     </div>
   </div>
-
-  <!-- Ajout article -->
   <div style="width:100%;max-width:500px;margin-bottom:12px">
     <div class="section-label" style="margin-bottom:8px">Ajouter un article</div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -1190,8 +1154,6 @@
       💡 Appuyez sur 🎙️ et dites un article à la fois — Sofia note chacun séparément
     </div>
   </div>
-
-  <!-- Compteur -->
   <div style="width:100%;max-width:500px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
     <div style="font-size:13px;color:var(--texte-muted)" id="epicerieCompteur">0 article</div>
     <div style="display:flex;gap:8px">
@@ -1199,8 +1161,6 @@
       <button onclick="viderListeEpicerie()" style="background:rgba(239,68,68,0.1);border:0.5px solid rgba(239,68,68,0.2);border-radius:10px;padding:6px 12px;font-size:12px;color:#fca5a5;cursor:pointer;font-weight:700">Tout effacer</button>
     </div>
   </div>
-
-  <!-- Liste articles -->
   <div id="epicerieListe" style="width:100%;max-width:500px;display:flex;flex-direction:column;gap:6px;padding-bottom:20px"></div>
 </div>
 
@@ -1210,11 +1170,7 @@
     <div class="urgence-titre">🚨 Urgence</div>
     <button class="urgence-fermer" onclick="fermerUrgence()">✕</button>
   </div>
-
-  <!-- 911 -->
   <button class="btn-911" onclick="appeler911()">📞 APPELER LE 911</button>
-
-  <!-- Numéros utiles pré-remplis -->
   <div class="section-label">Numéros utiles</div>
   <div class="utiles-grid">
     <div class="utile-card rouge" onclick="window.location.href='tel:811'">
@@ -1254,12 +1210,8 @@
       <div class="utile-desc">Info & références</div>
     </div>
   </div>
-
-  <!-- Contacts personnels -->
   <div class="section-label">Mes contacts de confiance</div>
   <div id="listeContacts"></div>
-
-  <!-- Formulaire ajout -->
   <div class="ajout-form">
     <div class="ajout-form-titre">✍️ Ajouter un contact</div>
     <div class="relation-grid" id="relationGrid">
@@ -1296,8 +1248,6 @@
 
 <!-- ZONE PRINCIPALE -->
 <div class="main-zone">
-
-  <!-- Avatar -->
   <div class="avatar-zone">
     <div class="avatar-outer-ring">
       <div class="avatar-ring">
@@ -1312,13 +1262,11 @@
     <div class="sofia-tagline">Votre compagne · Disponible partout</div>
   </div>
 
-  <!-- Badge recherche web -->
   <div class="web-badge">
     <div class="web-dot"></div>
     Recherche web en temps réel · Je sais tout
   </div>
 
-  <!-- Grille modules -->
   <div class="modules-grid">
     <div class="module-tile" onclick="demanderNouvelles()">
       <div class="module-icone">📰</div>
@@ -1354,7 +1302,6 @@
     </div>
   </div>
 
-  <!-- Statut & réponse -->
   <div class="status-zone">
     <div class="status-text" id="statusText">Appuyez sur Sofia ou posez votre question ✨</div>
   </div>
@@ -1370,7 +1317,9 @@
 <div class="text-hint" id="textHint">Parlez ou écrivez — Sofia cherche tout en temps réel ✨</div>
 
 <script>
-// === ÉTOILES ===
+// ============================================================
+// ÉTOILES
+// ============================================================
 (function(){
   var s=document.getElementById('stars');
   for(var i=0;i<50;i++){
@@ -1382,260 +1331,72 @@
   }
 })();
 
-// === PROFIL ===
-var profil=JSON.parse(localStorage.getItem('sofia_profil')||'{}');
-var profilEtapes=[
-  {champ:'prenom',question:'Comment vous appelez-vous ?'},
-  {champ:'ville',question:'Dans quelle ville habitez-vous ?'},
-  {champ:'statut',question:'Êtes-vous marié(e), veuf/veuve, célibataire ?'},
+// ============================================================
+// ÉTAT GLOBAL
+// ============================================================
+var profil = JSON.parse(localStorage.getItem('sofia_profil') || '{}');
+var profilEtapes = [
+  {champ:'prenom', question:'Comment vous appelez-vous ?'},
+  {champ:'ville',  question:'Dans quelle ville habitez-vous ?'},
+  {champ:'statut', question:'Êtes-vous marié(e), veuf/veuve, célibataire ?'},
   {champ:'enfants',question:'Avez-vous des enfants ou petits-enfants ?'},
   {champ:'interets',question:'Quels sont vos passe-temps ou intérêts ?'},
   {champ:'voyages',question:'Quelles destinations de voyage aimez-vous ?'}
 ];
-var profilEtapeActuelle=0;
+var profilEtapeActuelle = 0;
 
-// === ADMIN ===
-function ouvrirAdminDepuisApp(){
-  var code=prompt('Code administrateur :');
-  if(!code)return;
-  if(code.trim().toUpperCase()===CODE_ADMIN){
-    document.getElementById('adminCodeJour').textContent=getCodeDuJour();
-    document.getElementById('adminOverlay').style.display='flex';
-    adminAfficherUsers();
-  }else{alert('Code incorrect.');}
-}
-function fermerAdmin(){document.getElementById('adminOverlay').style.display='none';lancerSofia();}
-function adminAfficherUsers(){
-  var liste=document.getElementById('adminListeUsers');
-  liste.innerHTML='<div style="color:rgba(200,216,240,0.3);font-size:13px;text-align:center;padding:10px 0">Chargement...</div>';
-  fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'liste',data:{}})})
-  .then(function(r){return r.json();}).then(function(d){
-    var users=d.utilisateurs||[];
-    if(users.length===0){liste.innerHTML='<div style="color:rgba(200,216,240,0.25);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px">Aucun utilisateur de confiance.</div>';return;}
-    liste.innerHTML='';
-    users.forEach(function(u){
-      var card=document.createElement('div');card.className='admin-user-card';
-      card.innerHTML='<div class="admin-user-info"><div class="admin-user-nom">'+u.nom+'</div><div class="admin-user-code">🔑 '+u.code_acces+'</div></div><div class="admin-user-actions"><button class="btn-retirer" onclick="adminRetirerUser(\''+u.id+'\')">🗑️</button></div>';
-      liste.appendChild(card);
-    });
-  }).catch(function(){liste.innerHTML='<div style="color:#ef4444;font-size:13px;text-align:center;padding:10px 0">Erreur de chargement.</div>';});
-}
-function adminAjouterUser(){
-  var nom=document.getElementById('adminNom').value.trim();
-  var code=document.getElementById('adminCode').value.trim().toUpperCase();
-  if(!nom||!code){alert('Veuillez entrer un nom et un mot de passe.');return;}
-  if(code===CODE_ADMIN){alert('Ce mot de passe est réservé.');return;}
-  fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'ajouter',data:{nom:nom,code:code}})})
-  .then(function(r){return r.json();}).then(function(d){
-    if(d.succes){document.getElementById('adminNom').value='';document.getElementById('adminCode').value='';alert('Utilisateur '+nom+' ajouté !');adminAfficherUsers();}
-    else{alert(d.erreur||'Erreur.');}
-  }).catch(function(){alert('Erreur réseau.');});
-}
-function adminRetirerUser(id){
-  if(confirm('Retirer cet utilisateur ?')){
-    fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'supprimer',data:{utilisateur_id:id}})})
-    .then(function(){adminAfficherUsers();}).catch(function(){alert('Erreur.');});
-  }
-}
+var sessionId = null;
+var utilisateurId = localStorage.getItem('sofia_utilisateur_id') || null;
+var conversationHistory = JSON.parse(localStorage.getItem('sofia_historique') || '[]');
+var isSpeaking = false;
+var isListening = false;
+var isEcouteActive = false;
+var recognition = null;
+var autoRestartTimer = null;
+var modeAttente = null;
+var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
+var CODE_ADMIN = 'SOFIA2025';
 
-// === ACCÈS ===
-var CODE_ADMIN='SOFIA2025';
-function getCodeDuJour(){var d=new Date();return 'SF'+String(d.getDate()).padStart(2,'0')+String(d.getMonth()+1).padStart(2,'0');}
-
-function verifierAcces(){
-  var code=document.getElementById('accesInput').value.trim().toUpperCase();
-  var erreur=document.getElementById('accesErreur');
-  if(code===CODE_ADMIN){
-    localStorage.setItem('sofia_acces_admin','oui');
-    document.getElementById('accesInput').value='';
-    fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'connexion_admin',data:{}})})
-    .finally(function(){document.getElementById('accesOverlay').style.display='none';lancerSofia();});
-    return;
-  }
-  if(code===getCodeDuJour()){
-    erreur.textContent='Vérification...';
-    fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verifier_invite',data:{}})})
-    .then(function(r){return r.json();}).then(function(d){
-      if(d.valide){localStorage.setItem('sofia_acces_date',new Date().toDateString());document.getElementById('accesOverlay').style.display='none';document.getElementById('accesInput').value='';erreur.textContent='';lancerSofia();}
-      else{erreur.textContent=d.message||'Accès refusé pour aujourd\'hui.';}
-    }).catch(function(){localStorage.setItem('sofia_acces_date',new Date().toDateString());document.getElementById('accesOverlay').style.display='none';lancerSofia();});
-    return;
-  }
-  erreur.textContent='Vérification...';
-  fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'verifier_code',data:{code:code}})})
-  .then(function(r){return r.json();}).then(function(d){
-    if(d.valide){
-      localStorage.setItem('sofia_utilisateur_id',d.utilisateur.id);
-      localStorage.setItem('sofia_utilisateur_nom',d.utilisateur.nom);
-      utilisateurId=d.utilisateur.id;sessionId=d.session_id;
-      document.getElementById('accesInput').value='';erreur.textContent='';
-      document.getElementById('accesOverlay').style.display='none';lancerSofia();
-    }else{erreur.textContent='Code incorrect. Réessayez.';document.getElementById('accesInput').value='';setTimeout(function(){erreur.textContent='';},3000);}
-  }).catch(function(){erreur.textContent='Erreur réseau.';setTimeout(function(){erreur.textContent='';},3000);});
-}
-
-function verifierAccesAuDemarrage(){
-  if(localStorage.getItem('sofia_acces_admin')==='oui'){lancerSofia();return;}
-  var uid=localStorage.getItem('sofia_utilisateur_id');
-  if(uid){utilisateurId=uid;lancerSofia();return;}
-  if(localStorage.getItem('sofia_acces_date')===new Date().toDateString()){lancerSofia();return;}
-  document.getElementById('accesOverlay').style.display='flex';
-  setTimeout(function(){document.getElementById('accesInput').focus();},300);
-}
-function lancerSofia(){document.getElementById('accesOverlay').style.display='none';verifierProfil();}
-
-// === COMPAGNON ===
-var compagnon=localStorage.getItem('sofia_compagnon')||'sofia';
-var VOIX={sofia:'WeAAwKYcS06VmXw086yZ',leo:'93nuHbke4dTER9x2pDwE'};
-
-function changerCompagnon(){
-  document.getElementById('carteSofia').classList.toggle('selected',compagnon==='sofia');
-  document.getElementById('carteLeo').classList.toggle('selected',compagnon==='leo');
-  document.getElementById('choixOverlay').style.display='flex';
-}
-function selectionnerCompagnon(choix){
-  compagnon=choix;
-  document.getElementById('carteSofia').classList.toggle('selected',choix==='sofia');
-  document.getElementById('carteLeo').classList.toggle('selected',choix==='leo');
-}
-function confirmerChoix(){
-  profil.compagnon=compagnon;
-  localStorage.setItem('sofia_compagnon',compagnon);
-  localStorage.setItem('sofia_profil',JSON.stringify(profil));
-  document.getElementById('choixOverlay').style.display='none';
-  appliquerCompagnon(compagnon);
-  if(!profil.prenom){document.getElementById('profilOverlay').style.display='flex';afficherEtapeProfil();}
-  else{var nom=profil.prenom||'vous';var nomC=compagnon==='leo'?'Léo':'Sofia';var msg='Bonjour '+nom+' ! C\'est '+nomC+'. Comme je suis content de vous retrouver ! Comment allez-vous aujourd\'hui ?';showResponse(msg);speakText(msg);}
-}
-function appliquerCompagnon(choix){
-  var nomC=choix==='leo'?'Léo':'Sofia';
-  var icone=choix==='leo'?'🌙':'✨';
-  document.getElementById('avatarNom').textContent=nomC;
-  document.getElementById('sofiaNameLabel').textContent=nomC;
-  document.getElementById('changerTexte').textContent=nomC;
-  document.querySelector('#userInput').placeholder='Posez votre question à '+nomC+'...';
-}
-
-// === PROFIL ===
-function verifierProfil(){
-  if(!profil.compagnon){document.getElementById('choixOverlay').style.display='flex';}
-  else if(!profil.prenom){document.getElementById('profilOverlay').style.display='flex';afficherEtapeProfil();}
-  else{
-    appliquerCompagnon(profil.compagnon);
-    var derniereSalutation=localStorage.getItem('sofia_derniere_salutation');
-    var aujourdhui=new Date().toDateString();
-    if(derniereSalutation!==aujourdhui){
-      localStorage.setItem('sofia_derniere_salutation',aujourdhui);
-      var nom=profil.prenom||'vous';
-      var maintenant=new Date();
-      var jours=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-      var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-      var date='Nous sommes '+jours[maintenant.getDay()]+' le '+maintenant.getDate()+' '+mois[maintenant.getMonth()]+' '+maintenant.getFullYear()+'. ';
-      var nomC=profil.compagnon==='leo'?'Léo':'Sofia';
-      var msg=date+'Bonjour '+nom+' ! C\'est '+nomC+'. Bonne journée ! Comment allez-vous aujourd\'hui ?';
-      showResponse(msg);speakText(msg);
-    }
-    verifierAlerteBienEtre();
-  }
-}
-function afficherEtapeProfil(){
-  if(profilEtapeActuelle<profilEtapes.length){
-    document.getElementById('profilQuestion').textContent=profilEtapes[profilEtapeActuelle].question;
-    document.getElementById('profilInput').value='';
-    setTimeout(function(){document.getElementById('profilInput').focus();},100);
-  }
-}
-function profilSuivant(){
-  var valeur=document.getElementById('profilInput').value.trim();
-  if(valeur){profil[profilEtapes[profilEtapeActuelle].champ]=valeur;localStorage.setItem('sofia_profil',JSON.stringify(profil));}
-  profilEtapeActuelle++;
-  if(profilEtapeActuelle<profilEtapes.length){afficherEtapeProfil();}else{terminerProfil();}
-}
-function passerProfil(){profilEtapeActuelle++;if(profilEtapeActuelle<profilEtapes.length){afficherEtapeProfil();}else{terminerProfil();}}
-function terminerProfil(){
-  document.getElementById('profilOverlay').style.display='none';
-  var nom=profil.prenom||'vous';
-  var maintenant=new Date();
-  var jours=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-  var mois=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-  var date='Nous sommes '+jours[maintenant.getDay()]+' le '+maintenant.getDate()+' '+mois[maintenant.getMonth()]+' '+maintenant.getFullYear()+'. ';
-  var msg=compagnon==='leo'?date+'Bonjour '+nom+' ! Je suis Léo, votre compagnon. Je suis tellement content de faire votre connaissance !':date+'Bonjour '+nom+' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne.';
-  showResponse(msg);speakText(msg);
-}
-
-// === JE VAIS BIEN ===
-function jeVaisBien(){
-  var today=new Date().toDateString();
-  localStorage.setItem('sofia_bien_date',today);
-  localStorage.setItem('sofia_bien_heure',new Date().toTimeString().slice(0,5));
-  var btn=document.getElementById('bienBtn');
-  btn.classList.add('done');
-  document.getElementById('bienTexte').textContent='✓ Confirmé';
-  var nomC=profil.compagnon==='leo'?'Léo':'Sofia';
-  var msg='Merci ! '+(profil.prenom||'vous')+', je suis '+(compagnon==='leo'?'content':'contente')+' que vous alliez bien. Bonne journée ! 😊';
-  showResponse(msg);
-  speakText(msg);
-}
-
-function verifierAlerteBienEtre(){
-  var today=new Date().toDateString();
-  var dernierBien=localStorage.getItem('sofia_bien_date');
-  if(dernierBien===today){
-    var btn=document.getElementById('bienBtn');
-    btn.classList.add('done');
-    document.getElementById('bienTexte').textContent='✓ Confirmé';
-  }
-  // Vérifier si c'est après midi et pas encore confirmé
-  var maintenant=new Date();
-  if(maintenant.getHours()>=12 && dernierBien!==today){
-    var contacts=JSON.parse(localStorage.getItem('sofia_contacts')||'[]');
-    var alerteContacts=contacts.filter(function(c){return c.alerte;});
-    if(alerteContacts.length>0){
-      // Afficher un rappel doux à Sofia
-      setTimeout(function(){
-        var msg=(profil.prenom||'')?' ':'';
-        msg='Bonjour'+(profil.prenom?' '+profil.prenom:'')+' ! Vous n\'avez pas encore dit que vous alliez bien aujourd\'hui. Tout va bien ? Appuyez sur le bouton vert si vous allez bien.';
-        showResponse(msg);
-        speakText(msg);
-      },2000);
-    }
-  }
-}
-
-// === ÉTAT ===
-var sessionId=null;
-var utilisateurId=localStorage.getItem('sofia_utilisateur_id')||null;
-var conversationHistory=JSON.parse(localStorage.getItem('sofia_historique')||'[]');
-var isSpeaking=false;var isListening=false;var isEcouteActive=false;
-var recognition=null;var autoRestartTimer=null;var modeAttente=null;
-
-function sauvegarderHistorique(){var aGarder=conversationHistory.slice(-30);localStorage.setItem('sofia_historique',JSON.stringify(aGarder));}
-
-function mettreAJourMemoire(){
-  if(conversationHistory.length%10!==0)return;
-  if(conversationHistory.length<6)return;
-  var messages=conversationHistory.slice(-20).concat([{role:'user',content:'Résume en 3 phrases maximum les sujets importants abordés dans cette conversation: préférences, famille, santé mentionnée, événements, centres d\'intérêt. Format: texte simple, pas de listes.'}]);
-  fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages,profil:{}})})
-  .then(function(r){return r.json();}).then(function(d){if(d.content&&d.content[0]){profil.memoire=d.content[0].text;localStorage.setItem('sofia_profil',JSON.stringify(profil));}}).catch(function(){});
-}
-
-// === STATUT VISUEL ===
-function setSearching(on){
-  var dot=document.getElementById('statutDot');
-  var label=document.getElementById('statutLabel');
-  if(on){dot.classList.add('searching');label.textContent='Sofia cherche...';}
-  else{dot.classList.remove('searching');label.textContent='En ligne';}
-}
-
-// === FILE AUDIO (streaming simulé) ===
+// ============================================================
+// FILE AUDIO — PIPELINE EN CASCADE (NOUVEAU)
+// ============================================================
 var audioQueue = [];
 var isPlayingQueue = false;
 
+/**
+ * Découpe un texte en phrases naturelles pour la synthèse vocale.
+ * Chaque phrase doit faire au moins 20 chars pour éviter les micro-clips.
+ */
+function decouper(texte) {
+  // Découper sur . ! ? en conservant la ponctuation
+  var morceaux = texte.match(/[^.!?]+[.!?]+/g) || [texte];
+  var phrases = [];
+  var tampon = '';
+  morceaux.forEach(function(m) {
+    var s = m.trim();
+    if (!s) return;
+    tampon = tampon ? tampon + ' ' + s : s;
+    // Envoyer la phrase dès qu'elle est assez longue
+    if (tampon.length >= 40) {
+      phrases.push(tampon);
+      tampon = '';
+    }
+  });
+  if (tampon) phrases.push(tampon);
+  return phrases.filter(function(p) { return p.length > 2; });
+}
+
+/**
+ * Joue la prochaine phrase dans la file.
+ * S'enchaîne automatiquement sans silence entre les phrases.
+ */
 function jouerFileAudio() {
   if (isPlayingQueue || audioQueue.length === 0) return;
   isPlayingQueue = true;
+
   var item = audioQueue.shift();
 
+  // Activer l'état "parle" visuellement
   isSpeaking = true;
   try { if (recognition) recognition.stop(); } catch(e) {}
   isListening = false;
@@ -1660,28 +1421,34 @@ function jouerFileAudio() {
       var a = new Audio();
       a.onended = function() { URL.revokeObjectURL(url); resolve(); };
       a.onerror = function() { URL.revokeObjectURL(url); resolve(); };
-      a.src = url; a.load();
+      a.src = url;
+      a.load();
       var p = a.play();
-      if (p !== undefined) { p.catch(function() { URL.revokeObjectURL(url); resolve(); }); }
+      if (p !== undefined) {
+        p.catch(function() { URL.revokeObjectURL(url); resolve(); });
+      }
     });
   })
-  .catch(function() { /* silence en cas d'erreur */ })
+  .catch(function() { /* silence en cas d'erreur réseau */ })
   .then(function() {
     isPlayingQueue = false;
     if (audioQueue.length > 0) {
-      // Phrase suivante sans pause
+      // Phrase suivante immédiatement, sans pause
       jouerFileAudio();
     } else {
-      // File vide — fin de la réponse
+      // File vide
       if (item.estDerniere) {
         onSpeakEnd();
-      } else {
-        isPlayingQueue = false;
       }
+      // Sinon on attend que d'autres phrases arrivent (cas streaming futur)
     }
   });
 }
 
+/**
+ * Point d'entrée principal pour faire parler Sofia.
+ * Découpe le texte en phrases et remplit la file audio.
+ */
 function speakText(t) {
   var c = t
     .replace(/<br\s*\/?>/gi, '. ')
@@ -1690,152 +1457,680 @@ function speakText(t) {
     .trim();
   if (!c) return Promise.resolve();
 
-  // Découper en phrases naturelles (. ! ? avec majuscule après)
   var phrases = decouper(c);
   if (phrases.length === 0) return Promise.resolve();
 
   phrases.forEach(function(phrase, i) {
-    var estDerniere = (i === phrases.length - 1);
-    audioQueue.push({ texte: phrase, estDerniere: estDerniere });
+    audioQueue.push({
+      texte: phrase,
+      estDerniere: (i === phrases.length - 1)
+    });
   });
 
   jouerFileAudio();
   return Promise.resolve();
 }
 
-function decouper(texte) {
-  // Découper sur . ! ? en gardant la ponctuation, minimum 20 chars par phrase
-  var morceaux = texte.match(/[^.!?]+[.!?]+/g) || [texte];
-  var phrases = [];
-  var tampon = '';
-  morceaux.forEach(function(m) {
-    var s = m.trim();
-    if (!s) return;
-    tampon = tampon ? tampon + ' ' + s : s;
-    if (tampon.length >= 30) {
-      phrases.push(tampon);
-      tampon = '';
-    }
-  });
-  if (tampon) phrases.push(tampon);
-  return phrases.filter(function(p) { return p.length > 2; });
-}
-function onSpeakEnd(){
-  isSpeaking=false;
+function onSpeakEnd() {
+  isSpeaking = false;
   document.getElementById('soleil').classList.remove('speaking');
-  document.getElementById('soleilIcone').textContent='🎙️';
-  document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
-  if(modeAttente){setStatus('Dites le nom... 👂');clearTimeout(autoRestartTimer);autoRestartTimer=setTimeout(function(){if(modeAttente&&!isListening)startListening();},600);return;}
-  if(isEcouteActive){setStatus('Sofia vous écoute... 👂');clearTimeout(autoRestartTimer);autoRestartTimer=setTimeout(function(){if(isEcouteActive&&!isListening&&!isSpeaking&&!modeAttente){demarrerVADLoop();startListening();}},1000);}
-  else{setStatus('Appuyez sur Sofia ou posez votre question ✨');}
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
+  if (modeAttente) {
+    setStatus('Dites le nom... 👂');
+    clearTimeout(autoRestartTimer);
+    autoRestartTimer = setTimeout(function() {
+      if (modeAttente && !isListening) startListening();
+    }, 600);
+    return;
+  }
+  if (isEcouteActive) {
+    setStatus('Sofia vous écoute... 👂');
+    clearTimeout(autoRestartTimer);
+    autoRestartTimer = setTimeout(function() {
+      if (isEcouteActive && !isListening && !isSpeaking && !modeAttente) {
+        demarrerVADLoop();
+        startListening();
+      }
+    }, 1000);
+  } else {
+    setStatus('Appuyez sur Sofia ou posez votre question ✨');
+  }
 }
 
-// === VAD ===
-var vadStream=null;var vadAnalyser=null;var vadContext=null;var vadInterval=null;
-var SEUIL_VOLUME=18;var SILENCE_DUREE=1800;var dernierSon=0;
-function initVAD(){return navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream){vadStream=stream;vadContext=new(window.AudioContext||window.webkitAudioContext)();var source=vadContext.createMediaStreamSource(stream);vadAnalyser=vadContext.createAnalyser();vadAnalyser.fftSize=512;vadAnalyser.smoothingTimeConstant=0.6;source.connect(vadAnalyser);}).catch(function(e){console.log('VAD non disponible:',e.message);});}
-function getVolume(){if(!vadAnalyser)return 0;var data=new Uint8Array(vadAnalyser.frequencyBinCount);vadAnalyser.getByteFrequencyData(data);var debut=Math.floor(300/(vadContext.sampleRate/vadAnalyser.fftSize));var fin=Math.floor(3400/(vadContext.sampleRate/vadAnalyser.fftSize));var somme=0;for(var i=debut;i<fin;i++)somme+=data[i];return somme/(fin-debut);}
-function demarrerVADLoop(){if(vadInterval)return;vadInterval=setInterval(function(){if(isSpeaking||!isEcouteActive)return;var vol=getVolume();if(vol>SEUIL_VOLUME){dernierSon=Date.now();if(!isListening)startListening();}else{if(isListening&&(Date.now()-dernierSon)>SILENCE_DUREE){try{recognition.stop();}catch(e){}}}},150);}
-function arreterVADLoop(){clearInterval(vadInterval);vadInterval=null;}
+// ============================================================
+// APPEL CLAUDE — PIPELINE RAPIDE (NOUVEAU)
+// ============================================================
+function getSofiaReply(type) {
+  arreterVADLoop();
+  clearTimeout(autoRestartTimer);
+  try { if (recognition) recognition.stop(); } catch(e) {}
+  isListening = false;
+  modeAttente = null;
 
-// === RECONNAISSANCE VOCALE ===
-function initRecognition(){
+  // Vider la file audio au cas où une réponse précédente serait encore en cours
+  audioQueue = [];
+  isPlayingQueue = false;
+
+  document.getElementById('soleil').classList.remove('listening');
+  document.getElementById('soleilIcone').textContent = '⏳';
+  document.getElementById('soleilTexte').textContent = 'Attends...';
+  document.getElementById('sendBtn').disabled = true;
+  setStatus('Sofia réfléchit...');
+  setSearching(true);
+
+  var typesAvecRecherche = ['meteo', 'nouvelles', 'activites', 'urgence'];
+  var needsSearch = typesAvecRecherche.indexOf(type || '') !== -1;
+  var messagesLimites = conversationHistory.slice(-20);
+  var prenom = profil.prenom || '';
+
+  if (needsSearch) {
+    // ── MODE RECHERCHE WEB ─────────────────────────────────
+    // On lance DEUX requêtes en parallèle :
+    //   1. ElevenLabs pour l'intro courte  (~400 ms → audio joué en ~1s)
+    //   2. Claude + web search             (~4-6 s  → réponse complète)
+    // L'utilisatrice entend Sofia parler après ~1 seconde.
+    // La vraie réponse s'enchaîne dès que l'intro se termine.
+
+    var intros = {
+      'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + ' !',
+      'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + ' !',
+      'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + ' !',
+      'default':   'Laissez-moi chercher ça' + (prenom ? ', ' + prenom : '') + ' !'
+    };
+    var texteIntro = intros[type] || intros['default'];
+    showTyping();
+
+    // APPEL 1 : intro via ElevenLabs
+    var promiseIntro = fetch('/.netlify/functions/voice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: texteIntro, compagnon: compagnon })
+    }).then(function(r) { return r.blob(); });
+
+    // APPEL 2 : Claude + web search
+    var promiseClaude = fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type })
+    }).then(function(r) { return r.json(); });
+
+    // Jouer l'intro dès qu'elle arrive (~400 ms)
+    promiseIntro.then(function(blobIntro) {
+      isSpeaking = true;
+      document.getElementById('soleil').classList.add('speaking');
+      document.getElementById('soleilIcone').textContent = '🔊';
+      document.getElementById('soleilTexte').textContent = 'Parle...';
+      setStatus('Sofia vous parle...');
+
+      var url = URL.createObjectURL(blobIntro);
+      var audioIntro = new Audio();
+      audioIntro.src = url;
+      audioIntro.load();
+      audioIntro.play().catch(function() {});
+
+      // Pendant que l'intro joue, attendre la réponse Claude
+      promiseClaude.then(function(d) {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+
+        if (d.content && d.content[0]) {
+          var reply = d.content[0].text;
+          conversationHistory.push({ role: 'assistant', content: reply });
+          sauvegarderHistorique();
+          mettreAJourMemoire();
+          showResponse(reply);
+
+          // Préparer les phrases en file PENDANT que l'intro se termine
+          var textePropre = reply
+            .replace(/<br\s*\/?>/gi, '. ')
+            .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+          var phrases = decouper(textePropre);
+          phrases.forEach(function(phrase, i) {
+            audioQueue.push({
+              texte: phrase,
+              estDerniere: (i === phrases.length - 1)
+            });
+          });
+
+          // Quand l'intro se termine → démarrer la file immédiatement
+          audioIntro.onended = function() {
+            URL.revokeObjectURL(url);
+            isSpeaking = false;
+            isPlayingQueue = false;
+            jouerFileAudio();
+          };
+          audioIntro.onerror = function() {
+            URL.revokeObjectURL(url);
+            isSpeaking = false;
+            isPlayingQueue = false;
+            jouerFileAudio();
+          };
+
+        } else {
+          // Claude n'a rien renvoyé
+          audioIntro.onended = function() {
+            URL.revokeObjectURL(url);
+            showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+            onSpeakEnd();
+          };
+        }
+
+      }).catch(function() {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+        audioIntro.onended = function() {
+          URL.revokeObjectURL(url);
+          showResponse("Je suis désolée, réessayons !");
+          onSpeakEnd();
+        };
+      });
+
+    }).catch(function() {
+      // L'intro ElevenLabs a échoué → attendre Claude seul
+      promiseClaude.then(function(d) {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+        if (d.content && d.content[0]) {
+          var reply = d.content[0].text;
+          conversationHistory.push({ role: 'assistant', content: reply });
+          sauvegarderHistorique();
+          mettreAJourMemoire();
+          showResponse(reply);
+          speakText(reply);
+        } else {
+          showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+        }
+      }).catch(function() {
+        setSearching(false);
+        document.getElementById('sendBtn').disabled = false;
+        showResponse("Je suis désolée, réessayons !");
+      });
+    });
+
+  } else {
+    // ── CONVERSATION NORMALE — un seul appel ──────────────
+    showTyping();
+    fetch('/.netlify/functions/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      setSearching(false);
+      document.getElementById('sendBtn').disabled = false;
+      if (d.content && d.content[0]) {
+        var reply = d.content[0].text;
+        conversationHistory.push({ role: 'assistant', content: reply });
+        sauvegarderHistorique();
+        mettreAJourMemoire();
+        showResponse(reply);
+        speakText(reply);
+      } else {
+        showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
+        if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+      }
+    })
+    .catch(function() {
+      setSearching(false);
+      document.getElementById('sendBtn').disabled = false;
+      showResponse("Je suis désolée, réessayons !");
+      if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+    });
+  }
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function ouvrirAdminDepuisApp() {
+  var code = prompt('Code administrateur :');
+  if (!code) return;
+  if (code.trim().toUpperCase() === CODE_ADMIN) {
+    document.getElementById('adminCodeJour').textContent = getCodeDuJour();
+    document.getElementById('adminOverlay').style.display = 'flex';
+    adminAfficherUsers();
+  } else { alert('Code incorrect.'); }
+}
+function fermerAdmin() { document.getElementById('adminOverlay').style.display = 'none'; lancerSofia(); }
+function adminAfficherUsers() {
+  var liste = document.getElementById('adminListeUsers');
+  liste.innerHTML = '<div style="color:rgba(200,216,240,0.3);font-size:13px;text-align:center;padding:10px 0">Chargement...</div>';
+  fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'liste',data:{}}) })
+  .then(function(r) { return r.json(); }).then(function(d) {
+    var users = d.utilisateurs || [];
+    if (users.length === 0) { liste.innerHTML = '<div style="color:rgba(200,216,240,0.25);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px">Aucun utilisateur de confiance.</div>'; return; }
+    liste.innerHTML = '';
+    users.forEach(function(u) {
+      var card = document.createElement('div'); card.className = 'admin-user-card';
+      card.innerHTML = '<div class="admin-user-info"><div class="admin-user-nom">'+u.nom+'</div><div class="admin-user-code">🔑 '+u.code_acces+'</div></div><div class="admin-user-actions"><button class="btn-retirer" onclick="adminRetirerUser(\''+u.id+'\')">🗑️</button></div>';
+      liste.appendChild(card);
+    });
+  }).catch(function() { liste.innerHTML = '<div style="color:#ef4444;font-size:13px;text-align:center;padding:10px 0">Erreur de chargement.</div>'; });
+}
+function adminAjouterUser() {
+  var nom = document.getElementById('adminNom').value.trim();
+  var code = document.getElementById('adminCode').value.trim().toUpperCase();
+  if (!nom || !code) { alert('Veuillez entrer un nom et un mot de passe.'); return; }
+  if (code === CODE_ADMIN) { alert('Ce mot de passe est réservé.'); return; }
+  fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'ajouter',data:{nom:nom,code:code}}) })
+  .then(function(r) { return r.json(); }).then(function(d) {
+    if (d.succes) { document.getElementById('adminNom').value=''; document.getElementById('adminCode').value=''; alert('Utilisateur '+nom+' ajouté !'); adminAfficherUsers(); }
+    else { alert(d.erreur || 'Erreur.'); }
+  }).catch(function() { alert('Erreur réseau.'); });
+}
+function adminRetirerUser(id) {
+  if (confirm('Retirer cet utilisateur ?')) {
+    fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'supprimer',data:{utilisateur_id:id}}) })
+    .then(function() { adminAfficherUsers(); }).catch(function() { alert('Erreur.'); });
+  }
+}
+
+// ============================================================
+// ACCÈS
+// ============================================================
+function getCodeDuJour() { var d = new Date(); return 'SF'+String(d.getDate()).padStart(2,'0')+String(d.getMonth()+1).padStart(2,'0'); }
+
+function verifierAcces() {
+  var code = document.getElementById('accesInput').value.trim().toUpperCase();
+  var erreur = document.getElementById('accesErreur');
+  if (code === CODE_ADMIN) {
+    localStorage.setItem('sofia_acces_admin','oui');
+    document.getElementById('accesInput').value = '';
+    fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'connexion_admin',data:{}}) })
+    .finally(function() { document.getElementById('accesOverlay').style.display='none'; lancerSofia(); });
+    return;
+  }
+  if (code === getCodeDuJour()) {
+    erreur.textContent = 'Vérification...';
+    fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verifier_invite',data:{}}) })
+    .then(function(r) { return r.json(); }).then(function(d) {
+      if (d.valide) { localStorage.setItem('sofia_acces_date',new Date().toDateString()); document.getElementById('accesOverlay').style.display='none'; document.getElementById('accesInput').value=''; erreur.textContent=''; lancerSofia(); }
+      else { erreur.textContent = d.message || "Accès refusé pour aujourd'hui."; }
+    }).catch(function() { localStorage.setItem('sofia_acces_date',new Date().toDateString()); document.getElementById('accesOverlay').style.display='none'; lancerSofia(); });
+    return;
+  }
+  erreur.textContent = 'Vérification...';
+  fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verifier_code',data:{code:code}}) })
+  .then(function(r) { return r.json(); }).then(function(d) {
+    if (d.valide) {
+      localStorage.setItem('sofia_utilisateur_id', d.utilisateur.id);
+      localStorage.setItem('sofia_utilisateur_nom', d.utilisateur.nom);
+      utilisateurId = d.utilisateur.id; sessionId = d.session_id;
+      document.getElementById('accesInput').value = ''; erreur.textContent = '';
+      document.getElementById('accesOverlay').style.display = 'none'; lancerSofia();
+    } else {
+      erreur.textContent = 'Code incorrect. Réessayez.';
+      document.getElementById('accesInput').value = '';
+      setTimeout(function() { erreur.textContent=''; }, 3000);
+    }
+  }).catch(function() { erreur.textContent='Erreur réseau.'; setTimeout(function() { erreur.textContent=''; }, 3000); });
+}
+
+function verifierAccesAuDemarrage() {
+  if (localStorage.getItem('sofia_acces_admin') === 'oui') { lancerSofia(); return; }
+  var uid = localStorage.getItem('sofia_utilisateur_id');
+  if (uid) { utilisateurId = uid; lancerSofia(); return; }
+  if (localStorage.getItem('sofia_acces_date') === new Date().toDateString()) { lancerSofia(); return; }
+  document.getElementById('accesOverlay').style.display = 'flex';
+  setTimeout(function() { document.getElementById('accesInput').focus(); }, 300);
+}
+function lancerSofia() { document.getElementById('accesOverlay').style.display='none'; verifierProfil(); }
+
+// ============================================================
+// COMPAGNON
+// ============================================================
+function changerCompagnon() {
+  document.getElementById('carteSofia').classList.toggle('selected', compagnon === 'sofia');
+  document.getElementById('carteLeo').classList.toggle('selected', compagnon === 'leo');
+  document.getElementById('choixOverlay').style.display = 'flex';
+}
+function selectionnerCompagnon(choix) {
+  compagnon = choix;
+  document.getElementById('carteSofia').classList.toggle('selected', choix === 'sofia');
+  document.getElementById('carteLeo').classList.toggle('selected', choix === 'leo');
+}
+function confirmerChoix() {
+  profil.compagnon = compagnon;
+  localStorage.setItem('sofia_compagnon', compagnon);
+  localStorage.setItem('sofia_profil', JSON.stringify(profil));
+  document.getElementById('choixOverlay').style.display = 'none';
+  appliquerCompagnon(compagnon);
+  if (!profil.prenom) { document.getElementById('profilOverlay').style.display='flex'; afficherEtapeProfil(); }
+  else {
+    var nom = profil.prenom || 'vous';
+    var nomC = compagnon === 'leo' ? 'Léo' : 'Sofia';
+    var msg = 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Comme je suis content de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+    showResponse(msg); speakText(msg);
+  }
+}
+function appliquerCompagnon(choix) {
+  var nomC = choix === 'leo' ? 'Léo' : 'Sofia';
+  document.getElementById('avatarNom').textContent = nomC;
+  document.getElementById('sofiaNameLabel').textContent = nomC;
+  document.getElementById('changerTexte').textContent = nomC;
+  document.querySelector('#userInput').placeholder = 'Posez votre question à ' + nomC + '...';
+}
+
+// ============================================================
+// PROFIL
+// ============================================================
+function verifierProfil() {
+  if (!profil.compagnon) { document.getElementById('choixOverlay').style.display='flex'; }
+  else if (!profil.prenom) { document.getElementById('profilOverlay').style.display='flex'; afficherEtapeProfil(); }
+  else {
+    appliquerCompagnon(profil.compagnon);
+    var derniereSalutation = localStorage.getItem('sofia_derniere_salutation');
+    var aujourdhui = new Date().toDateString();
+    if (derniereSalutation !== aujourdhui) {
+      localStorage.setItem('sofia_derniere_salutation', aujourdhui);
+      var nom = profil.prenom || 'vous';
+      var maintenant = new Date();
+      var jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+      var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+      var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + '. ';
+      var nomC = profil.compagnon === 'leo' ? 'Léo' : 'Sofia';
+      var msg = date + 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Bonne journée ! Comment allez-vous aujourd\'hui ?';
+      showResponse(msg); speakText(msg);
+    }
+    verifierAlerteBienEtre();
+  }
+}
+function afficherEtapeProfil() {
+  if (profilEtapeActuelle < profilEtapes.length) {
+    document.getElementById('profilQuestion').textContent = profilEtapes[profilEtapeActuelle].question;
+    document.getElementById('profilInput').value = '';
+    setTimeout(function() { document.getElementById('profilInput').focus(); }, 100);
+  }
+}
+function profilSuivant() {
+  var valeur = document.getElementById('profilInput').value.trim();
+  if (valeur) { profil[profilEtapes[profilEtapeActuelle].champ] = valeur; localStorage.setItem('sofia_profil', JSON.stringify(profil)); }
+  profilEtapeActuelle++;
+  if (profilEtapeActuelle < profilEtapes.length) { afficherEtapeProfil(); } else { terminerProfil(); }
+}
+function passerProfil() { profilEtapeActuelle++; if (profilEtapeActuelle < profilEtapes.length) { afficherEtapeProfil(); } else { terminerProfil(); } }
+function terminerProfil() {
+  document.getElementById('profilOverlay').style.display = 'none';
+  var nom = profil.prenom || 'vous';
+  var maintenant = new Date();
+  var jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+  var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + '. ';
+  var msg = compagnon === 'leo'
+    ? date + 'Bonjour ' + nom + ' ! Je suis Léo, votre compagnon. Je suis tellement content de faire votre connaissance !'
+    : date + 'Bonjour ' + nom + ' ! Je suis tellement contente de faire votre connaissance ! Je suis Sofia, votre compagne.';
+  showResponse(msg); speakText(msg);
+}
+
+// ============================================================
+// JE VAIS BIEN
+// ============================================================
+function jeVaisBien() {
+  var today = new Date().toDateString();
+  localStorage.setItem('sofia_bien_date', today);
+  localStorage.setItem('sofia_bien_heure', new Date().toTimeString().slice(0,5));
+  var btn = document.getElementById('bienBtn');
+  btn.classList.add('done');
+  document.getElementById('bienTexte').textContent = '✓ Confirmé';
+  var msg = 'Merci ! ' + (profil.prenom || 'vous') + ', je suis ' + (compagnon === 'leo' ? 'content' : 'contente') + ' que vous alliez bien. Bonne journée ! 😊';
+  showResponse(msg);
+  speakText(msg);
+}
+
+function verifierAlerteBienEtre() {
+  var today = new Date().toDateString();
+  var dernierBien = localStorage.getItem('sofia_bien_date');
+  if (dernierBien === today) {
+    var btn = document.getElementById('bienBtn');
+    btn.classList.add('done');
+    document.getElementById('bienTexte').textContent = '✓ Confirmé';
+  }
+  var maintenant = new Date();
+  if (maintenant.getHours() >= 12 && dernierBien !== today) {
+    var contacts = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
+    var alerteContacts = contacts.filter(function(c) { return c.alerte; });
+    if (alerteContacts.length > 0) {
+      setTimeout(function() {
+        var msg = 'Bonjour' + (profil.prenom ? ' ' + profil.prenom : '') + ' ! Vous n\'avez pas encore dit que vous alliez bien aujourd\'hui. Tout va bien ? Appuyez sur le bouton vert si vous allez bien.';
+        showResponse(msg);
+        speakText(msg);
+      }, 2000);
+    }
+  }
+}
+
+// ============================================================
+// MÉMOIRE / HISTORIQUE
+// ============================================================
+function sauvegarderHistorique() {
+  var aGarder = conversationHistory.slice(-30);
+  localStorage.setItem('sofia_historique', JSON.stringify(aGarder));
+}
+
+function mettreAJourMemoire() {
+  if (conversationHistory.length % 10 !== 0) return;
+  if (conversationHistory.length < 6) return;
+  var messages = conversationHistory.slice(-20).concat([{role:'user',content:'Résume en 3 phrases maximum les sujets importants abordés dans cette conversation: préférences, famille, santé mentionnée, événements, centres d\'intérêt. Format: texte simple, pas de listes.'}]);
+  fetch('/.netlify/functions/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messages:messages,profil:{}}) })
+  .then(function(r) { return r.json(); })
+  .then(function(d) { if (d.content && d.content[0]) { profil.memoire = d.content[0].text; localStorage.setItem('sofia_profil', JSON.stringify(profil)); } })
+  .catch(function() {});
+}
+
+// ============================================================
+// STATUT VISUEL
+// ============================================================
+function setSearching(on) {
+  var dot = document.getElementById('statutDot');
+  var label = document.getElementById('statutLabel');
+  if (on) { dot.classList.add('searching'); label.textContent = 'Sofia cherche...'; }
+  else { dot.classList.remove('searching'); label.textContent = 'En ligne'; }
+}
+
+// ============================================================
+// VAD
+// ============================================================
+var vadStream=null; var vadAnalyser=null; var vadContext=null; var vadInterval=null;
+var SEUIL_VOLUME=18; var SILENCE_DUREE=1800; var dernierSon=0;
+function initVAD() {
+  return navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream) {
+    vadStream=stream; vadContext=new(window.AudioContext||window.webkitAudioContext)();
+    var source=vadContext.createMediaStreamSource(stream);
+    vadAnalyser=vadContext.createAnalyser(); vadAnalyser.fftSize=512; vadAnalyser.smoothingTimeConstant=0.6;
+    source.connect(vadAnalyser);
+  }).catch(function(e) { console.log('VAD non disponible:',e.message); });
+}
+function getVolume() {
+  if (!vadAnalyser) return 0;
+  var data=new Uint8Array(vadAnalyser.frequencyBinCount); vadAnalyser.getByteFrequencyData(data);
+  var debut=Math.floor(300/(vadContext.sampleRate/vadAnalyser.fftSize));
+  var fin=Math.floor(3400/(vadContext.sampleRate/vadAnalyser.fftSize));
+  var somme=0; for(var i=debut;i<fin;i++) somme+=data[i];
+  return somme/(fin-debut);
+}
+function demarrerVADLoop() {
+  if (vadInterval) return;
+  vadInterval=setInterval(function() {
+    if (isSpeaking||!isEcouteActive) return;
+    var vol=getVolume();
+    if (vol>SEUIL_VOLUME) { dernierSon=Date.now(); if (!isListening) startListening(); }
+    else { if (isListening&&(Date.now()-dernierSon)>SILENCE_DUREE) { try{recognition.stop();}catch(e){} } }
+  },150);
+}
+function arreterVADLoop() { clearInterval(vadInterval); vadInterval=null; }
+
+// ============================================================
+// RECONNAISSANCE VOCALE
+// ============================================================
+function initRecognition() {
   var S=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!S){document.getElementById('soleilTexte').textContent='Écrire';return;}
-  recognition=new S();recognition.lang='fr-CA';recognition.continuous=false;recognition.interimResults=false;
-  recognition.onresult=function(e){
-    var t=e.results[0][0].transcript.trim();var confiance=e.results[0][0].confidence;
-    if(confiance<0.4&&confiance>0){setStatus('Sofia vous écoute... 👂');return;}
-    isListening=false;document.getElementById('soleil').classList.remove('listening');
+  if (!S) { document.getElementById('soleilTexte').textContent='Écrire'; return; }
+  recognition=new S(); recognition.lang='fr-CA'; recognition.continuous=false; recognition.interimResults=false;
+
+  recognition.onresult=function(e) {
+    var t=e.results[0][0].transcript.trim();
+    var confiance=e.results[0][0].confidence;
+    if (confiance<0.4&&confiance>0) { setStatus('Sofia vous écoute... 👂'); return; }
+    isListening=false;
+    document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent='🎙️';
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
-    if(modeAttente==='ville'){obtenirMeteo(t);return;}
-    if(modeAttente==='voyage'){obtenirVoyage(t);return;}
-    if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
-    if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
-    if(modeAttente==='epicerie_article'){ajouterArticleParVoix(t);return;}
-    if(modeAttente==='sante'){modeAttente=null;document.getElementById('santeMicroBtn').classList.remove('active');document.getElementById('santeMicroBtn').textContent='🎙️';document.getElementById('santeReponseInput').value=t;envoyerReponseSante();return;}
+    if (modeAttente==='ville') { obtenirMeteo(t); return; }
+    if (modeAttente==='voyage') { obtenirVoyage(t); return; }
+    if (modeAttente==='nouvelles') { obtenirNouvelles(t); return; }
+    if (modeAttente==='ancetre') { obtenirAncetres(t); return; }
+    if (modeAttente==='epicerie_article') { ajouterArticleParVoix(t); return; }
+    if (modeAttente==='sante') {
+      modeAttente=null;
+      document.getElementById('santeMicroBtn').classList.remove('active');
+      document.getElementById('santeMicroBtn').textContent='🎙️';
+      document.getElementById('santeReponseInput').value=t;
+      envoyerReponseSante(); return;
+    }
     var tMin=t.toLowerCase();
-    if(tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')){demanderMeteo();return;}
-    if(tMin.includes('nouvelle')||tMin.includes('actualité')||tMin.includes('journal')){demanderNouvelles();return;}
-    if(tMin.includes('voyage')||tMin.includes('destination')){demanderVoyage();return;}
-    if(tMin.includes('ancêtre')||tMin.includes('ancetre')||tMin.includes('généalogie')){demanderAncetres();return;}
-    if(tMin.includes('urgence')||tMin.includes('aide')||tMin.includes('secours')){ouvrirUrgence();return;}
-    showUserMessage(t);conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();
+    if (tMin.includes('météo')||tMin.includes('meteo')||tMin.includes('température')) { demanderMeteo(); return; }
+    if (tMin.includes('nouvelle')||tMin.includes('actualité')||tMin.includes('journal')) { demanderNouvelles(); return; }
+    if (tMin.includes('voyage')||tMin.includes('destination')) { demanderVoyage(); return; }
+    if (tMin.includes('ancêtre')||tMin.includes('ancetre')||tMin.includes('généalogie')) { demanderAncetres(); return; }
+    if (tMin.includes('urgence')||tMin.includes('aide')||tMin.includes('secours')) { ouvrirUrgence(); return; }
+    showUserMessage(t);
+    conversationHistory.push({role:'user',content:t});
+    sauvegarderHistorique();
+    getSofiaReply();
   };
-  recognition.onend=function(){
-    if(isListening){isListening=false;document.getElementById('soleil').classList.remove('listening');document.getElementById('soleilIcone').textContent='🎙️';document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';}
-    if(modeAttente&&!isSpeaking){clearTimeout(autoRestartTimer);autoRestartTimer=setTimeout(function(){if(!isListening&&!isSpeaking)startListening();},600);}
+
+  recognition.onend=function() {
+    if (isListening) {
+      isListening=false;
+      document.getElementById('soleil').classList.remove('listening');
+      document.getElementById('soleilIcone').textContent='🎙️';
+      document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
+    }
+    if (modeAttente&&!isSpeaking) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer=setTimeout(function() { if (!isListening&&!isSpeaking) startListening(); },600);
+    }
   };
-  recognition.onerror=function(){
-    isListening=false;document.getElementById('soleil').classList.remove('listening');
+
+  recognition.onerror=function() {
+    isListening=false;
+    document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent='🎙️';
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
-    if(modeAttente&&!isSpeaking){clearTimeout(autoRestartTimer);autoRestartTimer=setTimeout(function(){if(!isListening&&!isSpeaking)startListening();},1200);}
+    if (modeAttente&&!isSpeaking) {
+      clearTimeout(autoRestartTimer);
+      autoRestartTimer=setTimeout(function() { if (!isListening&&!isSpeaking) startListening(); },1200);
+    }
   };
-}
-function startListening(){if(!recognition||isListening||isSpeaking)return;try{isListening=true;document.getElementById('soleil').classList.add('listening');document.getElementById('soleilIcone').textContent='⏹️';document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Parlez...';setStatus(modeAttente?'Dites le nom... 👂':'Sofia vous écoute... 👂');recognition.start();}catch(e){isListening=false;document.getElementById('soleil').classList.remove('listening');}}
-function stopListening(){isListening=false;modeAttente=null;clearTimeout(autoRestartTimer);document.getElementById('soleil').classList.remove('listening');document.getElementById('soleilIcone').textContent='🎙️';document.getElementById('soleilTexte').textContent='Appuyez';setStatus('Appuyez sur Sofia ou posez votre question ✨');try{recognition.stop();}catch(e){}}
-function toggleVoice(){if(isSpeaking)return;if(isListening){stopListening();}else{startListening();}}
-function toggleEcoute(){
-  isEcouteActive=!isEcouteActive;var btn=document.getElementById('ecouteBtn');var texte=document.getElementById('ecouteTexte');
-  if(isEcouteActive){btn.classList.add('active');texte.textContent='Active';document.getElementById('soleilTexte').textContent='Auto';setStatus('Sofia vous écoute... 👂');initVAD().then(function(){demarrerVADLoop();});}
-  else{btn.classList.remove('active');texte.textContent='Auto';arreterVADLoop();clearTimeout(autoRestartTimer);stopListening();}
 }
 
-// === MÉTÉO (via recherche web) ===
-function demanderMeteo(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
-  showUserMessage('Météo 🌤️');
-  var msg='Pour quelle ville voulez-vous la météo ?';
-  showResponse(msg);modeAttente='ville';speakText(msg);
+function startListening() {
+  if (!recognition||isListening||isSpeaking) return;
+  try {
+    isListening=true;
+    document.getElementById('soleil').classList.add('listening');
+    document.getElementById('soleilIcone').textContent='⏹️';
+    document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Parlez...';
+    setStatus(modeAttente?'Dites le nom... 👂':'Sofia vous écoute... 👂');
+    recognition.start();
+  } catch(e) {
+    isListening=false;
+    document.getElementById('soleil').classList.remove('listening');
+  }
 }
-function obtenirMeteo(ville){
-  if(!ville||ville.trim().length<2)return;
-  modeAttente=null;showUserMessage(ville);setStatus('Sofia cherche la météo...');setSearching(true);showTyping();
-  // Avec recherche web intégrée dans chat
-  var prompt='Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à '+ville+'. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires.';
+function stopListening() {
+  isListening=false; modeAttente=null; clearTimeout(autoRestartTimer);
+  document.getElementById('soleil').classList.remove('listening');
+  document.getElementById('soleilIcone').textContent='🎙️';
+  document.getElementById('soleilTexte').textContent='Appuyez';
+  setStatus('Appuyez sur Sofia ou posez votre question ✨');
+  try { recognition.stop(); } catch(e) {}
+}
+function toggleVoice() {
+  if (isSpeaking) return;
+  if (isListening) { stopListening(); } else { startListening(); }
+}
+function toggleEcoute() {
+  isEcouteActive=!isEcouteActive;
+  var btn=document.getElementById('ecouteBtn');
+  var texte=document.getElementById('ecouteTexte');
+  if (isEcouteActive) {
+    btn.classList.add('active'); texte.textContent='Active';
+    document.getElementById('soleilTexte').textContent='Auto';
+    setStatus('Sofia vous écoute... 👂');
+    initVAD().then(function() { demarrerVADLoop(); });
+  } else {
+    btn.classList.remove('active'); texte.textContent='Auto';
+    arreterVADLoop(); clearTimeout(autoRestartTimer); stopListening();
+  }
+}
+
+// ============================================================
+// MÉTÉO
+// ============================================================
+function demanderMeteo() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  showUserMessage('Météo 🌤️');
+  var msg = 'Pour quelle ville voulez-vous la météo ?';
+  showResponse(msg); modeAttente='ville'; speakText(msg);
+}
+function obtenirMeteo(ville) {
+  if (!ville||ville.trim().length<2) return;
+  modeAttente=null; showUserMessage(ville);
+  setStatus('Sofia cherche la météo...'); setSearching(true); showTyping();
+  var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à '+ville+'. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires.';
   conversationHistory.push({role:'user',content:prompt});
   enregistrerActivite('meteo',ville);
   getSofiaReply('meteo');
 }
 
-// === NOUVELLES — demander le sujet d'abord ===
-function demanderNouvelles(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+// ============================================================
+// NOUVELLES
+// ============================================================
+function demanderNouvelles() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   showUserMessage('Nouvelles 📰');
   var prenom=profil.prenom||'';
   var msg=(prenom?prenom+', vous':' Vous')+' voulez les nouvelles du Québec, du Canada, ou d\'ailleurs ?';
-  showResponse(msg);
-  speakText(msg);
-  modeAttente='nouvelles';
+  showResponse(msg); speakText(msg); modeAttente='nouvelles';
 }
-
-function obtenirNouvelles(sujet){
-  modeAttente=null;
-  showUserMessage(sujet);
+function obtenirNouvelles(sujet) {
+  modeAttente=null; showUserMessage(sujet);
   var prompt='Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui sur le sujet suivant : '+sujet+'. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
   conversationHistory.push({role:'user',content:prompt});
   enregistrerActivite('nouvelles',sujet);
   getSofiaReply('nouvelles');
 }
 
-// === VOYAGE ===
-var voyageDestinationActuelle=null;var coupsCoeur=JSON.parse(localStorage.getItem('sofia_coups_coeur')||'[]');var voyageDataActuelle=null;
-function demanderVoyage(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
-  showUserMessage('Voyage ✈️');var msg='Quelle destination vous intéresse ? Dites-moi le nom de la ville ou du pays !';
-  showResponse(msg);modeAttente='voyage';speakText(msg);
+// ============================================================
+// VOYAGE
+// ============================================================
+var voyageDestinationActuelle=null;
+var coupsCoeur=JSON.parse(localStorage.getItem('sofia_coups_coeur')||'[]');
+var voyageDataActuelle=null;
+
+function demanderVoyage() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  showUserMessage('Voyage ✈️');
+  var msg='Quelle destination vous intéresse ? Dites-moi le nom de la ville ou du pays !';
+  showResponse(msg); modeAttente='voyage'; speakText(msg);
 }
-function fermerVoyage(){document.getElementById('voyageOverlay').style.display='none';}
-function obtenirVoyage(destination){
-  if(!destination||destination.trim().length<2)return;
-  modeAttente=null;voyageDestinationActuelle=destination;showUserMessage(destination);setStatus('Sofia cherche les infos voyage...');setSearching(true);showTyping();
+function fermerVoyage() { document.getElementById('voyageOverlay').style.display='none'; }
+
+function obtenirVoyage(destination) {
+  if (!destination||destination.trim().length<2) return;
+  modeAttente=null; voyageDestinationActuelle=destination; showUserMessage(destination);
+  setStatus('Sofia cherche les infos voyage...'); setSearching(true); showTyping();
   fetch('/.netlify/functions/voyage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destination:destination})})
   .then(function(r){return r.json();}).then(function(d){voyageDataActuelle=d;afficherVoyage(d,destination);setSearching(false);})
   .catch(function(){showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !");modeAttente=null;setSearching(false);});
 }
-function afficherVoyage(d,destination){
+
+function afficherVoyage(d,destination) {
   if(d.photo){var img=document.getElementById('voyagePhoto');img.src=d.photo.url;img.alt=d.photo.description;img.style.display='block';document.getElementById('voyagePhotoCredit').textContent='Photo: '+d.photo.credit+' / Unsplash';}
   document.getElementById('voyageNom').textContent=d.destination||destination;document.getElementById('voyagePays').textContent=d.pays||'';
   var meteoBar=document.getElementById('voyageMeteoBar');meteoBar.innerHTML='';
@@ -1851,21 +2146,40 @@ function afficherVoyage(d,destination){
   document.getElementById('btnCoupCoeur').textContent=estCoeur?'💔 Retirer':'❤️ Coup de cœur';
   afficherCoupsCoeur();document.getElementById('voyageOverlay').style.display='flex';sofiaRaconteVoyage();
 }
-function sofiaRaconteVoyage(){
-  if(!voyageDataActuelle)return;var d=voyageDataActuelle;var dest=d.destination||voyageDestinationActuelle;
+
+function sofiaRaconteVoyage() {
+  if (!voyageDataActuelle) return;
+  var d=voyageDataActuelle;var dest=d.destination||voyageDestinationActuelle;
   var prompt='Tu es Sofia. La personne veut visiter '+dest+'. ';
   if(d.meteo)prompt+='Il fait '+d.meteo.temperature+' degrés avec '+d.meteo.description+'. ';
   if(d.infos){if(d.infos.villages)prompt+='Les incontournables sont '+d.infos.villages.join(', ')+'. ';if(d.infos.meilleure_saison)prompt+='La meilleure période: '+d.infos.meilleure_saison+'. ';}
   prompt+='Parle de cette destination avec enthousiasme, comme si tu racontais à une amie. Sois chaleureuse et inspirante !';
   conversationHistory.push({role:'user',content:prompt});getSofiaReply('voyage');
 }
-function toggleCoupCoeur(){var dest=voyageDestinationActuelle;if(!dest)return;var index=coupsCoeur.indexOf(dest);if(index===-1){coupsCoeur.push(dest);document.getElementById('btnCoupCoeur').textContent='💔 Retirer';}else{coupsCoeur.splice(index,1);document.getElementById('btnCoupCoeur').textContent='❤️ Coup de cœur';}localStorage.setItem('sofia_coups_coeur',JSON.stringify(coupsCoeur));afficherCoupsCoeur();}
-function afficherCoupsCoeur(){var zone=document.getElementById('coupsCoeurListe');var items=document.getElementById('coupsCoeurItems');if(coupsCoeur.length===0){zone.style.display='none';return;}zone.style.display='block';items.innerHTML='';coupsCoeur.forEach(function(c){var item=document.createElement('div');item.className='coup-coeur-item';item.innerHTML='<span class="coup-coeur-nom">❤️ '+c+'</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur(\''+c+'\')">✕</button>';items.appendChild(item);});}
-function retirerCoupCoeur(dest){coupsCoeur=coupsCoeur.filter(function(c){return c!==dest;});localStorage.setItem('sofia_coups_coeur',JSON.stringify(coupsCoeur));afficherCoupsCoeur();}
 
-// === VILLAGE ===
-var villageActuel=null;var villageDescriptionTexte=null;
-function ouvrirVillage(village,destination){
+function toggleCoupCoeur() {
+  var dest=voyageDestinationActuelle;if(!dest)return;
+  var index=coupsCoeur.indexOf(dest);
+  if(index===-1){coupsCoeur.push(dest);document.getElementById('btnCoupCoeur').textContent='💔 Retirer';}
+  else{coupsCoeur.splice(index,1);document.getElementById('btnCoupCoeur').textContent='❤️ Coup de cœur';}
+  localStorage.setItem('sofia_coups_coeur',JSON.stringify(coupsCoeur));afficherCoupsCoeur();
+}
+function afficherCoupsCoeur() {
+  var zone=document.getElementById('coupsCoeurListe');var items=document.getElementById('coupsCoeurItems');
+  if(coupsCoeur.length===0){zone.style.display='none';return;}
+  zone.style.display='block';items.innerHTML='';
+  coupsCoeur.forEach(function(c){var item=document.createElement('div');item.className='coup-coeur-item';item.innerHTML='<span class="coup-coeur-nom">❤️ '+c+'</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur(\''+c+'\')">✕</button>';items.appendChild(item);});
+}
+function retirerCoupCoeur(dest) {
+  coupsCoeur=coupsCoeur.filter(function(c){return c!==dest;});
+  localStorage.setItem('sofia_coups_coeur',JSON.stringify(coupsCoeur));afficherCoupsCoeur();
+}
+
+// ============================================================
+// VILLAGE
+// ============================================================
+var villageActuel=null; var villageDescriptionTexte=null;
+function ouvrirVillage(village,destination) {
   villageActuel=village;villageDescriptionTexte=null;
   document.getElementById('villageNom').textContent=village;document.getElementById('villagePhotos').innerHTML='';
   document.getElementById('villageDescription').style.display='none';document.getElementById('villageDescription').textContent='';
@@ -1873,15 +2187,23 @@ function ouvrirVillage(village,destination){
   document.getElementById('villageOverlay').style.display='flex';
   Promise.all([chargerPhotosVillage(village),chargerDescriptionVillage(village,destination)]);
 }
-function fermerVillage(){document.getElementById('villageOverlay').style.display='none';}
-function chargerPhotosVillage(village){return fetch('/.netlify/functions/voyage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destination:village,type:'photos'})}).then(function(r){return r.json();}).then(function(d){var zone=document.getElementById('villagePhotos');zone.innerHTML='';if(d.photos&&d.photos.length>0){d.photos.forEach(function(p){var img=document.createElement('img');img.className='village-photo-img';img.src=p.url;img.alt=p.description||village;zone.appendChild(img);});}}).catch(function(){});}
-function chargerDescriptionVillage(village,destination){return fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:'Décris le village ou lieu '+village+' en 4-5 phrases poétiques et inspirantes. Mentionne ce qui le rend unique, son atmosphère, ce qu\'on peut y faire, pourquoi c\'est incontournable. Écris en français, sans formatage, juste du texte fluide.'}],profil:{},type:'village'})}).then(function(r){return r.json();}).then(function(d){if(d.content&&d.content[0]){villageDescriptionTexte=d.content[0].text;document.getElementById('villageLoading').style.display='none';document.getElementById('villageDescription').textContent=villageDescriptionTexte;document.getElementById('villageDescription').style.display='block';document.getElementById('btnSofiaVillage').style.display='block';}}).catch(function(){document.getElementById('villageLoading').textContent='Désolée, je n\'arrive pas à charger les détails.';});}
-function sofiaRaconteVillage(){if(!villageDescriptionTexte)return;speakText(villageDescriptionTexte);}
+function fermerVillage() { document.getElementById('villageOverlay').style.display='none'; }
+function chargerPhotosVillage(village) {
+  return fetch('/.netlify/functions/voyage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destination:village,type:'photos'})})
+  .then(function(r){return r.json();}).then(function(d){var zone=document.getElementById('villagePhotos');zone.innerHTML='';if(d.photos&&d.photos.length>0){d.photos.forEach(function(p){var img=document.createElement('img');img.className='village-photo-img';img.src=p.url;img.alt=p.description||village;zone.appendChild(img);});}}).catch(function(){});
+}
+function chargerDescriptionVillage(village,destination) {
+  return fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:'Décris le village ou lieu '+village+' en 4-5 phrases poétiques et inspirantes. Mentionne ce qui le rend unique, son atmosphère, ce qu\'on peut y faire, pourquoi c\'est incontournable. Écris en français, sans formatage, juste du texte fluide.'}],profil:{},type:'village'})})
+  .then(function(r){return r.json();}).then(function(d){if(d.content&&d.content[0]){villageDescriptionTexte=d.content[0].text;document.getElementById('villageLoading').style.display='none';document.getElementById('villageDescription').textContent=villageDescriptionTexte;document.getElementById('villageDescription').style.display='block';document.getElementById('btnSofiaVillage').style.display='block';}}).catch(function(){document.getElementById('villageLoading').textContent='Désolée, je n\'arrive pas à charger les détails.';});
+}
+function sofiaRaconteVillage() { if (!villageDescriptionTexte) return; speakText(villageDescriptionTexte); }
 
-// === ANCÊTRES ===
-function demanderAncetres(){ouvrirGenealogie();}
-function obtenirAncetres(nom){
-  if(!nom||nom.trim().length<2)return;
+// ============================================================
+// ANCÊTRES
+// ============================================================
+function demanderAncetres() { ouvrirGenealogie(); }
+function obtenirAncetres(nom) {
+  if (!nom||nom.trim().length<2) return;
   modeAttente=null;showUserMessage(nom);setStatus('Sofia cherche les ressources...');setSearching(true);showTyping();
   fetch('/.netlify/functions/ancetres',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nom:nom})})
   .then(function(r){return r.json();}).then(function(d){
@@ -1894,7 +2216,9 @@ function obtenirAncetres(nom){
   }).catch(function(){showResponse("Je n'arrive pas à trouver les ressources généalogiques. Réessayons !");modeAttente=null;setSearching(false);});
 }
 
-// === GÉNÉALOGIE ===
+// ============================================================
+// GÉNÉALOGIE
+// ============================================================
 var genealogieDonnees=JSON.parse(localStorage.getItem('sofia_genealogie')||'{}');
 function ouvrirGenealogie(){document.getElementById('genealogieOverlay').style.display='flex';genealogieChargerDonnees();genealogieAfficherEtape(1);}
 function fermerGenealogie(){document.getElementById('genealogieOverlay').style.display='none';}
@@ -1953,9 +2277,11 @@ function genealogieEffacer(){
   }
 }
 
-// === ACTIVITÉS (via recherche web) ===
-function demanderActivites(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+// ============================================================
+// ACTIVITÉS
+// ============================================================
+function demanderActivites() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   var ville=profil.ville||'Québec';
   showUserMessage('Activités à '+ville+' 🎭');
   var prompt='Quelles sont les activités culturelles, sorties et événements à faire à '+ville+' cette semaine ? Spectacles, expositions, activités de plein air, événements communautaires. Suggère 3 ou 4 options concrètes avec une phrase de description chacune. Sois chaleureuse et enthousiaste !';
@@ -1964,47 +2290,37 @@ function demanderActivites(){
   getSofiaReply('activites');
 }
 
-// === ÉPICERIE — MODULE COMPLET ===
+// ============================================================
+// ÉPICERIE
+// ============================================================
 var listeEpicerie=JSON.parse(localStorage.getItem('sofia_liste_epicerie')||'[]');
-// Format: [{id, nom, categorie, coche}]
 
-function sauvegarderListeEpicerie(liste){
+function sauvegarderListeEpicerie(liste) {
   listeEpicerie=liste;
   localStorage.setItem('sofia_liste_epicerie',JSON.stringify(liste));
 }
 
-function demanderEpicerie(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+function demanderEpicerie() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   document.getElementById('epicerieOverlay').style.display='flex';
   afficherListeEpicerie();
 }
 
-function fermerEpicerie(){
+function fermerEpicerie() {
   document.getElementById('epicerieOverlay').style.display='none';
-  if(modeAttente==='epicerie'){modeAttente=null;}
+  if (modeAttente==='epicerie') modeAttente=null;
 }
 
-function afficherListeEpicerie(){
+function afficherListeEpicerie() {
   var liste=document.getElementById('epicerieListe');
   var compteur=document.getElementById('epicerieCompteur');
   var total=listeEpicerie.length;
   var coches=listeEpicerie.filter(function(a){return a.coche;}).length;
   compteur.textContent=total+' article'+(total>1?'s':'')+' — '+coches+' coché'+(coches>1?'s':'');
-
-  // Grouper par catégorie
-  var categories={};
-  listeEpicerie.forEach(function(a){
-    var cat=a.categorie||'Autres';
-    if(!categories[cat])categories[cat]=[];
-    categories[cat].push(a);
-  });
-
-  var html='';
-  // Articles non cochés d'abord, cochés ensuite
   var nonCoches=listeEpicerie.filter(function(a){return !a.coche;});
   var coches2=listeEpicerie.filter(function(a){return a.coche;});
   var ordonnes=nonCoches.concat(coches2);
-
+  var html='';
   ordonnes.forEach(function(a){
     html+='<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+a.id+'">'
       +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" onclick="cocherArticle(\''+a.id+'\')">'+(a.coche?'✓':'')+'</div>'
@@ -2015,37 +2331,13 @@ function afficherListeEpicerie(){
       +'<button class="epicerie-suppr" onclick="supprimerArticle(\''+a.id+'\')">✕</button>'
       +'</div>';
   });
-
-  if(ordonnes.length===0){
+  if (ordonnes.length===0) {
     html='<div style="text-align:center;padding:30px 0;color:var(--texte-muted);font-size:14px">Votre liste est vide.<br>Dites un article à la fois à Sofia !</div>';
   }
-
   liste.innerHTML=html;
 }
 
-function ajouterArticleEpicerie(){
-  var input=document.getElementById('epicerieInput');
-  var texte=input.value.trim();
-  if(!texte)return;
-
-  // Détecter catégorie automatiquement
-  var categorie=detecterCategorie(texte);
-
-  var article={
-    id: Date.now().toString(),
-    nom: texte.charAt(0).toUpperCase()+texte.slice(1),
-    categorie: categorie,
-    coche: false
-  };
-
-  listeEpicerie.push(article);
-  sauvegarderListeEpicerie(listeEpicerie);
-  afficherListeEpicerie();
-  input.value='';
-  input.focus();
-}
-
-function detecterCategorie(texte){
+function detecterCategorie(texte) {
   var t=texte.toLowerCase();
   if(/pomme|poire|banane|raisin|fraise|bleuet|framboise|melon|mangue|orange|citron|pamplemousse|cerise|kiwi|ananas|fruit/.test(t)) return '🍎 Fruits';
   if(/carotte|brocoli|chou|laitue|tomate|concombre|poivron|oignon|ail|patate|pomme de terre|céleri|épinard|maïs|asperge|champignon|légume/.test(t)) return '🥦 Légumes';
@@ -2061,90 +2353,63 @@ function detecterCategorie(texte){
   return '🛒 Autres';
 }
 
-function cocherArticle(id){
-  listeEpicerie=listeEpicerie.map(function(a){
-    if(a.id===id)a.coche=!a.coche;
-    return a;
-  });
-  sauvegarderListeEpicerie(listeEpicerie);
-  afficherListeEpicerie();
-}
-
-function supprimerArticle(id){
-  listeEpicerie=listeEpicerie.filter(function(a){return a.id!==id;});
-  sauvegarderListeEpicerie(listeEpicerie);
-  afficherListeEpicerie();
-}
-
-function effacerCocheEpicerie(){
-  listeEpicerie=listeEpicerie.filter(function(a){return !a.coche;});
-  sauvegarderListeEpicerie(listeEpicerie);
-  afficherListeEpicerie();
-}
-
-function viderListeEpicerie(){
-  if(confirm('Effacer toute la liste ?')){
-    listeEpicerie=[];
-    sauvegarderListeEpicerie([]);
-    afficherListeEpicerie();
-  }
-}
-
-// Micro épicerie — article par article
-var epicerieMicroActif=false;
-function toggleMicroEpicerie(){
-  var btn=document.getElementById('epicerieMicroBtn');
-  if(epicerieMicroActif){
-    epicerieMicroActif=false;
-    btn.classList.remove('active');
-    btn.textContent='🎙️';
-    modeAttente=null;
-    try{recognition.stop();}catch(e){}
-    return;
-  }
-  epicerieMicroActif=true;
-  btn.classList.add('active');
-  btn.textContent='⏹️';
-  modeAttente='epicerie_article';
-  startListening();
-}
-
-function ajouterArticleParVoix(texte){
-  // Vérifier si c'est une commande d'arrêt
-  var t=texte.toLowerCase().trim();
-  if(t==="c'est tout"||t==='terminé'||t==='terminer'||t==='fini'||t==='arrêter'||t==='stop'){
-    epicerieMicroActif=false;
-    var btn=document.getElementById('epicerieMicroBtn');
-    btn.classList.remove('active');
-    btn.textContent='🎙️';
-    modeAttente=null;
-    var msg='Parfait ! Votre liste est prête, avec '+listeEpicerie.filter(function(a){return !a.coche;}).length+' articles.';
-    speakText(msg);
-    return;
-  }
-
-  // Ajouter l'article
-  var categorie=detecterCategorie(texte);
-  var article={
-    id: Date.now().toString(),
-    nom: texte.charAt(0).toUpperCase()+texte.slice(1),
-    categorie: categorie,
-    coche: false
-  };
+function ajouterArticleEpicerie() {
+  var input=document.getElementById('epicerieInput');
+  var texte=input.value.trim();
+  if (!texte) return;
+  var article={id:Date.now().toString(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
   listeEpicerie.push(article);
   sauvegarderListeEpicerie(listeEpicerie);
   afficherListeEpicerie();
+  input.value='';input.focus();
+}
 
-  // Confirmation vocale courte
+function cocherArticle(id) {
+  listeEpicerie=listeEpicerie.map(function(a){if(a.id===id)a.coche=!a.coche;return a;});
+  sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
+}
+function supprimerArticle(id) {
+  listeEpicerie=listeEpicerie.filter(function(a){return a.id!==id;});
+  sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
+}
+function effacerCocheEpicerie() {
+  listeEpicerie=listeEpicerie.filter(function(a){return !a.coche;});
+  sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
+}
+function viderListeEpicerie() {
+  if (confirm('Effacer toute la liste ?')) { listeEpicerie=[]; sauvegarderListeEpicerie([]); afficherListeEpicerie(); }
+}
+
+var epicerieMicroActif=false;
+function toggleMicroEpicerie() {
+  var btn=document.getElementById('epicerieMicroBtn');
+  if (epicerieMicroActif) {
+    epicerieMicroActif=false;btn.classList.remove('active');btn.textContent='🎙️';
+    modeAttente=null;try{recognition.stop();}catch(e){}return;
+  }
+  epicerieMicroActif=true;btn.classList.add('active');btn.textContent='⏹️';
+  modeAttente='epicerie_article';startListening();
+}
+
+function ajouterArticleParVoix(texte) {
+  var t=texte.toLowerCase().trim();
+  if(t==="c'est tout"||t==='terminé'||t==='terminer'||t==='fini'||t==='arrêter'||t==='stop'){
+    epicerieMicroActif=false;
+    var btn=document.getElementById('epicerieMicroBtn');btn.classList.remove('active');btn.textContent='🎙️';
+    modeAttente=null;
+    var msg='Parfait ! Votre liste est prête, avec '+listeEpicerie.filter(function(a){return !a.coche;}).length+' articles.';
+    speakText(msg);return;
+  }
+  var article={id:Date.now().toString(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
+  listeEpicerie.push(article);sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
   speakText('Noté !').then(function(){
-    if(epicerieMicroActif){
-      modeAttente='epicerie_article';
-      setTimeout(function(){startListening();},300);
-    }
+    if (epicerieMicroActif) { modeAttente='epicerie_article'; setTimeout(function(){startListening();},300); }
   });
 }
 
-// === SANTÉ ===
+// ============================================================
+// SANTÉ
+// ============================================================
 function ouvrirSante(){if(isListening){try{recognition.stop();}catch(e){}isListening=false;}document.getElementById('santeOverlay').style.display='flex';document.getElementById('santeMenu').style.display='block';document.getElementById('santeContenu').style.display='none';}
 function fermerSante(){document.getElementById('santeOverlay').style.display='none';}
 function retourMenuSante(){document.getElementById('santeMenu').style.display='block';document.getElementById('santeContenu').style.display='none';}
@@ -2198,7 +2463,9 @@ function envoyerReponseSante(){
 }
 function toggleMicroSante(){var btn=document.getElementById('santeMicroBtn');if(isListening){stopListening();btn.classList.remove('active');btn.textContent='🎙️';return;}btn.classList.add('active');btn.textContent='⏹️';modeAttente='sante';startListening();}
 
-// === URGENCE ===
+// ============================================================
+// URGENCE
+// ============================================================
 var contactsUrgence=JSON.parse(localStorage.getItem('sofia_contacts')||'[]');
 var relationSelectionnee='Enfant';
 
@@ -2208,40 +2475,17 @@ function choisirRelation(rel){
   event.target.classList.add('selected');
   document.getElementById('contactRelation').value=rel;
 }
-
-function ouvrirUrgence(){
-  document.getElementById('urgenceOverlay').style.display='flex';
-  afficherContacts();
-  // Charger CLSC selon ville du profil
-  if(profil.ville){chargerCLSC(profil.ville);}
-}
+function ouvrirUrgence(){document.getElementById('urgenceOverlay').style.display='flex';afficherContacts();if(profil.ville){chargerCLSC(profil.ville);}}
 function fermerUrgence(){document.getElementById('urgenceOverlay').style.display='none';}
 function appeler911(){window.location.href='tel:911';}
 
 function chargerCLSC(ville){
   var clscNumero=document.getElementById('clscNumero');
   var clscDesc=document.getElementById('clscDesc');
-  // CLSC connus pour les villes principales du Québec
-  var clscs={
-    'montreal':{num:'514-527-2361',desc:'Montréal'},
-    'québec':{num:'418-529-4777',desc:'Québec'},
-    'quebec':{num:'418-529-4777',desc:'Québec'},
-    'laval':{num:'450-978-8300',desc:'Laval'},
-    'longueuil':{num:'450-651-9830',desc:'Longueuil'},
-    'sherbrooke':{num:'819-780-2222',desc:'Sherbrooke'},
-    'gatineau':{num:'819-966-6530',desc:'Gatineau'},
-    'trois-rivières':{num:'819-379-7171',desc:'Trois-Rivières'},
-    'saguenay':{num:'418-541-1000',desc:'Saguenay'},
-    'levis':{num:'418-835-4000',desc:'Lévis'},
-    'lévis':{num:'418-835-4000',desc:'Lévis'}
-  };
+  var clscs={'montreal':{num:'514-527-2361',desc:'Montréal'},'québec':{num:'418-529-4777',desc:'Québec'},'quebec':{num:'418-529-4777',desc:'Québec'},'laval':{num:'450-978-8300',desc:'Laval'},'longueuil':{num:'450-651-9830',desc:'Longueuil'},'sherbrooke':{num:'819-780-2222',desc:'Sherbrooke'},'gatineau':{num:'819-966-6530',desc:'Gatineau'},'trois-rivières':{num:'819-379-7171',desc:'Trois-Rivières'},'saguenay':{num:'418-541-1000',desc:'Saguenay'},'levis':{num:'418-835-4000',desc:'Lévis'},'lévis':{num:'418-835-4000',desc:'Lévis'}};
   var villeMin=ville.toLowerCase().trim();
   var clsc=clscs[villeMin];
-  if(clsc){
-    clscNumero.textContent=clsc.num;
-    clscDesc.textContent=clsc.desc;
-    document.querySelector('.utile-card:nth-child(3)').onclick=function(){window.location.href='tel:'+clsc.num.replace(/[^0-9]/g,'');};
-  }
+  if(clsc){clscNumero.textContent=clsc.num;clscDesc.textContent=clsc.desc;document.querySelector('.utile-card:nth-child(3)').onclick=function(){window.location.href='tel:'+clsc.num.replace(/[^0-9]/g,'');};}
 }
 
 function trouverCLSC(){
@@ -2253,7 +2497,6 @@ function trouverCLSC(){
   fermerUrgence();
   getSofiaReply('urgence');
 }
-
 function trouverPharmacie(){
   var ville=profil.ville||'';
   if(!ville){ville=prompt('Entrez votre ville pour trouver la pharmacie de garde :');if(!ville)return;}
@@ -2263,7 +2506,6 @@ function trouverPharmacie(){
   fermerUrgence();
   getSofiaReply('urgence');
 }
-
 function afficherContacts(){
   var liste=document.getElementById('listeContacts');
   if(contactsUrgence.length===0){liste.innerHTML='<div style="color:rgba(200,216,240,0.25);font-size:13px;text-align:center;padding:10px 0;margin-bottom:16px">Aucun contact encore ajouté.</div>';return;}
@@ -2296,203 +2538,22 @@ function envoyerSMS(tel,nom){
   window.location.href='sms:'+tel+'?body='+encodeURIComponent(message);
 }
 
-// === ALERTE BIEN-ÊTRE ===
 function verifierEtEnvoyerAlertes(){
   var today=new Date().toDateString();
   var dernierBien=localStorage.getItem('sofia_bien_date');
   var maintenant=new Date();
   if(maintenant.getHours()>=12&&dernierBien!==today){
     var contacts=contactsUrgence.filter(function(c){return c.alerte;});
-    contacts.forEach(function(c){
-      // En production : envoyer via une Netlify function
-      // Pour l'instant : log seulement
-      console.log('Alerte à envoyer à '+c.nom+' ('+c.tel+')');
-    });
+    contacts.forEach(function(c){console.log('Alerte à envoyer à '+c.nom+' ('+c.tel+')');});
   }
 }
 setInterval(verifierEtEnvoyerAlertes,60*60*1000);
 
-// === UTILITAIRES ===
-function enregistrerActivite(type,detail){
-  if(!utilisateurId)return;
-  fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'activite',data:{utilisateur_id:utilisateurId,type:type,detail:detail||''}})}).catch(function(){});
-}
-function setStatus(t){document.getElementById('statusText').textContent=t;}
-function autoResize(e){e.style.height='auto';e.style.height=Math.min(e.scrollHeight,40)+'px';}
-function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
-function sendSuggestion(t){modeAttente=null;if(isListening){try{recognition.stop();}catch(e){}}showUserMessage(t);conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();}
-function showUserMessage(t){var z=document.getElementById('responseZone');z.innerHTML='<div class="user-bubble">'+t+'</div>';}
-function showTyping(){var z=document.getElementById('responseZone');z.innerHTML+='<div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';}
-function showResponse(t){
-  var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="response-bubble"><div class="response-label">Sofia</div>'+t.replace(/\n/g,'<br>')+'</div>';
-  z.scrollTop=z.scrollHeight;
-}
-function sendMessage(){
-  var i=document.getElementById('userInput');var t=i.value.trim();if(!t)return;
-  if(isListening){try{recognition.stop();}catch(e){}}
-  showUserMessage(t);i.value='';i.style.height='auto';
-  if(modeAttente==='ville'){obtenirMeteo(t);return;}
-  if(modeAttente==='voyage'){obtenirVoyage(t);return;}
-  if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
-  if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
-  modeAttente=null;conversationHistory.push({role:'user',content:t});sauvegarderHistorique();getSofiaReply();
-}
-
-// === APPEL CLAUDE AVEC PIPELINE AUDIO RAPIDE ===
-function getSofiaReply(type) {
-  arreterVADLoop(); clearTimeout(autoRestartTimer);
-  try { if (recognition) recognition.stop(); } catch(e) {}
-  isListening = false; modeAttente = null;
-  audioQueue = []; isPlayingQueue = false;
-  document.getElementById('soleil').classList.remove('listening');
-  document.getElementById('soleilIcone').textContent = '⏳';
-  document.getElementById('soleilTexte').textContent = 'Attends...';
-  document.getElementById('sendBtn').disabled = true;
-  setStatus('Sofia réfléchit...'); setSearching(true);
-
-  var typesAvecRecherche = ['meteo', 'nouvelles', 'activites', 'urgence'];
-  var needsSearch = typesAvecRecherche.indexOf(type || '') !== -1;
-  var messagesLimites = conversationHistory.slice(-20);
-  var prenom = profil.prenom || '';
-
-  if (needsSearch) {
-    var intros = {
-      'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + ' !',
-      'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + ' !',
-      'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + ' !',
-      'default':   'Laissez-moi chercher ça' + (prenom ? ', ' + prenom : '') + ' !'
-    };
-    var texteIntro = intros[type] || intros['default'];
-    showTyping();
-
-    // APPEL 1 : intro immédiate via ElevenLabs
-    var promiseIntro = fetch('/.netlify/functions/voice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: texteIntro, compagnon: compagnon })
-    }).then(function(r) { return r.blob(); });
-
-    // APPEL 2 : Claude + web search en parallèle
-    var promiseClaude = fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type })
-    }).then(function(r) { return r.json(); });
-
-    // Jouer l'intro dès qu'elle arrive (~400ms)
-    promiseIntro.then(function(blobIntro) {
-      isSpeaking = true;
-      document.getElementById('soleil').classList.add('speaking');
-      document.getElementById('soleilIcone').textContent = '🔊';
-      document.getElementById('soleilTexte').textContent = 'Parle...';
-      setStatus('Sofia vous parle...');
-      var url = URL.createObjectURL(blobIntro);
-      var a = new Audio();
-      a.src = url; a.load();
-      a.play().catch(function() {});
-
-      // Dès que Claude répond, mettre les phrases en file d'attente
-      promiseClaude.then(function(d) {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-
-        if (d.content && d.content[0]) {
-          var reply = d.content[0].text;
-          conversationHistory.push({ role: 'assistant', content: reply });
-          sauvegarderHistorique(); mettreAJourMemoire();
-          showResponse(reply);
-
-          var phrases = decouper(
-            reply.replace(/<br\s*\/?>/gi, '. ')
-                 .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
-                 .replace(/\s+/g, ' ').trim()
-          );
-
-          // Mettre toutes les phrases en file AVANT que l'intro se termine
-          phrases.forEach(function(phrase, i) {
-            audioQueue.push({ texte: phrase, estDerniere: (i === phrases.length - 1) });
-          });
-
-          // Quand l'intro finit, démarrer immédiatement la file
-          a.onended = function() {
-            URL.revokeObjectURL(url);
-            isPlayingQueue = false;
-            isSpeaking = false;
-            jouerFileAudio();
-          };
-          a.onerror = function() {
-            URL.revokeObjectURL(url);
-            isPlayingQueue = false;
-            isSpeaking = false;
-            jouerFileAudio();
-          };
-
-        } else {
-          a.onended = function() {
-            URL.revokeObjectURL(url);
-            showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-            onSpeakEnd();
-          };
-        }
-      }).catch(function() {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-        a.onended = function() {
-          URL.revokeObjectURL(url);
-          showResponse("Je suis désolée, réessayons !");
-          onSpeakEnd();
-        };
-      });
-    }).catch(function() {
-      // Intro échouée — attendre Claude seul
-      promiseClaude.then(function(d) {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-        if (d.content && d.content[0]) {
-          var reply = d.content[0].text;
-          conversationHistory.push({ role: 'assistant', content: reply });
-          sauvegarderHistorique(); mettreAJourMemoire();
-          showResponse(reply); speakText(reply);
-        } else {
-          showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-        }
-      });
-    });
-
-  } else {
-    // === CONVERSATION NORMALE — un seul appel ===
-    showTyping();
-    fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      setSearching(false);
-      document.getElementById('sendBtn').disabled = false;
-      if (d.content && d.content[0]) {
-        var reply = d.content[0].text;
-        conversationHistory.push({ role: 'assistant', content: reply });
-        sauvegarderHistorique(); mettreAJourMemoire();
-        showResponse(reply); speakText(reply);
-      } else {
-        showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-        if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
-      }
-    })
-    .catch(function() {
-      setSearching(false);
-      document.getElementById('sendBtn').disabled = false;
-      showResponse("Je suis désolée, réessayons !");
-      if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
-    });
-  }
-}
-// === TÉLÉ CE SOIR — liens directs ===
-function demanderTele(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+// ============================================================
+// TÉLÉ CE SOIR
+// ============================================================
+function demanderTele() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   showUserMessage('Télé ce soir 📺');
   var prenom=profil.prenom||'';
   var msg=(prenom?prenom+', voici':'Voici')+' les horaires de ce soir. Choisissez votre chaîne !';
@@ -2509,9 +2570,11 @@ function demanderTele(){
   enregistrerActivite('tele','');
 }
 
-// === FILMS — liens directs ===
-function demanderFilms(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+// ============================================================
+// FILMS
+// ============================================================
+function demanderFilms() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   showUserMessage('Films 🍿');
   var prenom=profil.prenom||'';
   var msg=(prenom?prenom+', voici':'Voici')+' où trouver de beaux films ce soir !';
@@ -2528,27 +2591,79 @@ function demanderFilms(){
   enregistrerActivite('films','');
 }
 
-// === TOUT ===
-function demanderTout(){
-  if(isListening){try{recognition.stop();}catch(e){}isListening=false;}
+// ============================================================
+// TOUT
+// ============================================================
+function demanderTout() {
+  if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   var prenom=profil.prenom||'';
   var msg=(prenom?prenom+', que':'Que')+' voulez-vous savoir ?';
   showResponse(msg);
   speakText(msg);
 }
 
-// === PING SESSION ===
-function pingSession(){
-  if(!sessionId||!utilisateurId)return;
+// ============================================================
+// UTILITAIRES
+// ============================================================
+function enregistrerActivite(type,detail) {
+  if (!utilisateurId) return;
+  fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'activite',data:{utilisateur_id:utilisateurId,type:type,detail:detail||''}})}).catch(function(){});
+}
+function setStatus(t) { document.getElementById('statusText').textContent=t; }
+function autoResize(e) { e.style.height='auto'; e.style.height=Math.min(e.scrollHeight,40)+'px'; }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+
+function showUserMessage(t) {
+  var z=document.getElementById('responseZone');
+  z.innerHTML='<div class="user-bubble">'+t+'</div>';
+}
+function showTyping() {
+  var z=document.getElementById('responseZone');
+  z.innerHTML+='<div class="typing-dots"><div class="td"></div><div class="td"></div><div class="td"></div></div>';
+}
+function showResponse(t) {
+  var z=document.getElementById('responseZone');
+  z.innerHTML='<div class="response-bubble"><div class="response-label">Sofia</div>'+t.replace(/\n/g,'<br>')+'</div>';
+  z.scrollTop=z.scrollHeight;
+}
+
+function sendMessage() {
+  var i=document.getElementById('userInput');
+  var t=i.value.trim();if(!t)return;
+  if(isListening){try{recognition.stop();}catch(e){}}
+  showUserMessage(t);i.value='';i.style.height='auto';
+  if(modeAttente==='ville'){obtenirMeteo(t);return;}
+  if(modeAttente==='voyage'){obtenirVoyage(t);return;}
+  if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
+  if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
+  modeAttente=null;
+  conversationHistory.push({role:'user',content:t});
+  sauvegarderHistorique();
+  getSofiaReply();
+}
+
+// ============================================================
+// PING SESSION
+// ============================================================
+function pingSession() {
+  if (!sessionId||!utilisateurId) return;
   fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'activite',data:{utilisateur_id:utilisateurId,type:'ping',detail:'en ligne'}})}).catch(function(){});
 }
 setInterval(pingSession,5*60*1000);
-window.addEventListener('beforeunload',function(){if(sessionId){navigator.sendBeacon('/.netlify/functions/users',JSON.stringify({action:'fin_session',data:{session_id:sessionId}}));}});
+window.addEventListener('beforeunload',function(){
+  if(sessionId){navigator.sendBeacon('/.netlify/functions/users',JSON.stringify({action:'fin_session',data:{session_id:sessionId}}));}
+});
 
-// === INIT ===
+// ============================================================
+// INIT
+// ============================================================
 initRecognition();
 verifierAccesAuDemarrage();
-if('serviceWorker'in navigator){navigator.serviceWorker.register('/sw.js').then(function(){console.log('Sofia PWA prête !');}).catch(function(e){console.log('SW error:',e);});}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(function(){console.log('Sofia PWA prête !');})
+    .catch(function(e){console.log('SW error:',e);});
+}
 </script>
 </body>
 </html>
