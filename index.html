@@ -1981,6 +1981,7 @@ function initRecognition() {
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
     if (modeAttente==='ville') { obtenirMeteo(t); return; }
     if (modeAttente==='voyage') { obtenirVoyage(t); return; }
+    modeAttente = null;
     if (modeAttente==='nouvelles') { obtenirNouvelles(t); return; }
     if (modeAttente==='ancetre') { obtenirAncetres(t); return; }
     if (modeAttente==='epicerie_article') { ajouterArticleParVoix(t); return; }
@@ -2078,13 +2079,17 @@ function demanderMeteo() {
   var msg = 'Pour quelle ville voulez-vous la météo ?';
   showResponse(msg); modeAttente='ville'; speakText(msg);
 }
+javascript
 function obtenirMeteo(ville) {
-  if (!ville||ville.trim().length<2) return;
-  modeAttente=null; showUserMessage(ville);
-  setStatus('Sofia cherche la météo...'); setSearching(true); showTyping();
-  var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à '+ville+'. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires.';
-  conversationHistory.push({role:'user',content:prompt});
-  enregistrerActivite('meteo',ville);
+  if (!ville || ville.trim().length < 2) return;
+  modeAttente = null;
+  showUserMessage(ville);
+  setStatus('Sofia cherche la météo...');
+  setSearching(true);
+  showTyping();
+  var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à ' + ville + '. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires.';
+  conversationHistory.push({role: 'user', content: prompt});
+  enregistrerActivite('meteo', ville);
   getSofiaReply('meteo');
 }
 
@@ -2099,10 +2104,14 @@ function demanderNouvelles() {
   showResponse(msg); speakText(msg); modeAttente='nouvelles';
 }
 function obtenirNouvelles(sujet) {
-  modeAttente=null; showUserMessage(sujet);
-  var prompt='Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui sur le sujet suivant : '+sujet+'. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
-  conversationHistory.push({role:'user',content:prompt});
-  enregistrerActivite('nouvelles',sujet);
+  modeAttente = null;
+  showUserMessage(sujet);
+  setStatus('Sofia cherche les nouvelles...');
+  setSearching(true);
+  showTyping();
+  var prompt = 'Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui sur le sujet suivant : ' + sujet + '. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
+  conversationHistory.push({role: 'user', content: prompt});
+  enregistrerActivite('nouvelles', sujet);
   getSofiaReply('nouvelles');
 }
 
