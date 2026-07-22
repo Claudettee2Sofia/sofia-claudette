@@ -1529,14 +1529,14 @@ function getSofiaReply(type) {
   setSearching(true);
 
   var prenom = profil.prenom || '';
-  var intros = {
-    'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + '!',
-    'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + '!',
-    'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + '!',
-    'voyage':    'Je cherche les infos voyage' + (prenom ? ', ' + prenom : '') + '!',
-    'ancetres':  'Je cherche vos ancêtres' + (prenom ? ', ' + prenom : '') + '!',
-    'default':   'Je cherche ça pour vous' + (prenom ? ', ' + prenom : '') + '!'
-  };
+ var intros = {
+  'meteo':     (prenom ? prenom + ', ' : '') + 'un instant !',
+  'nouvelles': (prenom ? prenom + ', ' : '') + 'un instant !',
+  'activites': (prenom ? prenom + ', ' : '') + 'un instant !',
+  'voyage':    (prenom ? prenom + ', ' : '') + 'un instant !',
+  'ancetres':  (prenom ? prenom + ', ' : '') + 'un instant !',
+  'default':   (prenom ? prenom + ', ' : '') + 'un instant !'
+};
   var texteIntro = intros[type] || intros['default'];
 
   // Intro IMMÉDIATE via voix navigateur (0.2 seconde)
