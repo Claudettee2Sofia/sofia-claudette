@@ -2103,10 +2103,16 @@ function obtenirMeteo(ville) {
 // ============================================================
 function demanderNouvelles() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
+  modeAttente = null;
+  audioQueue = [];
+  isPlayingQueue = false;
   showUserMessage('Nouvelles 📰');
-  var prenom=profil.prenom||'';
-  var msg=(prenom?prenom+', vous':' Vous')+' voulez les nouvelles du Québec, du Canada, ou d\'ailleurs ?';
-  showResponse(msg); speakText(msg); modeAttente='nouvelles';
+  var prenom = profil.prenom || '';
+  var sujetParDefaut = 'Québec et Canada';
+  var prompt = 'Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui au Québec et au Canada. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
+  conversationHistory.push({role: 'user', content: prompt});
+  enregistrerActivite('nouvelles', sujetParDefaut);
+  getSofiaReply('nouvelles');
 }
 function obtenirNouvelles(sujet) {
   modeAttente = null;
