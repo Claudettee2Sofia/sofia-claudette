@@ -1528,18 +1528,42 @@ function getSofiaReply(type) {
   setStatus('Sofia réfléchit...');
   setSearching(true);
 
-  var messagesLimites = conversationHistory.slice(-20);
+  var prenom = profil.prenom || '';
+  var intros = {
+    'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + '!',
+    'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + '!',
+    'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + '!',
+    'voyage':    'Je cherche les infos voyage' + (prenom ? ', ' + prenom : '') + '!',
+    'ancetres':  'Je cherche vos ancêtres' + (prenom ? ', ' + prenom : '') + '!',
+    'default':   'Je cherche ça pour vous' + (prenom ? ', ' + prenom : '') + '!'
+  };
+  var texteIntro = intros[type] || intros['default'];
+
+  // Intro IMMÉDIATE via voix navigateur (0.2 seconde)
+  window.speechSynthesis.cancel();
+  var utterance = new SpeechSynthesisUtterance(texteIntro);
+  utterance.lang = 'fr-CA';
+  utterance.rate = 0.95;
+  utterance.pitch = 1.1;
+  var voixFR = window.speechSynthesis.getVoices().filter(function(v) {
+    return v.lang.startsWith('fr');
+  });
+  if (voixFR.length > 0) utterance.voice = voixFR[0];
+  window.speechSynthesis.speak(utterance);
 
   showTyping();
+
+  // Appel Claude en parallèle
   fetch('/.netlify/functions/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
+    body: JSON.stringify({ messages: conversationHistory.slice(-20), profil: profil, type: type || 'conversation' })
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
     setSearching(false);
     document.getElementById('sendBtn').disabled = false;
+    window.speechSynthesis.cancel();
     if (d.content && d.content[0]) {
       var reply = d.content[0].text;
       conversationHistory.push({ role: 'assistant', content: reply });
@@ -1555,6 +1579,7 @@ function getSofiaReply(type) {
   .catch(function() {
     setSearching(false);
     document.getElementById('sendBtn').disabled = false;
+    window.speechSynthesis.cancel();
     showResponse("Je suis désolée, réessayons !");
     if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
   });
