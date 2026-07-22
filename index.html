@@ -1529,7 +1529,7 @@ function getSofiaReply(type) {
   setStatus('Sofia réfléchit...');
   setSearching(true);
 
-  var typesAvecRecherche = ['meteo', 'nouvelles', 'activites', 'urgence'];
+  var typesAvecRecherche = [];
   var needsSearch = typesAvecRecherche.indexOf(type || '') !== -1;
   var messagesLimites = conversationHistory.slice(-20);
   var prenom = profil.prenom || '';
@@ -1606,18 +1606,22 @@ function getSofiaReply(type) {
           });
 
           // Quand l'intro se termine → démarrer la file immédiatement
-          audioIntro.onended = function() {
-            URL.revokeObjectURL(url);
-            isSpeaking = false;
-            isPlayingQueue = false;
-            jouerFileAudio();
-          };
-          audioIntro.onerror = function() {
-            URL.revokeObjectURL(url);
-            isSpeaking = false;
-            isPlayingQueue = false;
-            jouerFileAudio();
-          };
+        audioIntro.onended = function() {
+  URL.revokeObjectURL(url);
+  isSpeaking = false;
+  isPlayingQueue = false;
+  if (audioQueue.length > 0) {
+    jouerFileAudio();
+  }
+};
+audioIntro.onerror = function() {
+  URL.revokeObjectURL(url);
+  isSpeaking = false;
+  isPlayingQueue = false;
+  if (audioQueue.length > 0) {
+    jouerFileAudio();
+  }
+};
 
         } else {
           // Claude n'a rien renvoyé
