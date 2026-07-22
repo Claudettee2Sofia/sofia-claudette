@@ -1628,8 +1628,35 @@ function setSearching(on){
 }
 
 // === VOIX ===
+// Charger les voix disponibles
+var voixDisponibles=[];
+window.speechSynthesis.onvoiceschanged=function(){
+  voixDisponibles=window.speechSynthesis.getVoices();
+};
+
+function choisirVoix(){
+  var voix=window.speechSynthesis.getVoices();
+  // Priorité : voix françaises de qualité
+  var priorites=[
+    function(v){return v.lang==='fr-CA'&&v.localService;},
+    function(v){return v.lang==='fr-FR'&&v.localService;},
+    function(v){return v.lang.startsWith('fr')&&v.localService;},
+    function(v){return v.lang.startsWith('fr');},
+  ];
+  for(var i=0;i<priorites.length;i++){
+    var trouvee=voix.filter(priorites[i]);
+    // Préférer voix féminine
+    var feminine=trouvee.filter(function(v){return /marie|amelie|amelie|sophie|julie|claire|female|femme/i.test(v.name);});
+    if(feminine.length>0)return feminine[0];
+    if(trouvee.length>0)return trouvee[0];
+  }
+  return null;
+}
+
 function speakText(t){
   var c=t.replace(/<br\s*\/?>/gi,'. ').replace(/[\u{1F300}-\u{1FFFF}]/gu,'').replace(/\s+/g,' ').trim();
+  if(!c)return Promise.resolve();
+
   isSpeaking=true;
   try{if(recognition)recognition.stop();}catch(e){}
   isListening=false;
@@ -1638,18 +1665,20 @@ function speakText(t){
   document.getElementById('soleilIcone').textContent='🔊';
   document.getElementById('soleilTexte').textContent='Parle...';
   setStatus('Sofia vous parle...');
-  return fetch('/.netlify/functions/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:c,compagnon:compagnon})})
-  .then(function(r){if(!r.ok)throw new Error('failed');return r.blob();})
-  .then(function(b){
-    return new Promise(function(resolve){
-      var url=URL.createObjectURL(b);var a=new Audio();
-      a.onended=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
-      a.onerror=function(){URL.revokeObjectURL(url);onSpeakEnd();resolve();};
-      a.src=url;a.load();
-      var p=a.play();
-      if(p!==undefined){p.catch(function(err){URL.revokeObjectURL(url);onSpeakEnd();resolve();});}
-    });
-  }).catch(function(){onSpeakEnd();});
+
+  return new Promise(function(resolve){
+    window.speechSynthesis.cancel();
+    var utterance=new SpeechSynthesisUtterance(c);
+    utterance.lang='fr-CA';
+    utterance.rate=0.92;
+    utterance.pitch=1.05;
+    utterance.volume=1;
+    var voix=choisirVoix();
+    if(voix)utterance.voice=voix;
+    utterance.onend=function(){onSpeakEnd();resolve();};
+    utterance.onerror=function(){onSpeakEnd();resolve();};
+    window.speechSynthesis.speak(utterance);
+  });
 }
 function onSpeakEnd(){
   isSpeaking=false;
