@@ -1517,10 +1517,9 @@ function getSofiaReply(type) {
   try { if (recognition) recognition.stop(); } catch(e) {}
   isListening = false;
   modeAttente = null;
-
-  // Vider la file audio au cas où une réponse précédente serait encore en cours
   audioQueue = [];
   isPlayingQueue = false;
+  isSpeaking = false;
 
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleilIcone').textContent = '⏳';
@@ -1529,174 +1528,37 @@ function getSofiaReply(type) {
   setStatus('Sofia réfléchit...');
   setSearching(true);
 
-  var typesAvecRecherche = [];
-  var needsSearch = typesAvecRecherche.indexOf(type || '') !== -1;
   var messagesLimites = conversationHistory.slice(-20);
-  var prenom = profil.prenom || '';
 
-  if (needsSearch) {
-    // ── MODE RECHERCHE WEB ─────────────────────────────────
-    // On lance DEUX requêtes en parallèle :
-    //   1. ElevenLabs pour l'intro courte  (~400 ms → audio joué en ~1s)
-    //   2. Claude + web search             (~4-6 s  → réponse complète)
-    // L'utilisatrice entend Sofia parler après ~1 seconde.
-    // La vraie réponse s'enchaîne dès que l'intro se termine.
-
-    var intros = {
-      'meteo':     'Je cherche la météo' + (prenom ? ', ' + prenom : '') + ' !',
-      'nouvelles': 'Je cherche les nouvelles' + (prenom ? ', ' + prenom : '') + ' !',
-      'activites': 'Je cherche des activités' + (prenom ? ', ' + prenom : '') + ' !',
-      'default':   'Laissez-moi chercher ça' + (prenom ? ', ' + prenom : '') + ' !'
-    };
-    var texteIntro = intros[type] || intros['default'];
-    showTyping();
-
-    // APPEL 1 : intro via ElevenLabs
-    var promiseIntro = fetch('/.netlify/functions/voice', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: texteIntro, compagnon: compagnon })
-    }).then(function(r) { return r.blob(); });
-
-    // APPEL 2 : Claude + web search
-    var promiseClaude = fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type })
-    }).then(function(r) { return r.json(); });
-
-    // Jouer l'intro dès qu'elle arrive (~400 ms)
-    promiseIntro.then(function(blobIntro) {
-      isSpeaking = true;
-      document.getElementById('soleil').classList.add('speaking');
-      document.getElementById('soleilIcone').textContent = '🔊';
-      document.getElementById('soleilTexte').textContent = 'Parle...';
-      setStatus('Sofia vous parle...');
-
-      var url = URL.createObjectURL(blobIntro);
-      var audioIntro = new Audio();
-      audioIntro.src = url;
-      audioIntro.load();
-      audioIntro.play().catch(function() {});
-
-      // Pendant que l'intro joue, attendre la réponse Claude
-      promiseClaude.then(function(d) {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-
-        if (d.content && d.content[0]) {
-          var reply = d.content[0].text;
-          conversationHistory.push({ role: 'assistant', content: reply });
-          sauvegarderHistorique();
-          mettreAJourMemoire();
-          showResponse(reply);
-
-          // Préparer les phrases en file PENDANT que l'intro se termine
-          var textePropre = reply
-            .replace(/<br\s*\/?>/gi, '. ')
-            .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-          var phrases = decouper(textePropre);
-          phrases.forEach(function(phrase, i) {
-            audioQueue.push({
-              texte: phrase,
-              estDerniere: (i === phrases.length - 1)
-            });
-          });
-
-          // Quand l'intro se termine → démarrer la file immédiatement
-        audioIntro.onended = function() {
-  URL.revokeObjectURL(url);
-  isSpeaking = false;
-  isPlayingQueue = false;
-  if (audioQueue.length > 0) {
-    jouerFileAudio();
-  }
-};
-audioIntro.onerror = function() {
-  URL.revokeObjectURL(url);
-  isSpeaking = false;
-  isPlayingQueue = false;
-  if (audioQueue.length > 0) {
-    jouerFileAudio();
-  }
-};
-
-        } else {
-          // Claude n'a rien renvoyé
-          audioIntro.onended = function() {
-            URL.revokeObjectURL(url);
-            showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-            onSpeakEnd();
-          };
-        }
-
-      }).catch(function() {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-        audioIntro.onended = function() {
-          URL.revokeObjectURL(url);
-          showResponse("Je suis désolée, réessayons !");
-          onSpeakEnd();
-        };
-      });
-
-    }).catch(function() {
-      // L'intro ElevenLabs a échoué → attendre Claude seul
-      promiseClaude.then(function(d) {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-        if (d.content && d.content[0]) {
-          var reply = d.content[0].text;
-          conversationHistory.push({ role: 'assistant', content: reply });
-          sauvegarderHistorique();
-          mettreAJourMemoire();
-          showResponse(reply);
-          speakText(reply);
-        } else {
-          showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-        }
-      }).catch(function() {
-        setSearching(false);
-        document.getElementById('sendBtn').disabled = false;
-        showResponse("Je suis désolée, réessayons !");
-      });
-    });
-
-  } else {
-    // ── CONVERSATION NORMALE — un seul appel ──────────────
-    showTyping();
-    fetch('/.netlify/functions/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
-    })
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      setSearching(false);
-      document.getElementById('sendBtn').disabled = false;
-      if (d.content && d.content[0]) {
-        var reply = d.content[0].text;
-        conversationHistory.push({ role: 'assistant', content: reply });
-        sauvegarderHistorique();
-        mettreAJourMemoire();
-        showResponse(reply);
-        speakText(reply);
-      } else {
-        showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-        if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
-      }
-    })
-    .catch(function() {
-      setSearching(false);
-      document.getElementById('sendBtn').disabled = false;
-      showResponse("Je suis désolée, réessayons !");
+  showTyping();
+  fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: messagesLimites, profil: profil, type: type || 'conversation' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    setSearching(false);
+    document.getElementById('sendBtn').disabled = false;
+    if (d.content && d.content[0]) {
+      var reply = d.content[0].text;
+      conversationHistory.push({ role: 'assistant', content: reply });
+      sauvegarderHistorique();
+      mettreAJourMemoire();
+      showResponse(reply);
+      speakText(reply);
+    } else {
+      showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
       if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
-    });
-  }
+    }
+  })
+  .catch(function() {
+    setSearching(false);
+    document.getElementById('sendBtn').disabled = false;
+    showResponse("Je suis désolée, réessayons !");
+    if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+  });
 }
-
 // ============================================================
 // ADMIN
 // ============================================================
