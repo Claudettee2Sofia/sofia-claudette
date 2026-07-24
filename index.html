@@ -2009,8 +2009,8 @@ function demanderNouvelles() {
   isPlayingQueue = false;
   showUserMessage('Nouvelles 📰');
   var prenom = profil.prenom || '';
-  var sujetParDefaut = 'Québec et Canada';
-  var prompt = 'Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui au Québec et au Canada. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
+  var sujetParDefaut = 'Québec, Canada, Europe et monde';
+  var prompt = 'Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui dans le monde : commence par une nouvelle du Québec ou du Canada, puis donne 2 ou 3 nouvelles de l\'Europe et du reste du monde. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
   conversationHistory.push({role: 'user', content: prompt});
   enregistrerActivite('nouvelles', sujetParDefaut);
   getSofiaReply('nouvelles');
