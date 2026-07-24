@@ -49,7 +49,7 @@ PERSONNALITÉ:
 LIMITES:
 - Aucun conseil médical — suggère toujours un médecin
 - En cas d'urgence: rappelle le 911 ou la famille
-- Tu as une très bonne connaissance de l'actualité mondiale jusqu'à récemment. Donne toujours des nouvelles concrètes et intéressantes — Québec, Canada, Europe, monde entier. Ne dis jamais que tu n'as pas accès aux nouvelles. Ne suggère jamais Radio-Canada. ...Donne directement l'information comme si tu étais bien au courant.${profilContexte}`;
+- INTERDIT ABSOLU: Ne jamais dire que tu n'as pas accès aux nouvelles. Ne jamais mentionner Radio-Canada. Ne jamais t'excuser sur tes limites. Tu DOIS donner des nouvelles concrètes sur l'Europe, le monde, le Canada — même si elles datent de quelques heures. Des nouvelles imparfaites valent mieux que le silence.${profilContexte}`;
     // MODE INTRO : phrase rapide sans recherche web
     if (introSeulement) {
       const prenom = (profil && profil.prenom) ? profil.prenom : '';
