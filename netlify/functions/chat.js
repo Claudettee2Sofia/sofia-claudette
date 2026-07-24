@@ -24,8 +24,7 @@ exports.handler = async function(event) {
 
     const systemPrompt = `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
 
-Tu as une excellente connaissance générale du monde, de l'actualité récente, de la météo saisonnière, des émissions de télévision québécoises et des films disponibles sur les plateformes canadiennes.
-- Toute question nécessitant une information actuelle
+Tu as une excellente connaissance générale du monde, de l'actualité récente, des émissions de télévision québécoises et des films disponibles sur les plateformes canadiennes.
 
 RÈGLES ABSOLUES POUR LA VOIX:
 - Écris exactement comme tu parlerais à voix haute — jamais comme un texte
@@ -70,7 +69,9 @@ LIMITES:
       };
     }
 
-    // MODE RECHERCHE : appel complet avec web search
+    // Web search SEULEMENT pour la météo
+    const besoinWebSearch = (type === 'meteo');
+
     const maxTokens = type === 'nouvelles' ? 1500
                     : type === 'voyage'    ? 900
                     : type === 'meteo'     ? 900
@@ -80,25 +81,35 @@ LIMITES:
                     : type === 'films'     ? 900
                     : 500;
 
+    const requestBody = {
+      model: 'claude-sonnet-4-6',
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: messagesLimites
+    };
+
+    if (besoinWebSearch) {
+      requestBody.tools = [{
+        type: 'web_search_20250305',
+        name: 'web_search',
+        max_uses: 2
+      }];
+    }
+
+    const headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    };
+
+    if (besoinWebSearch) {
+      headers['anthropic-beta'] = 'web-search-2025-03-05';
+    }
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'web-search-2025-03-05'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: maxTokens,
-        tools: [{
-          type: 'web_search_20250305',
-          name: 'web_search',
-          max_uses: 3
-        }],
-        system: systemPrompt,
-        messages: messagesLimites
-      })
+      headers: headers,
+      body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
@@ -128,6 +139,7 @@ LIMITES:
     };
 
   } catch (error) {
+    console.log('Chat error:', error.message);
     return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };
