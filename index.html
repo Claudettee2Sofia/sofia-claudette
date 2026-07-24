@@ -2397,13 +2397,21 @@ function choisirRelation(rel){
   event.target.classList.add('selected');
   document.getElementById('contactRelation').value=rel;
 }
-  function majSofia() {
+function majSofia() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(function(registrations) {
       for (let r of registrations) r.unregister();
     });
   }
-  window.location.reload(true);
+  if ('caches' in window) {
+    caches.keys().then(function(names) {
+      for (let name of names) caches.delete(name);
+    });
+  }
+  setTimeout(function() {
+    window.location.href = window.location.href + '?v=' + Date.now();
+  }, 500);
+}
 }
 function ouvrirUrgence(){document.getElementById('urgenceOverlay').style.display='flex';afficherContacts();if(profil.ville){chargerCLSC(profil.ville);}}
 function fermerUrgence(){document.getElementById('urgenceOverlay').style.display='none';}
