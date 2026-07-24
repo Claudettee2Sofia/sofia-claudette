@@ -1313,6 +1313,7 @@
   <button class="urgence-btn" onclick="ouvrirUrgence()" title="Urgence">🚨</button>
   <textarea class="text-input" id="userInput" placeholder="Posez votre question à Sofia..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
   <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  <button class="urgence-btn" onclick="majSofia()" title="Mise à jour" style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);box-shadow:0 0 12px rgba(59,130,246,0.25);">🔄</button>
 </div>
 <div class="text-hint" id="textHint">Parlez ou écrivez — Sofia cherche tout en temps réel ✨</div>
 
@@ -2395,6 +2396,14 @@ function choisirRelation(rel){
   document.querySelectorAll('.relation-chip').forEach(function(c){c.classList.remove('selected');});
   event.target.classList.add('selected');
   document.getElementById('contactRelation').value=rel;
+}
+  function majSofia() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for (let r of registrations) r.unregister();
+    });
+  }
+  window.location.reload(true);
 }
 function ouvrirUrgence(){document.getElementById('urgenceOverlay').style.display='flex';afficherContacts();if(profil.ville){chargerCLSC(profil.ville);}}
 function fermerUrgence(){document.getElementById('urgenceOverlay').style.display='none';}
