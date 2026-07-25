@@ -1904,14 +1904,7 @@ function initRecognition() {
     showUserMessage(t);
     conversationHistory.push({role:'user',content:t});
     sauvegarderHistorique();
-    getSofiaReply();
-  };
-  return; 
-}
-    showUserMessage(t);
-    conversationHistory.push({role:'user',content:t});
-    sauvegarderHistorique();
-    getSofiaReply();
+  getSofiaReply();
   };
 
   recognition.onend=function() {
