@@ -1900,7 +1900,8 @@ function initRecognition() {
     if (tMin.includes('voyage')||tMin.includes('destination')) { demanderVoyage(); return; }
     if (tMin.includes('ancêtre')||tMin.includes('ancetre')||tMin.includes('généalogie')) { demanderAncetres(); return; }
     if (tMin.includes('urgence')||tMin.includes('aide')||tMin.includes('secours')) { ouvrirUrgence(); return; }
-    if (tMin.includes('formule')||tMin.includes('f1')||tMin.includes('ferrari')||tMin.includes('écurie')||tMin.includes('ecurie')||tMin.includes('pilote')||tMin.includes('gp ')||tMin.includes('grand prix')) { 
+    var tMin = t.toLowerCase();
+if (tMin.includes('formule')||tMin.includes('f1')||tMin.includes('ferrari')||tMin.includes('écurie')||tMin.includes('ecurie')||tMin.includes('pilote')) { getSofiaReply('f1'); return; }
   conversationHistory.push({role:'user',content:t}); 
   getSofiaReply('f1'); 
   return; 
