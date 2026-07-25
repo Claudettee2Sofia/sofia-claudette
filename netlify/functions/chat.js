@@ -70,7 +70,7 @@ LIMITES:
     }
 
     // Web search SEULEMENT pour la météo
-    const besoinWebSearch = (type === 'meteo');
+    const besoinWebSearch = (type === 'meteo') || (type === 'f1') || (type === 'nouvelles');
 
     const maxTokens = type === 'nouvelles' ? 1500
                     : type === 'voyage'    ? 900
