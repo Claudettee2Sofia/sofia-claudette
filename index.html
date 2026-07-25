@@ -1741,7 +1741,9 @@ function verifierProfil() {
       var maintenant = new Date();
       var jours = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
       var mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-      var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + '. ';
+      var minutes = maintenant.getMinutes();
+      var heure = maintenant.getHours() + 'h' + (minutes < 10 ? '0' + minutes : minutes);
+      var date = 'Nous sommes ' + jours[maintenant.getDay()] + ' le ' + maintenant.getDate() + ' ' + mois[maintenant.getMonth()] + ' ' + maintenant.getFullYear() + ' et il est ' + heure + '. ';
       var nomC = profil.compagnon === 'leo' ? 'Léo' : 'Sofia';
       var msg = date + 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Bonne journée ! Comment allez-vous aujourd\'hui ?';
       showResponse(msg); speakText(msg);
