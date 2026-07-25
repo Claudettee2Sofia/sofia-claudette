@@ -2005,7 +2005,7 @@ function obtenirMeteo(ville) {
   setStatus('Sofia cherche la météo...');
   setSearching(true);
   showTyping();
-  var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à ' + ville + '. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires.';
+  var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à ' + ville + '. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires. Dis aussi clairement si c\'est une belle journée pour sortir dehors ou s\'il vaut mieux rester au chaud à l\'intérieur, et suggère un bon moment de la journée pour prendre l\'air si c\'est possible.';
   conversationHistory.push({role: 'user', content: prompt});
   enregistrerActivite('meteo', ville);
   getSofiaReply('meteo');
