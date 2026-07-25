@@ -2574,13 +2574,13 @@ function sendMessage() {
   if(modeAttente==='voyage'){obtenirVoyage(t);return;}
   if(modeAttente==='nouvelles'){obtenirNouvelles(t);return;}
   if(modeAttente==='ancetre'){obtenirAncetres(t);return;}
-  if (tMin.includes('formule')||tMin.includes('f1')||tMin.includes('ferrari')||tMin.includes('écurie')||tMin.includes('ecurie')||tMin.includes('pilote')) { getSofiaReply('f1'); return; }
   modeAttente=null;
+  var tMin=t.toLowerCase();
+  if(tMin.includes('formule')||tMin.includes('f1')||tMin.includes('ferrari')||tMin.includes('écurie')||tMin.includes('ecurie')||tMin.includes('pilote')){conversationHistory.push({role:'user',content:t});getSofiaReply('f1');return;}
   conversationHistory.push({role:'user',content:t});
   sauvegarderHistorique();
   getSofiaReply();
 }
-
 // ============================================================
 // PING SESSION
 // ============================================================
