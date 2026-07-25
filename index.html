@@ -1541,16 +1541,24 @@ function getSofiaReply(type) {
   var texteIntro = intros[type] || intros['default'];
 
   // Intro IMMÉDIATE via voix navigateur (0.2 seconde)
-  window.speechSynthesis.cancel();
-  var utterance = new SpeechSynthesisUtterance(texteIntro);
-  utterance.lang = 'fr-CA';
-  utterance.rate = 0.95;
-  utterance.pitch = 1.1;
-  var voixFR = window.speechSynthesis.getVoices().filter(function(v) {
-    return v.lang.startsWith('fr');
-  });
-  if (voixFR.length > 0) utterance.voice = voixFR[0];
-  window.speechSynthesis.speak(utterance);
+// Son musical doux à la place de la voix
+(function() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var oscillator = ctx.createOscillator();
+    var gainNode = ctx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(523, ctx.currentTime);       // Do
+    oscillator.frequency.setValueAtTime(659, ctx.currentTime + 0.12); // Mi
+    oscillator.frequency.setValueAtTime(784, ctx.currentTime + 0.24); // Sol
+    gainNode.gain.setValueAtTime(0.18, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.6);
+  } catch(e) {}
+})();
 
   showTyping();
 
