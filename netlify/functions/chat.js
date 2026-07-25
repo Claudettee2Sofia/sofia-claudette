@@ -81,9 +81,10 @@ LIMITES:
                     : type === 'films'     ? 900
                     : 500;
 
-    const requestBody = {
+   const requestBody = {
       model: 'claude-sonnet-4-6',
       max_tokens: maxTokens,
+      temperature: 0.7,
       system: systemPrompt,
       messages: messagesLimites
     };
