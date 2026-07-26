@@ -41,16 +41,31 @@
     min-height: 100%;
   }
 
-  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .star { position: absolute; border-radius: 50%; animation: twinkle 3s ease-in-out infinite; }
+  .stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    contain: strict;
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+    will-change: opacity;
+  }
   @keyframes twinkle { 0%,100%{opacity:0.1}50%{opacity:0.6} }
+
+  /* Sur une vieille tablette, ces animations permanentes empêchent le CPU
+     de se reposer. On les coupe si la personne a demandé moins d'animations. */
+  @media (prefers-reduced-motion: reduce) {
+    .star, .web-dot, .ecoute-btn.active .ecoute-dot, .statut-dot.searching { animation: none; }
+    .avatar-outer-ring, .avatar-ring { animation: none; }
+    .avatar-core.listening, .avatar-core.speaking { animation: none; }
+    .btn-911 { animation: none; }
+  }
 
   .top-bar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 14px;
-    background: rgba(5,13,26,0.6);
-    backdrop-filter: blur(12px);
+    background: rgba(5,13,26,0.93);
     border-bottom: 0.5px solid rgba(61,124,240,0.12);
   }
 
@@ -62,7 +77,7 @@
     cursor: pointer; font-family: 'Quicksand', sans-serif;
     font-size: 12px; font-weight: 700;
     color: var(--bleu-pale);
-    transition: all 0.2s ease; backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
   }
   .changer-btn:active { transform: scale(0.95); }
   .changer-btn:hover { background: rgba(61,124,240,0.22); border-color: rgba(61,124,240,0.4); }
@@ -266,7 +281,6 @@
 
   .response-bubble {
     background: rgba(61,124,240,0.08);
-    backdrop-filter: blur(12px);
     border-radius: 18px; padding: 12px 16px;
     font-family: 'Cormorant Garamond', serif;
     font-size: clamp(15px,4vw,18px); line-height: 1.7;
@@ -298,8 +312,7 @@
 
   .bottom-bar {
     z-index: 10;
-    background: rgba(5,13,26,0.7);
-    backdrop-filter: blur(15px);
+    background: rgba(5,13,26,0.93);
     border-top: 0.5px solid rgba(61,124,240,0.12);
     padding: 8px 12px; display: flex; gap: 8px; align-items: center;
   }
@@ -356,10 +369,53 @@
   .bien-btn:hover { background: rgba(74,222,128,0.18); color: #4ade80; }
   .bien-btn.done { background: rgba(74,222,128,0.18); color: #4ade80; border-color: rgba(74,222,128,0.4); }
 
+  .alerte-overlay {
+    position: fixed; inset: 0; z-index: 480;
+    background: rgba(5,13,26,0.97);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; animation: fadeIn 0.4s ease;
+  }
+  .alerte-modal {
+    background: linear-gradient(135deg, #0f1f3d, #050d1a);
+    border: 1px solid rgba(251,191,36,0.3);
+    border-radius: 24px; padding: 30px 24px;
+    width: min(92vw, 400px); text-align: center;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(251,191,36,0.1);
+  }
+  .alerte-titre {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; font-weight: 600; color: #fbbf24; margin-bottom: 10px;
+  }
+  .alerte-texte { font-size: 17px; line-height: 1.6; color: var(--argent-pale); margin-bottom: 22px; }
+  .alerte-btn-ok {
+    width: 100%; background: linear-gradient(135deg, #4ade80, #16a34a);
+    border: none; border-radius: 14px; padding: 18px;
+    font-size: 19px; font-weight: 800; font-family: 'Quicksand', sans-serif;
+    color: #052e16; cursor: pointer; margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(74,222,128,0.35);
+  }
+  .alerte-btn-ok:active { transform: scale(0.97); }
+  .alerte-sous-titre {
+    font-size: 12px; font-weight: 800; color: rgba(200,216,240,0.4);
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px;
+  }
+  .alerte-contact-btn {
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
+    font-size: 16px; font-weight: 700; font-family: 'Quicksand', sans-serif;
+    color: #fca5a5; cursor: pointer; text-align: left;
+  }
+  .alerte-contact-btn:active { transform: scale(0.98); }
+  .alerte-plus-tard {
+    margin-top: 10px; font-size: 13px; color: rgba(200,216,240,0.35);
+    cursor: pointer; text-decoration: underline; display: inline-block;
+  }
+
   .overlay-base {
     position: fixed; inset: 0; z-index: 400;
-    background: rgba(5,13,26,0.97);
-    backdrop-filter: blur(12px);
+    background: rgba(5,13,26,0.99);
     display: flex; flex-direction: column;
     align-items: center; overflow-y: auto;
     padding: 20px 16px 40px;
@@ -417,8 +473,7 @@
 
   .acces-overlay {
     position: fixed; inset: 0; z-index: 500;
-    background: rgba(5,13,26,0.98);
-    backdrop-filter: blur(12px);
+    background: rgba(5,13,26,0.99);
     display: flex; align-items: center; justify-content: center;
     animation: fadeIn 0.5s ease;
   }
@@ -460,8 +515,7 @@
 
   .choix-overlay {
     position: fixed; inset: 0; z-index: 450;
-    background: rgba(5,13,26,0.97);
-    backdrop-filter: blur(12px);
+    background: rgba(5,13,26,0.99);
     display: flex; align-items: center; justify-content: center;
     animation: fadeIn 0.5s ease;
   }
@@ -497,7 +551,7 @@
 
   .profil-overlay {
     position: fixed; inset: 0; z-index: 420;
-    background: rgba(5,13,26,0.95); backdrop-filter: blur(12px);
+    background: rgba(5,13,26,0.98);
     display: flex; align-items: center; justify-content: center;
     animation: fadeIn 0.5s ease;
   }
@@ -525,7 +579,7 @@
 
   .admin-overlay{
     position:fixed;inset:0;z-index:500;
-    background:rgba(5,13,26,0.98);backdrop-filter:blur(12px);
+    background:rgba(5,13,26,0.99);
     display:flex;flex-direction:column;align-items:center;overflow-y:auto;
     padding:24px 16px 40px;animation:fadeIn 0.3s ease;
   }
@@ -568,7 +622,7 @@
 
   .urgence-overlay{
     position:fixed;inset:0;z-index:400;
-    background:rgba(5,13,26,0.97);backdrop-filter:blur(12px);
+    background:rgba(5,13,26,0.99);
     display:flex;flex-direction:column;align-items:center;overflow-y:auto;
     padding:20px 16px 40px;animation:fadeIn 0.3s ease;
   }
@@ -906,6 +960,20 @@
   ✅ <span id="bienTexte">Je vais bien</span>
 </button>
 
+<!-- ALERTE BIEN-ÊTRE -->
+<div class="alerte-overlay" id="alerteOverlay" style="display:none">
+  <div class="alerte-modal">
+    <div class="alerte-titre">💛 Tout va bien ?</div>
+    <div class="alerte-texte" id="alerteTexte"></div>
+    <button class="alerte-btn-ok" onclick="jeVaisBien()">✅ Oui, je vais bien</button>
+    <div id="alerteContactsZone" style="display:none">
+      <div class="alerte-sous-titre">Prévenir un proche</div>
+      <div id="alerteContacts"></div>
+    </div>
+    <span class="alerte-plus-tard" onclick="fermerAlerteBienEtre()">Plus tard</span>
+  </div>
+</div>
+
 <!-- PANEL ADMIN -->
 <div class="admin-overlay" id="adminOverlay" style="display:none">
   <div class="admin-header">
@@ -1215,12 +1283,12 @@
   <div class="ajout-form">
     <div class="ajout-form-titre">✍️ Ajouter un contact</div>
     <div class="relation-grid" id="relationGrid">
-      <div class="relation-chip selected" onclick="choisirRelation('Enfant')">👨‍👩‍👧 Enfant</div>
-      <div class="relation-chip" onclick="choisirRelation('Conjoint')">💑 Conjoint</div>
-      <div class="relation-chip" onclick="choisirRelation('Frère/Sœur')">👫 Frère/Sœur</div>
-      <div class="relation-chip" onclick="choisirRelation('Voisin')">🏠 Voisin</div>
-      <div class="relation-chip" onclick="choisirRelation('Ami')">🤝 Ami</div>
-      <div class="relation-chip" onclick="choisirRelation('Médecin')">👨‍⚕️ Médecin</div>
+      <div class="relation-chip selected" onclick="choisirRelation(this,'Enfant')">👨‍👩‍👧 Enfant</div>
+      <div class="relation-chip" onclick="choisirRelation(this,'Conjoint')">💑 Conjoint</div>
+      <div class="relation-chip" onclick="choisirRelation(this,'Frère/Sœur')">👫 Frère/Sœur</div>
+      <div class="relation-chip" onclick="choisirRelation(this,'Voisin')">🏠 Voisin</div>
+      <div class="relation-chip" onclick="choisirRelation(this,'Ami')">🤝 Ami</div>
+      <div class="relation-chip" onclick="choisirRelation(this,'Médecin')">👨‍⚕️ Médecin</div>
     </div>
     <input class="ajout-input" id="contactNom" type="text" placeholder="Prénom et nom">
     <input class="ajout-input" id="contactTel" type="tel" placeholder="Numéro de téléphone">
@@ -1323,13 +1391,17 @@
 // ============================================================
 (function(){
   var s=document.getElementById('stars');
-  for(var i=0;i<50;i++){
+  // 24 étoiles au lieu de 50 : autant d'éléments animés en moins à composer
+  // à chaque frame. On les ajoute en un seul passage dans le DOM.
+  var frag=document.createDocumentFragment();
+  for(var i=0;i<24;i++){
     var st=document.createElement('div');st.className='star';
     var sz=Math.random()*2+0.5;
     var alpha=Math.random()*0.35+0.05;
     st.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;top:'+Math.random()*80+'%;background:rgba(180,210,255,'+alpha+');position:absolute;border-radius:50%;animation-delay:'+Math.random()*6+'s;animation-duration:'+(Math.random()*3+2)+'s;';
-    s.appendChild(st);
+    frag.appendChild(st);
   }
+  s.appendChild(frag);
 })();
 
 // ============================================================
@@ -1356,46 +1428,133 @@ var recognition = null;
 var autoRestartTimer = null;
 var modeAttente = null;
 var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
-var CODE_ADMIN = 'SOFIA2025';
+
+/** Appel unique vers users.js — aucun secret ne vit plus dans cette page. */
+function postUsers(action, data) {
+  return fetch('/.netlify/functions/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: action, data: data || {} })
+  }).then(function(r) { return r.json(); });
+}
 
 // ============================================================
-// FILE AUDIO — PIPELINE EN CASCADE (NOUVEAU)
+// FILE AUDIO — PIPELINE EN CASCADE AVEC PRÉCHARGEMENT
 // ============================================================
+// La phrase N+1 est téléchargée pendant que la phrase N est jouée : plus de
+// blanc de 300 à 800 ms entre chaque phrase. En mode flux, les phrases sont
+// ajoutées au fur et à mesure que Claude écrit, sans attendre la fin.
 var audioQueue = [];
 var isPlayingQueue = false;
+var fluxTermine = true;          // false tant que du texte peut encore arriver
+var tamponFlux = '';             // texte reçu mais pas encore découpé
+var premierePhraseEnvoyee = false;
+var audioCourant = null;
+var jetonParole = 0;             // invalide les audios d'une parole interrompue
+var PRECHARGE = 2;               // phrases téléchargées en avance
 
-/**
- * Découpe un texte en phrases naturelles pour la synthèse vocale.
- * Chaque phrase doit faire au moins 20 chars pour éviter les micro-clips.
- */
-function decouper(texte) {
-  // Découper sur . ! ? en conservant la ponctuation
-  var morceaux = texte.match(/[^.!?]+[.!?]+/g) || [texte];
-  var phrases = [];
-  var tampon = '';
-  morceaux.forEach(function(m) {
-    var s = m.trim();
-    if (!s) return;
-    tampon = tampon ? tampon + ' ' + s : s;
-    // Envoyer la phrase dès qu'elle est assez longue
-    if (tampon.length >= 40) {
-      phrases.push(tampon);
-      tampon = '';
-    }
-  });
-  if (tampon) phrases.push(tampon);
-  return phrases.filter(function(p) { return p.length > 2; });
+/** Nettoie un texte destiné à la synthèse vocale. */
+function nettoyerPourVoix(texte) {
+  return texte
+    .replace(/<br\s*\/?>/gi, '. ')
+    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /**
- * Joue la prochaine phrase dans la file.
- * S'enchaîne automatiquement sans silence entre les phrases.
+ * Position de fin de la première phrase d'au moins `seuil` caractères.
+ * -1 si aucune phrase complète n'est disponible.
+ * On exige une espace après la ponctuation pour ne pas couper « 3.5 »,
+ * et on ignore les initiales du genre « M. Tremblay ».
  */
+function finDePhrase(s, seuil) {
+  for (var i = seuil; i < s.length; i++) {
+    var c = s.charAt(i);
+    if (c !== '.' && c !== '!' && c !== '?') continue;
+    if (c === '.' && /[A-ZÀ-Ý]/.test(s.charAt(i - 1)) && !/\S/.test(s.charAt(i - 2) || ' ')) continue;
+    var j = i + 1;
+    while (j < s.length && '.!?'.indexOf(s.charAt(j)) !== -1) j++;
+    if (j < s.length && /\s/.test(s.charAt(j))) return j;
+  }
+  return -1;
+}
+
+/**
+ * Découpe un texte complet en phrases.
+ * La première est volontairement courte pour que Sofia attaque vite ;
+ * les suivantes sont plus longues, ce qui donne une meilleure prosodie.
+ */
+function decouper(texte) {
+  var phrases = [];
+  var reste = texte;
+  var premier = true;
+  for (;;) {
+    var fin = finDePhrase(reste, premier ? 25 : 120);
+    if (fin === -1) break;
+    phrases.push(reste.slice(0, fin));
+    reste = reste.slice(fin);
+    premier = false;
+  }
+  if (reste.trim()) phrases.push(reste);
+  return phrases.filter(function(p) { return p.trim().length > 2; });
+}
+
+/** Lance (ou récupère) le téléchargement audio d'une phrase. */
+function prechargerAudio(item) {
+  if (item.promesse) return item.promesse;
+  item.promesse = fetch('/.netlify/functions/voice', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: item.texte, compagnon: compagnon })
+  }).then(function(r) {
+    if (!r.ok) throw new Error('voix ' + r.status);
+    return r.blob();
+  });
+  return item.promesse;
+}
+
+function prechargerProchains() {
+  var n = Math.min(PRECHARGE, audioQueue.length);
+  for (var i = 0; i < n; i++) prechargerAudio(audioQueue[i]);
+}
+
+/** Ajoute une phrase à la file et démarre la lecture si besoin. */
+function fileAjouterPhrase(texte) {
+  var propre = nettoyerPourVoix(texte);
+  if (propre.length < 2) return;
+  audioQueue.push({ texte: propre, promesse: null });
+  prechargerProchains();
+  jouerFileAudio();
+}
+
+/** Coupe net la parole en cours et vide la file. */
+function arreterParole() {
+  jetonParole++;
+  audioQueue = [];
+  isPlayingQueue = false;
+  isSpeaking = false;
+  tamponFlux = '';
+  fluxTermine = true;
+  premierePhraseEnvoyee = false;
+  if (audioCourant) {
+    try { audioCourant.pause(); } catch(e) {}
+    audioCourant = null;
+  }
+}
+
+/** Joue la prochaine phrase, en enchaînant sans silence. */
 function jouerFileAudio() {
-  if (isPlayingQueue || audioQueue.length === 0) return;
+  if (isPlayingQueue) return;
+  if (audioQueue.length === 0) {
+    if (fluxTermine && isSpeaking) onSpeakEnd();
+    return;
+  }
   isPlayingQueue = true;
 
   var item = audioQueue.shift();
+  prechargerProchains();          // la suivante se télécharge pendant la lecture
+  var jeton = jetonParole;
 
   isSpeaking = true;
   document.getElementById('soleil').classList.remove('listening');
@@ -1404,83 +1563,70 @@ function jouerFileAudio() {
   document.getElementById('soleilTexte').textContent = 'Parle...';
   setStatus('Sofia vous parle...');
 
-  fetch('/.netlify/functions/voice', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: item.texte, compagnon: compagnon })
-  })
-  .then(function(r) { return r.blob(); })
-  .then(function(b) {
-    var url = URL.createObjectURL(b);
+  var suite = function() {
+    isPlayingQueue = false;
+    audioCourant = null;
+    if (jeton === jetonParole) jouerFileAudio();
+  };
+
+  prechargerAudio(item).then(function(blob) {
+    if (jeton !== jetonParole) { isPlayingQueue = false; return; }
+    var url = URL.createObjectURL(blob);
     var a = new Audio();
+    audioCourant = a;
     a.src = url;
-    a.load();
-    a.onended = function() {
-      URL.revokeObjectURL(url);
-      isPlayingQueue = false;
-      isSpeaking = false;
-      if (audioQueue.length > 0) {
-        jouerFileAudio();
-      } else if (item.estDerniere) {
-        onSpeakEnd();
-      }
-    };
-    a.onerror = function() {
-      URL.revokeObjectURL(url);
-      isPlayingQueue = false;
-      isSpeaking = false;
-      if (audioQueue.length > 0) {
-        jouerFileAudio();
-      } else {
-        onSpeakEnd();
-      }
-    };
+    a.onended = function() { URL.revokeObjectURL(url); suite(); };
+    a.onerror = function() { URL.revokeObjectURL(url); suite(); };
     a.play().catch(function(err) {
       console.log('Audio play error:', err);
-      isPlayingQueue = false;
-      isSpeaking = false;
-      onSpeakEnd();
+      URL.revokeObjectURL(url);
+      suite();
     });
-  })
-  .catch(function(err) {
+  }).catch(function(err) {
     console.log('Voice fetch error:', err);
-    isPlayingQueue = false;
-    isSpeaking = false;
-    if (audioQueue.length > 0) {
-      jouerFileAudio();
-    } else {
-      onSpeakEnd();
-    }
+    suite();
   });
 }
 
 /**
- * Point d'entrée principal pour faire parler Sofia.
- * Découpe le texte en phrases et remplit la file audio.
+ * Point d'entrée principal pour faire parler Sofia d'un texte déjà complet.
  */
 function speakText(t) {
-  var c = t
-    .replace(/<br\s*\/?>/gi, '. ')
-    .replace(/[\u{1F300}-\u{1FFFF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  arreterParole();
+  var c = nettoyerPourVoix(t);
   if (!c) return Promise.resolve();
-
-  audioQueue = [];
-  isPlayingQueue = false;
-
-  var phrases = decouper(c);
-  if (phrases.length === 0) return Promise.resolve();
-
-  phrases.forEach(function(phrase, i) {
-    audioQueue.push({
-      texte: phrase,
-      estDerniere: (i === phrases.length - 1)
-    });
-  });
-
+  fluxTermine = false;
+  decouper(c).forEach(fileAjouterPhrase);
+  fluxTermine = true;
   jouerFileAudio();
   return Promise.resolve();
+}
+
+// ---------- Mode flux : Sofia parle pendant que Claude écrit ----------
+function debuterFluxParole() {
+  arreterParole();
+  fluxTermine = false;
+  tamponFlux = '';
+  premierePhraseEnvoyee = false;
+}
+
+function pousserFluxParole(morceau) {
+  tamponFlux += morceau;
+  for (;;) {
+    var fin = finDePhrase(tamponFlux, premierePhraseEnvoyee ? 120 : 25);
+    if (fin === -1) break;
+    var phrase = tamponFlux.slice(0, fin);
+    tamponFlux = tamponFlux.slice(fin);
+    premierePhraseEnvoyee = true;
+    fileAjouterPhrase(phrase);
+  }
+}
+
+function terminerFluxParole() {
+  if (tamponFlux.trim()) fileAjouterPhrase(tamponFlux);
+  tamponFlux = '';
+  fluxTermine = true;
+  jouerFileAudio();
 }
 function onSpeakEnd() {
   isSpeaking = false;
@@ -1510,17 +1656,52 @@ function onSpeakEnd() {
 }
 
 // ============================================================
-// APPEL CLAUDE — PIPELINE RAPIDE (NOUVEAU)
+// APPEL CLAUDE — RÉPONSE EN FLUX
 // ============================================================
+/** Petit carillon Do-Mi-Sol pour confirmer que Sofia a bien entendu. */
+function carillon() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523, ctx.currentTime);        // Do
+    osc.frequency.setValueAtTime(659, ctx.currentTime + 0.12); // Mi
+    osc.frequency.setValueAtTime(784, ctx.currentTime + 0.24); // Sol
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+    setTimeout(function() { try { ctx.close(); } catch(e) {} }, 900);
+  } catch(e) {}
+}
+
+function reponseTerminee(texte) {
+  conversationHistory.push({ role: 'assistant', content: texte });
+  sauvegarderHistorique();
+  // La mise à jour de mémoire est un 2e appel Claude : on la décale pour ne pas
+  // voler de la bande passante au téléchargement des phrases en cours de lecture.
+  setTimeout(mettreAJourMemoire, 4000);
+}
+
+function reponseEchouee(message) {
+  setSearching(false);
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('soleilIcone').textContent = '🎙️';
+  document.getElementById('soleilTexte').textContent = (isEcouteActive || modeAttente) ? 'Auto' : 'Appuyez';
+  showResponse(message);
+  if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+}
+
 function getSofiaReply(type) {
   arreterVADLoop();
   clearTimeout(autoRestartTimer);
   try { if (recognition) recognition.stop(); } catch(e) {}
   isListening = false;
   modeAttente = null;
-  audioQueue = [];
-  isPlayingQueue = false;
-  isSpeaking = false;
+  arreterParole();
 
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleilIcone').textContent = '⏳';
@@ -1528,69 +1709,107 @@ function getSofiaReply(type) {
   document.getElementById('sendBtn').disabled = true;
   setStatus('Sofia réfléchit...');
   setSearching(true);
-
-  var prenom = profil.prenom || '';
- var intros = {
-  'meteo':     (prenom ? prenom + ', ' : '') + 'un instant !',
-  'nouvelles': (prenom ? prenom + ', ' : '') + 'Oups voila que Sofia cherche pour vous !',
-  'activites': (prenom ? prenom + ', ' : '') + 'un instant !',
-  'voyage':    (prenom ? prenom + ', ' : '') + 'un instant !',
-  'ancetres':  (prenom ? prenom + ', ' : '') + 'un instant !',
-  'default':   (prenom ? prenom + ', ' : '') + 'un instant !'
-};
-  var texteIntro = intros[type] || intros['default'];
-
-  // Intro IMMÉDIATE via voix navigateur (0.2 seconde)
-// Son musical doux à la place de la voix
-(function() {
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var oscillator = ctx.createOscillator();
-    var gainNode = ctx.createGain();
-    oscillator.connect(gainNode);
-    gainNode.connect(ctx.destination);
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(523, ctx.currentTime);       // Do
-    oscillator.frequency.setValueAtTime(659, ctx.currentTime + 0.12); // Mi
-    oscillator.frequency.setValueAtTime(784, ctx.currentTime + 0.24); // Sol
-    gainNode.gain.setValueAtTime(0.18, ctx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-    oscillator.start(ctx.currentTime);
-    oscillator.stop(ctx.currentTime + 0.6);
-  } catch(e) {}
-})();
-
+  carillon();
   showTyping();
 
-  // Appel Claude en parallèle
-  fetch('/.netlify/functions/chat', {
+  var charge = {
+    messages: conversationHistory.slice(-20),
+    profil: profil,
+    type: type || 'conversation'
+  };
+
+  demanderEnFlux(charge).catch(function(err) {
+    console.log('Flux indisponible, repli JSON:', err && err.message);
+    return demanderEnJson(charge);
+  }).catch(function() {
+    reponseEchouee('Je suis désolée, réessayons !');
+  });
+}
+
+// Le texte arrive token par token : on ne redessine qu'une fois par frame.
+var rafAffichage = null;
+var texteAAfficher = '';
+function afficherProgressivement(texte) {
+  texteAAfficher = texte;
+  if (rafAffichage) return;
+  rafAffichage = requestAnimationFrame(function() {
+    rafAffichage = null;
+    showResponse(texteAAfficher);
+  });
+}
+
+/**
+ * Lit la réponse de Claude au fur et à mesure : le texte s'affiche et Sofia
+ * commence à parler dès la première phrase complète.
+ */
+function demanderEnFlux(charge) {
+  var avecFlux = { messages: charge.messages, profil: charge.profil, type: charge.type, stream: true };
+  return fetch('/.netlify/functions/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages: conversationHistory.slice(-20), profil: profil, type: type || 'conversation' })
+    body: JSON.stringify(avecFlux)
+  }).then(function(r) {
+    // Safari < 14.1 n'expose pas r.body : on bascule sur le mode JSON.
+    if (!r.ok || !r.body || !r.body.getReader) throw new Error('flux non supporté');
+
+    var lecteur = r.body.getReader();
+    var decodeur = new TextDecoder();
+    var accumule = '';
+    var premierMorceau = true;
+
+    function lire() {
+      return lecteur.read().then(function(res) {
+        if (res.done) return;
+        var morceau = decodeur.decode(res.value, { stream: true });
+        if (morceau) {
+          if (premierMorceau) {
+            premierMorceau = false;
+            setSearching(false);
+            debuterFluxParole();
+          }
+          accumule += morceau;
+          afficherProgressivement(accumule);
+          pousserFluxParole(morceau);
+        }
+        return lire();
+      });
+    }
+
+    return lire().catch(function(err) {
+      // Coupure en cours de route : Sofia a déjà commencé à parler, on garde
+      // ce qui est dit plutôt que de tout refaire dire depuis le début.
+      if (!premierMorceau) { console.log('Flux interrompu:', err && err.message); return; }
+      throw err;
+    }).then(function() {
+      if (!accumule.trim()) throw new Error('flux vide');
+      terminerFluxParole();
+      showResponse(accumule.trim());
+      setSearching(false);
+      document.getElementById('sendBtn').disabled = false;
+      reponseTerminee(accumule.trim());
+    });
+  });
+}
+
+/** Ancien chemin : on attend la réponse complète avant de parler. */
+function demanderEnJson(charge) {
+  return fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(charge)
   })
   .then(function(r) { return r.json(); })
   .then(function(d) {
     setSearching(false);
     document.getElementById('sendBtn').disabled = false;
-    window.speechSynthesis.cancel();
-    if (d.content && d.content[0]) {
+    if (d.content && d.content[0] && d.content[0].text) {
       var reply = d.content[0].text;
-      conversationHistory.push({ role: 'assistant', content: reply });
-      sauvegarderHistorique();
-      mettreAJourMemoire();
       showResponse(reply);
       speakText(reply);
+      reponseTerminee(reply);
     } else {
-      showResponse("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
-      if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
+      reponseEchouee("Oh, j'ai eu un petit souci ! Pouvez-vous répéter ?");
     }
-  })
-  .catch(function() {
-    setSearching(false);
-    document.getElementById('sendBtn').disabled = false;
-    window.speechSynthesis.cancel();
-    showResponse("Je suis désolée, réessayons !");
-    if (isEcouteActive) setTimeout(function() { startListening(); }, 1000);
   });
 }
 // ============================================================
@@ -1599,11 +1818,14 @@ function getSofiaReply(type) {
 function ouvrirAdminDepuisApp() {
   var code = prompt('Code administrateur :');
   if (!code) return;
-  if (code.trim().toUpperCase() === CODE_ADMIN) {
-    document.getElementById('adminCodeJour').textContent = getCodeDuJour();
-    document.getElementById('adminOverlay').style.display = 'flex';
-    adminAfficherUsers();
-  } else { alert('Code incorrect.'); }
+  // La comparaison se fait sur le serveur : le code n'est plus dans cette page.
+  postUsers('verifier_admin', { code: code.trim().toUpperCase() }).then(function(d) {
+    if (d && d.valide) {
+      document.getElementById('adminCodeJour').textContent = d.code_du_jour || '—';
+      document.getElementById('adminOverlay').style.display = 'flex';
+      adminAfficherUsers();
+    } else { alert('Code incorrect.'); }
+  }).catch(function() { alert('Erreur réseau.'); });
 }
 function fermerAdmin() { document.getElementById('adminOverlay').style.display = 'none'; lancerSofia(); }
 function adminAfficherUsers() {
@@ -1616,7 +1838,7 @@ function adminAfficherUsers() {
     liste.innerHTML = '';
     users.forEach(function(u) {
       var card = document.createElement('div'); card.className = 'admin-user-card';
-      card.innerHTML = '<div class="admin-user-info"><div class="admin-user-nom">'+u.nom+'</div><div class="admin-user-code">🔑 '+u.code_acces+'</div></div><div class="admin-user-actions"><button class="btn-retirer" onclick="adminRetirerUser(\''+u.id+'\')">🗑️</button></div>';
+      card.innerHTML = '<div class="admin-user-info"><div class="admin-user-nom">'+echapper(u.nom)+'</div><div class="admin-user-code">🔑 '+echapper(u.code_acces)+'</div></div><div class="admin-user-actions"><button class="btn-retirer" data-id="'+echapper(u.id)+'" onclick="adminRetirerUser(this.dataset.id)">🗑️</button></div>';
       liste.appendChild(card);
     });
   }).catch(function() { liste.innerHTML = '<div style="color:#ef4444;font-size:13px;text-align:center;padding:10px 0">Erreur de chargement.</div>'; });
@@ -1625,9 +1847,7 @@ function adminAjouterUser() {
   var nom = document.getElementById('adminNom').value.trim();
   var code = document.getElementById('adminCode').value.trim().toUpperCase();
   if (!nom || !code) { alert('Veuillez entrer un nom et un mot de passe.'); return; }
-  if (code === CODE_ADMIN) { alert('Ce mot de passe est réservé.'); return; }
-  fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'ajouter',data:{nom:nom,code:code}}) })
-  .then(function(r) { return r.json(); }).then(function(d) {
+  postUsers('ajouter', { nom: nom, code: code }).then(function(d) {
     if (d.succes) { document.getElementById('adminNom').value=''; document.getElementById('adminCode').value=''; alert('Utilisateur '+nom+' ajouté !'); adminAfficherUsers(); }
     else { alert(d.erreur || 'Erreur.'); }
   }).catch(function() { alert('Erreur réseau.'); });
@@ -1642,42 +1862,57 @@ function adminRetirerUser(id) {
 // ============================================================
 // ACCÈS
 // ============================================================
-function getCodeDuJour() { var d = new Date(); return 'SF'+String(d.getDate()).padStart(2,'0')+String(d.getMonth()+1).padStart(2,'0'); }
-
+// Aucun code n'est comparé dans le navigateur : tout est validé par users.js.
 function verifierAcces() {
   var code = document.getElementById('accesInput').value.trim().toUpperCase();
   var erreur = document.getElementById('accesErreur');
-  if (code === CODE_ADMIN) {
-    localStorage.setItem('sofia_acces_admin','oui');
-    document.getElementById('accesInput').value = '';
-    fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'connexion_admin',data:{}}) })
-    .finally(function() { document.getElementById('accesOverlay').style.display='none'; lancerSofia(); });
-    return;
-  }
-  if (code === getCodeDuJour()) {
-    erreur.textContent = 'Vérification...';
-    fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verifier_invite',data:{}}) })
-    .then(function(r) { return r.json(); }).then(function(d) {
-      if (d.valide) { localStorage.setItem('sofia_acces_date',new Date().toDateString()); document.getElementById('accesOverlay').style.display='none'; document.getElementById('accesInput').value=''; erreur.textContent=''; lancerSofia(); }
-      else { erreur.textContent = d.message || "Accès refusé pour aujourd'hui."; }
-    }).catch(function() { localStorage.setItem('sofia_acces_date',new Date().toDateString()); document.getElementById('accesOverlay').style.display='none'; lancerSofia(); });
-    return;
-  }
+  if (!code) return;
   erreur.textContent = 'Vérification...';
-  fetch('/.netlify/functions/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'verifier_code',data:{code:code}}) })
-  .then(function(r) { return r.json(); }).then(function(d) {
-    if (d.valide) {
+
+  var entrer = function() {
+    document.getElementById('accesInput').value = '';
+    erreur.textContent = '';
+    document.getElementById('accesOverlay').style.display = 'none';
+    lancerSofia();
+  };
+
+  // 1) code administrateur, 2) code du jour, 3) code permanent
+  postUsers('verifier_admin', { code: code }).then(function(d) {
+    if (d && d.valide) {
+      localStorage.setItem('sofia_acces_admin', 'oui');
+      entrer();
+      return null;
+    }
+    return postUsers('verifier_invite', { code: code });
+  }).then(function(d) {
+    if (d === null) return null;
+    if (d && d.valide) {
+      localStorage.setItem('sofia_acces_date', new Date().toDateString());
+      entrer();
+      return null;
+    }
+    if (d && d.erreur === 'limite') {
+      erreur.textContent = d.message || "Accès refusé pour aujourd'hui.";
+      return null;
+    }
+    return postUsers('verifier_code', { code: code });
+  }).then(function(d) {
+    if (d === null) return;
+    if (d && d.valide && d.utilisateur) {
       localStorage.setItem('sofia_utilisateur_id', d.utilisateur.id);
       localStorage.setItem('sofia_utilisateur_nom', d.utilisateur.nom);
-      utilisateurId = d.utilisateur.id; sessionId = d.session_id;
-      document.getElementById('accesInput').value = ''; erreur.textContent = '';
-      document.getElementById('accesOverlay').style.display = 'none'; lancerSofia();
+      utilisateurId = d.utilisateur.id;
+      sessionId = d.session_id;
+      entrer();
     } else {
       erreur.textContent = 'Code incorrect. Réessayez.';
       document.getElementById('accesInput').value = '';
-      setTimeout(function() { erreur.textContent=''; }, 3000);
+      setTimeout(function() { erreur.textContent = ''; }, 3000);
     }
-  }).catch(function() { erreur.textContent='Erreur réseau.'; setTimeout(function() { erreur.textContent=''; }, 3000); });
+  }).catch(function() {
+    erreur.textContent = 'Erreur réseau.';
+    setTimeout(function() { erreur.textContent = ''; }, 3000);
+  });
 }
 
 function verifierAccesAuDemarrage() {
@@ -1788,30 +2023,80 @@ function jeVaisBien() {
   var btn = document.getElementById('bienBtn');
   btn.classList.add('done');
   document.getElementById('bienTexte').textContent = '✓ Confirmé';
+  document.getElementById('alerteOverlay').style.display = 'none';
   var msg = 'Merci ! ' + (profil.prenom || 'vous') + ', je suis ' + (compagnon === 'leo' ? 'content' : 'contente') + ' que vous alliez bien. Bonne journée ! 😊';
   showResponse(msg);
   speakText(msg);
 }
 
-function verifierAlerteBienEtre() {
+function fermerAlerteBienEtre() {
+  document.getElementById('alerteOverlay').style.display = 'none';
+}
+
+function bienEtreConfirmeAujourdhui() {
+  return localStorage.getItem('sofia_bien_date') === new Date().toDateString();
+}
+
+function contactsAAlerter() {
+  return JSON.parse(localStorage.getItem('sofia_contacts') || '[]')
+    .filter(function(c) { return c.alerte; });
+}
+
+/**
+ * Midi est passé sans confirmation : on montre un panneau impossible à manquer,
+ * on prévient l'administrateur par courriel, et on offre un bouton SMS par
+ * contact de confiance. Avant, cette fonction ne faisait qu'un console.log.
+ */
+function declencherAlerteBienEtre() {
+  if (bienEtreConfirmeAujourdhui()) return;
+  var contacts = contactsAAlerter();
   var today = new Date().toDateString();
-  var dernierBien = localStorage.getItem('sofia_bien_date');
-  if (dernierBien === today) {
-    var btn = document.getElementById('bienBtn');
-    btn.classList.add('done');
-    document.getElementById('bienTexte').textContent = '✓ Confirmé';
+
+  // Le panneau peut réapparaître, mais le courriel ne part qu'une fois par jour.
+  if (localStorage.getItem('sofia_alerte_envoyee') !== today) {
+    localStorage.setItem('sofia_alerte_envoyee', today);
+    postUsers('alerte_bienetre', {
+      prenom: profil.prenom || '',
+      ville: profil.ville || '',
+      utilisateur_id: utilisateurId || null,
+      contacts: contacts
+    }).catch(function() {});
   }
-  var maintenant = new Date();
-  if (maintenant.getHours() >= 12 && dernierBien !== today) {
-    var contacts = JSON.parse(localStorage.getItem('sofia_contacts') || '[]');
-    var alerteContacts = contacts.filter(function(c) { return c.alerte; });
-    if (alerteContacts.length > 0) {
-      setTimeout(function() {
-        var msg = 'Bonjour' + (profil.prenom ? ' ' + profil.prenom : '') + ' ! Vous n\'avez pas encore dit que vous alliez bien aujourd\'hui. Tout va bien ? Appuyez sur le bouton vert si vous allez bien.';
-        showResponse(msg);
-        speakText(msg);
-      }, 2000);
-    }
+
+  var prenom = profil.prenom ? ' ' + profil.prenom : '';
+  document.getElementById('alerteTexte').textContent =
+    'Bonjour' + prenom + " ! Vous n'avez pas encore dit que vous alliez bien aujourd'hui. Tout va bien ?";
+
+  var zone = document.getElementById('alerteContactsZone');
+  var liste = document.getElementById('alerteContacts');
+  if (contacts.length > 0) {
+    liste.innerHTML = '';
+    contacts.forEach(function(c) {
+      var b = document.createElement('button');
+      b.className = 'alerte-contact-btn';
+      b.innerHTML = '💬 <span>Écrire à ' + echapper(c.nom) + '</span>';
+      b.onclick = (function(contact) {
+        return function() { envoyerSMS(contact.tel, contact.nom); };
+      })(c);
+      liste.appendChild(b);
+    });
+    zone.style.display = 'block';
+  } else {
+    zone.style.display = 'none';
+  }
+
+  document.getElementById('alerteOverlay').style.display = 'flex';
+  speakText("Bonjour" + prenom + " ! Vous n'avez pas encore dit que vous alliez bien aujourd'hui. Tout va bien ? Appuyez sur le grand bouton vert si vous allez bien.");
+}
+
+function verifierAlerteBienEtre() {
+  if (bienEtreConfirmeAujourdhui()) {
+    document.getElementById('bienBtn').classList.add('done');
+    document.getElementById('bienTexte').textContent = '✓ Confirmé';
+    return;
+  }
+  if (new Date().getHours() >= 12) {
+    setTimeout(declencherAlerteBienEtre, 2000);
   }
 }
 
@@ -1847,21 +2132,49 @@ function setSearching(on) {
 // VAD
 // ============================================================
 var vadStream=null; var vadAnalyser=null; var vadContext=null; var vadInterval=null;
+var vadDonnees=null;
 var SEUIL_VOLUME=18; var SILENCE_DUREE=1800; var dernierSon=0;
+var VAD_PERIODE=250;  // 250 ms suffisent pour de la parole ; 150 ms vidait la batterie
 function initVAD() {
+  // Déjà initialisé : on ne rouvre pas un deuxième flux micro.
+  if (vadStream && vadAnalyser) {
+    if (vadContext && vadContext.state === 'suspended') vadContext.resume();
+    return Promise.resolve();
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setStatus("Le micro n'est pas disponible sur cet appareil.");
+    return Promise.resolve();
+  }
   return navigator.mediaDevices.getUserMedia({audio:true,video:false}).then(function(stream) {
     vadStream=stream; vadContext=new(window.AudioContext||window.webkitAudioContext)();
     var source=vadContext.createMediaStreamSource(stream);
     vadAnalyser=vadContext.createAnalyser(); vadAnalyser.fftSize=512; vadAnalyser.smoothingTimeConstant=0.6;
+    vadDonnees=new Uint8Array(vadAnalyser.frequencyBinCount);
     source.connect(vadAnalyser);
-  }).catch(function(e) { console.log('VAD non disponible:',e.message); });
+  }).catch(function(e) {
+    console.log('VAD non disponible:',e.message);
+    // Sans message, la personne ne comprend pas pourquoi rien ne se passe.
+    setStatus('Autorisez le microphone dans les réglages du navigateur 🎙️');
+  });
+}
+
+/** Ferme le micro et l'AudioContext : le voyant d'enregistrement s'éteint. */
+function libererVAD() {
+  if (vadStream) {
+    vadStream.getTracks().forEach(function(t) { try { t.stop(); } catch(e) {} });
+    vadStream=null;
+  }
+  if (vadContext) { try { vadContext.close(); } catch(e) {} vadContext=null; }
+  vadAnalyser=null; vadDonnees=null;
 }
 function getVolume() {
-  if (!vadAnalyser) return 0;
-  var data=new Uint8Array(vadAnalyser.frequencyBinCount); vadAnalyser.getByteFrequencyData(data);
-  var debut=Math.floor(300/(vadContext.sampleRate/vadAnalyser.fftSize));
-  var fin=Math.floor(3400/(vadContext.sampleRate/vadAnalyser.fftSize));
-  var somme=0; for(var i=debut;i<fin;i++) somme+=data[i];
+  if (!vadAnalyser || !vadDonnees) return 0;
+  // Le tableau est réutilisé : plus d'allocation de 256 octets 7 fois par seconde.
+  vadAnalyser.getByteFrequencyData(vadDonnees);
+  var largeurBande=vadContext.sampleRate/vadAnalyser.fftSize;
+  var debut=Math.floor(300/largeurBande);
+  var fin=Math.floor(3400/largeurBande);
+  var somme=0; for(var i=debut;i<fin;i++) somme+=vadDonnees[i];
   return somme/(fin-debut);
 }
 function demarrerVADLoop() {
@@ -1871,7 +2184,7 @@ function demarrerVADLoop() {
     var vol=getVolume();
     if (vol>SEUIL_VOLUME) { dernierSon=Date.now(); if (!isListening) startListening(); }
     else { if (isListening&&(Date.now()-dernierSon)>SILENCE_DUREE) { try{recognition.stop();}catch(e){} } }
-  },150);
+  },VAD_PERIODE);
 }
 function arreterVADLoop() { clearInterval(vadInterval); vadInterval=null; }
 
@@ -1891,14 +2204,17 @@ function initRecognition() {
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent='🎙️';
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
-    if (modeAttente==='ville') { obtenirMeteo(t); return; }
-    if (modeAttente==='voyage') { obtenirVoyage(t); return; }
+
+    // On capture le mode AVANT de le remettre à zéro : sinon toutes les
+    // branches placées après l'effacement ne se déclenchent jamais.
+    var mode = modeAttente;
     modeAttente = null;
-    if (modeAttente==='nouvelles') { obtenirNouvelles(t); return; }
-    if (modeAttente==='ancetre') { obtenirAncetres(t); return; }
-    if (modeAttente==='epicerie_article') { ajouterArticleParVoix(t); return; }
-    if (modeAttente==='sante') {
-      modeAttente=null;
+    if (mode==='ville') { obtenirMeteo(t); return; }
+    if (mode==='voyage') { obtenirVoyage(t); return; }
+    if (mode==='nouvelles') { obtenirNouvelles(t); return; }
+    if (mode==='ancetre') { obtenirAncetres(t); return; }
+    if (mode==='epicerie_article') { ajouterArticleParVoix(t); return; }
+    if (mode==='sante') {
       document.getElementById('santeMicroBtn').classList.remove('active');
       document.getElementById('santeMicroBtn').textContent='🎙️';
       document.getElementById('santeReponseInput').value=t;
@@ -1930,11 +2246,19 @@ function initRecognition() {
     }
   };
 
-  recognition.onerror=function() {
+  recognition.onerror=function(e) {
     isListening=false;
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent='🎙️';
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Appuyez';
+    // Micro refusé : sans message, la personne appuie dans le vide.
+    if (e && (e.error==='not-allowed'||e.error==='service-not-allowed')) {
+      isEcouteActive=false;
+      arreterVADLoop(); libererVAD();
+      document.getElementById('ecouteBtn').classList.remove('active');
+      setStatus('Micro bloqué — touchez le cadenas 🔒 dans la barre d\'adresse pour l\'autoriser');
+      return;
+    }
     if (modeAttente&&!isSpeaking) {
       clearTimeout(autoRestartTimer);
       autoRestartTimer=setTimeout(function() { if (!isListening&&!isSpeaking) startListening(); },1200);
@@ -1959,8 +2283,7 @@ function startListening() {
 function stopListening() {
   isListening = false;
   modeAttente = null;
-  audioQueue = [];
-  isPlayingQueue = false;
+  arreterParole();
   clearTimeout(autoRestartTimer);
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleilIcone').textContent = '🎙️';
@@ -1985,7 +2308,7 @@ function toggleEcoute() {
     initVAD().then(function() { demarrerVADLoop(); });
   } else {
     btn.classList.remove('active'); texte.textContent='Auto';
-    arreterVADLoop(); clearTimeout(autoRestartTimer); stopListening();
+    arreterVADLoop(); libererVAD(); clearTimeout(autoRestartTimer); stopListening();
   }
 }
 
@@ -2017,8 +2340,7 @@ function obtenirMeteo(ville) {
 function demanderNouvelles() {
   if (isListening) { try{recognition.stop();}catch(e){} isListening=false; }
   modeAttente = null;
-  audioQueue = [];
-  isPlayingQueue = false;
+  arreterParole();
   showUserMessage('Nouvelles 📰');
   var prenom = profil.prenom || '';
   var sujetParDefaut = 'Québec, Canada, Europe, Chine et monde';
@@ -2070,8 +2392,8 @@ function afficherVoyage(d,destination) {
   if(d.meteo){var chips=['🌡️ '+d.meteo.temperature+'°C','☁️ '+d.meteo.description,'💧 '+d.meteo.humidite+'%','💨 '+d.meteo.vent+' km/h'];if(d.decalage)chips.push('🕐 '+d.decalage);chips.forEach(function(c){var chip=document.createElement('div');chip.className='voyage-meteo-chip';chip.textContent=c;meteoBar.appendChild(chip);});}
   if(d.infos){
     document.getElementById('voyageInfosSection').style.display='block';var grid=document.getElementById('voyageInfosGrid');grid.innerHTML='';
-    [{label:'Visa',valeur:d.infos.visa},{label:'Monnaie',valeur:d.infos.monnaie},{label:'Langue',valeur:d.infos.langue},{label:'Meilleure saison',valeur:d.infos.meilleure_saison}].forEach(function(info){if(info.valeur){var card=document.createElement('div');card.className='voyage-info-card';card.innerHTML='<div class="voyage-info-label">'+info.label+'</div><div class="voyage-info-valeur">'+info.valeur+'</div>';grid.appendChild(card);}});
-    if(d.infos.villages&&d.infos.villages.length>0){document.getElementById('voyageVillagesSection').style.display='block';var liste=document.getElementById('voyageVillagesList');liste.innerHTML='';d.infos.villages.forEach(function(v,i){var icones=['🥇','🥈','🥉'];var item=document.createElement('div');item.className='voyage-village-item';item.style.cursor='pointer';item.innerHTML='<span>'+(icones[i]||'📍')+'</span><span style="flex:1">'+v+'</span><span style="color:rgba(200,216,240,0.3);font-size:18px">›</span>';item.onclick=(function(village,dest){return function(){ouvrirVillage(village,dest);};})(v,d.destination||destination);liste.appendChild(item);});}
+    [{label:'Visa',valeur:d.infos.visa},{label:'Monnaie',valeur:d.infos.monnaie},{label:'Langue',valeur:d.infos.langue},{label:'Meilleure saison',valeur:d.infos.meilleure_saison}].forEach(function(info){if(info.valeur){var card=document.createElement('div');card.className='voyage-info-card';card.innerHTML='<div class="voyage-info-label">'+echapper(info.label)+'</div><div class="voyage-info-valeur">'+echapper(info.valeur)+'</div>';grid.appendChild(card);}});
+    if(d.infos.villages&&d.infos.villages.length>0){document.getElementById('voyageVillagesSection').style.display='block';var liste=document.getElementById('voyageVillagesList');liste.innerHTML='';d.infos.villages.forEach(function(v,i){var icones=['🥇','🥈','🥉'];var item=document.createElement('div');item.className='voyage-village-item';item.style.cursor='pointer';item.innerHTML='<span>'+(icones[i]||'📍')+'</span><span style="flex:1">'+echapper(v)+'</span><span style="color:rgba(200,216,240,0.3);font-size:18px">›</span>';item.onclick=(function(village,dest){return function(){ouvrirVillage(village,dest);};})(v,d.destination||destination);liste.appendChild(item);});}
     if(d.infos.route){document.getElementById('voyageRouteSection').style.display='block';document.getElementById('voyageRouteTxt').textContent=d.infos.route;}
     if(d.infos.conseils){document.getElementById('voyageConseilSection').style.display='block';document.getElementById('voyageConseilTxt').textContent='💡 '+d.infos.conseils;}
   }
@@ -2101,7 +2423,7 @@ function afficherCoupsCoeur() {
   var zone=document.getElementById('coupsCoeurListe');var items=document.getElementById('coupsCoeurItems');
   if(coupsCoeur.length===0){zone.style.display='none';return;}
   zone.style.display='block';items.innerHTML='';
-  coupsCoeur.forEach(function(c){var item=document.createElement('div');item.className='coup-coeur-item';item.innerHTML='<span class="coup-coeur-nom">❤️ '+c+'</span><button class="btn-retirer-coeur" onclick="retirerCoupCoeur(\''+c+'\')">✕</button>';items.appendChild(item);});
+  coupsCoeur.forEach(function(c){var item=document.createElement('div');item.className='coup-coeur-item';item.innerHTML='<span class="coup-coeur-nom">❤️ '+echapper(c)+'</span><button class="btn-retirer-coeur" data-dest="'+echapper(c)+'" onclick="retirerCoupCoeur(this.dataset.dest)">✕</button>';items.appendChild(item);});
 }
 function retirerCoupCoeur(dest) {
   coupsCoeur=coupsCoeur.filter(function(c){return c!==dest;});
@@ -2178,18 +2500,18 @@ function genealogieLancerRecherche(){
 function genealogieAfficherResultats(d,personne){
   var zone=document.getElementById('genealogieResultats');var html='';
   html+='<div class="genealogie-arbre"><div class="genealogie-arbre-titre">🌳 Votre arbre</div>';
-  if(personne.prenom||personne.nom)html+='<div class="genealogie-personne"><span>👤</span><div><div class="genealogie-personne-nom">'+(personne.prenom+' '+personne.nom).trim()+'</div><div class="genealogie-personne-role">Personne recherchée</div></div></div>';
-  if(personne.pere_prenom||personne.pere_nom)html+='<div class="genealogie-personne"><span>👨</span><div><div class="genealogie-personne-nom">'+(personne.pere_prenom+' '+personne.pere_nom).trim()+'</div><div class="genealogie-personne-role">Père</div></div></div>';
-  if(personne.mere_prenom||personne.mere_nom)html+='<div class="genealogie-personne"><span>👩</span><div><div class="genealogie-personne-nom">'+(personne.mere_prenom+' '+personne.mere_nom).trim()+'</div><div class="genealogie-personne-role">Mère</div></div></div>';
+  if(personne.prenom||personne.nom)html+='<div class="genealogie-personne"><span>👤</span><div><div class="genealogie-personne-nom">'+echapper((personne.prenom+' '+personne.nom).trim())+'</div><div class="genealogie-personne-role">Personne recherchée</div></div></div>';
+  if(personne.pere_prenom||personne.pere_nom)html+='<div class="genealogie-personne"><span>👨</span><div><div class="genealogie-personne-nom">'+echapper((personne.pere_prenom+' '+personne.pere_nom).trim())+'</div><div class="genealogie-personne-role">Père</div></div></div>';
+  if(personne.mere_prenom||personne.mere_nom)html+='<div class="genealogie-personne"><span>👩</span><div><div class="genealogie-personne-nom">'+echapper((personne.mere_prenom+' '+personne.mere_nom).trim())+'</div><div class="genealogie-personne-role">Mère</div></div></div>';
   html+='</div>';
   if(d.analyse){
-    if(d.analyse.origine_nom)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📜 Origine du nom de famille</div><div class="genealogie-resultat-desc">'+d.analyse.origine_nom+'</div></div>';
-    if(d.analyse.histoire_famille)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📖 Contexte historique</div><div class="genealogie-resultat-desc">'+d.analyse.histoire_famille+'</div></div>';
-    if(d.analyse.periode_cle)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📅 Période clé à rechercher</div><div class="genealogie-resultat-desc">'+d.analyse.periode_cle+'</div></div>';
-    if(d.analyse.paroisses_suggeres&&d.analyse.paroisses_suggeres.length>0){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">⛪ Paroisses suggérées</div>';d.analyse.paroisses_suggeres.forEach(function(p){html+='<div class="genealogie-suggestion" style="margin-bottom:6px">⛪ '+p+'</div>';});html+='</div>';}
-    if(d.analyse.pistes_recherche&&d.analyse.pistes_recherche.length>0){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">💡 Pistes personnalisées</div>';d.analyse.pistes_recherche.forEach(function(p){html+='<div class="genealogie-suggestion" style="margin-bottom:6px">💡 '+p+'</div>';});html+='</div>';}
+    if(d.analyse.origine_nom)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📜 Origine du nom de famille</div><div class="genealogie-resultat-desc">'+echapper(d.analyse.origine_nom)+'</div></div>';
+    if(d.analyse.histoire_famille)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📖 Contexte historique</div><div class="genealogie-resultat-desc">'+echapper(d.analyse.histoire_famille)+'</div></div>';
+    if(d.analyse.periode_cle)html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">📅 Période clé à rechercher</div><div class="genealogie-resultat-desc">'+echapper(d.analyse.periode_cle)+'</div></div>';
+    if(d.analyse.paroisses_suggeres&&d.analyse.paroisses_suggeres.length>0){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">⛪ Paroisses suggérées</div>';d.analyse.paroisses_suggeres.forEach(function(p){html+='<div class="genealogie-suggestion" style="margin-bottom:6px">⛪ '+echapper(p)+'</div>';});html+='</div>';}
+    if(d.analyse.pistes_recherche&&d.analyse.pistes_recherche.length>0){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">💡 Pistes personnalisées</div>';d.analyse.pistes_recherche.forEach(function(p){html+='<div class="genealogie-suggestion" style="margin-bottom:6px">💡 '+echapper(p)+'</div>';});html+='</div>';}
   }
-  if(d.resultats&&d.resultats.length>0){html+='<div class="genealogie-section-titre" style="margin:16px 0 10px">🔗 Rechercher dans les archives</div>';d.resultats.forEach(function(r){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">'+r.source+'</div><div class="genealogie-resultat-desc">'+r.description+'</div><a href="'+r.url+'" target="_blank" class="genealogie-resultat-btn">Ouvrir →</a></div>';});}
+  if(d.resultats&&d.resultats.length>0){html+='<div class="genealogie-section-titre" style="margin:16px 0 10px">🔗 Rechercher dans les archives</div>';d.resultats.forEach(function(r){html+='<div class="genealogie-resultat-card"><div class="genealogie-resultat-source">'+echapper(r.source)+'</div><div class="genealogie-resultat-desc">'+echapper(r.description)+'</div><a href="'+echapper(urlSure(r.url))+'" target="_blank" rel="noopener noreferrer" class="genealogie-resultat-btn">Ouvrir →</a></div>';});}
   zone.innerHTML=html;
 }
 function genealogieSofiaParle(d,personne){
@@ -2255,13 +2577,13 @@ function afficherListeEpicerie() {
   var ordonnes=nonCoches.concat(coches2);
   var html='';
   ordonnes.forEach(function(a){
-    html+='<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+a.id+'">'
-      +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" onclick="cocherArticle(\''+a.id+'\')">'+(a.coche?'✓':'')+'</div>'
+    html+='<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+echapper(a.id)+'">'
+      +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" data-id="'+echapper(a.id)+'" onclick="cocherArticle(this.dataset.id)">'+(a.coche?'✓':'')+'</div>'
       +'<div style="flex:1">'
-      +'<div class="epicerie-article-nom">'+a.nom+'</div>'
-      +(a.categorie?'<div class="epicerie-article-cat">'+a.categorie+'</div>':'')
+      +'<div class="epicerie-article-nom">'+echapper(a.nom)+'</div>'
+      +(a.categorie?'<div class="epicerie-article-cat">'+echapper(a.categorie)+'</div>':'')
       +'</div>'
-      +'<button class="epicerie-suppr" onclick="supprimerArticle(\''+a.id+'\')">✕</button>'
+      +'<button class="epicerie-suppr" data-id="'+echapper(a.id)+'" onclick="supprimerArticle(this.dataset.id)">✕</button>'
       +'</div>';
   });
   if (ordonnes.length===0) {
@@ -2290,7 +2612,7 @@ function ajouterArticleEpicerie() {
   var input=document.getElementById('epicerieInput');
   var texte=input.value.trim();
   if (!texte) return;
-  var article={id:Date.now().toString(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
+  var article={id:nouvelId(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
   listeEpicerie.push(article);
   sauvegarderListeEpicerie(listeEpicerie);
   afficherListeEpicerie();
@@ -2333,11 +2655,12 @@ function ajouterArticleParVoix(texte) {
     var msg='Parfait ! Votre liste est prête, avec '+listeEpicerie.filter(function(a){return !a.coche;}).length+' articles.';
     speakText(msg);return;
   }
-  var article={id:Date.now().toString(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
+  var article={id:nouvelId(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
   listeEpicerie.push(article);sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
-  speakText('Noté !').then(function(){
-    if (epicerieMicroActif) { modeAttente='epicerie_article'; setTimeout(function(){startListening();},300); }
-  });
+  // Le mode est armé AVANT de parler : c'est onSpeakEnd qui relancera l'écoute
+  // une fois « Noté ! » terminé.
+  if (epicerieMicroActif) modeAttente='epicerie_article';
+  speakText('Noté !');
 }
 
 // ============================================================
@@ -2361,35 +2684,36 @@ function poserQuestionSante(){
   .then(function(r){return r.json();}).then(function(d){afficherReponseSanteVocale(d.texte);})
   .catch(function(){document.getElementById('santeContenuInner').innerHTML='<div class="sante-loading">Désolée, réessayez dans un moment !</div>';});
 }
-function afficherReponseSanteVocale(texte){var html='<div class="sante-card" style="margin-top:8px"><div class="sante-card-texte">'+texte.replace(/\n/g,'<br>')+'</div></div>';document.getElementById('santeContenuInner').innerHTML=html;speakText(texte);}
+function afficherReponseSanteVocale(texte){var html='<div class="sante-card" style="margin-top:8px"><div class="sante-card-texte">'+echapper(texte).replace(/\n/g,'<br>')+'</div></div>';document.getElementById('santeContenuInner').innerHTML=html;speakText(texte);}
 function afficherContenuSante(theme,data){
   var html='';
-  if(data.intro)html+='<div class="sante-intro">'+data.intro+'</div>';
+  var e_=echapper;
+  if(data.intro)html+='<div class="sante-intro">'+e_(data.intro)+'</div>';
   if(theme==='nutrition'){
-    if(data.conseils){html+='<div class="sante-section-titre">💡 Conseils nutritionnels</div>';data.conseils.forEach(function(c){html+='<div class="sante-card"><div class="sante-card-titre">'+c.icone+' '+c.titre+'</div><div class="sante-card-texte">'+c.conseil+'</div></div>';});}
-    if(data.recette_du_jour){html+='<div class="sante-card"><div class="sante-card-titre">🍽️ Recette du jour : '+data.recette_du_jour.nom+'</div><div class="sante-card-texte"><strong>Ingrédients :</strong> '+data.recette_du_jour.ingredients.join(', ')+'<br><strong>Préparation :</strong> '+data.recette_du_jour.preparation+'</div></div>';}
-    if(data.aliments_a_privilegier){html+='<div class="sante-card"><div class="sante-card-titre">✅ Aliments à privilégier</div><div class="sante-card-texte">';data.aliments_a_privilegier.forEach(function(a){html+='<span class="sante-tag">'+a+'</span>';});html+='</div></div>';}
+    if(data.conseils){html+='<div class="sante-section-titre">💡 Conseils nutritionnels</div>';data.conseils.forEach(function(c){html+='<div class="sante-card"><div class="sante-card-titre">'+e_(c.icone)+' '+e_(c.titre)+'</div><div class="sante-card-texte">'+e_(c.conseil)+'</div></div>';});}
+    if(data.recette_du_jour){html+='<div class="sante-card"><div class="sante-card-titre">🍽️ Recette du jour : '+e_(data.recette_du_jour.nom)+'</div><div class="sante-card-texte"><strong>Ingrédients :</strong> '+e_((data.recette_du_jour.ingredients||[]).join(', '))+'<br><strong>Préparation :</strong> '+e_(data.recette_du_jour.preparation)+'</div></div>';}
+    if(data.aliments_a_privilegier){html+='<div class="sante-card"><div class="sante-card-titre">✅ Aliments à privilégier</div><div class="sante-card-texte">';data.aliments_a_privilegier.forEach(function(a){html+='<span class="sante-tag">'+e_(a)+'</span>';});html+='</div></div>';}
   }else if(theme==='exercice'){
-    if(data.exercices){html+='<div class="sante-section-titre">🏃 Exercices recommandés</div>';data.exercices.forEach(function(e){html+='<div class="sante-card"><div class="sante-card-titre">'+e.icone+' '+e.nom+' <span style="font-size:12px;color:rgba(74,222,128,0.5);font-weight:400">('+e.duree+')</span></div><div class="sante-card-texte">'+e.description+'<br><span style="color:#4ade80;font-size:14px">✓ '+e.benefice+'</span>'+(e.attention?'<br><span style="color:#fbbf24;font-size:13px">⚠️ '+e.attention+'</span>':'')+'</div></div>';});}
+    if(data.exercices){html+='<div class="sante-section-titre">🏃 Exercices recommandés</div>';data.exercices.forEach(function(ex){html+='<div class="sante-card"><div class="sante-card-titre">'+e_(ex.icone)+' '+e_(ex.nom)+' <span style="font-size:12px;color:rgba(74,222,128,0.5);font-weight:400">('+e_(ex.duree)+')</span></div><div class="sante-card-texte">'+e_(ex.description)+'<br><span style="color:#4ade80;font-size:14px">✓ '+e_(ex.benefice)+'</span>'+(ex.attention?'<br><span style="color:#fbbf24;font-size:13px">⚠️ '+e_(ex.attention)+'</span>':'')+'</div></div>';});}
   }else if(theme==='memoire'){
-    if(data.exercices){html+='<div class="sante-section-titre">🧠 Exercices mentaux</div>';data.exercices.forEach(function(e){html+='<div class="sante-card"><div class="sante-card-titre">'+e.icone+' '+e.nom+' <span style="font-size:12px;color:rgba(74,222,128,0.5);font-weight:400">('+e.duree+')</span></div><div class="sante-card-texte">'+e.description+'</div></div>';});}
-    if(data.habitudes_benefiques){html+='<div class="sante-card"><div class="sante-card-titre">✅ Habitudes bénéfiques</div><div class="sante-card-texte">';data.habitudes_benefiques.forEach(function(h){html+='• '+h+'<br>';});html+='</div></div>';}
+    if(data.exercices){html+='<div class="sante-section-titre">🧠 Exercices mentaux</div>';data.exercices.forEach(function(ex){html+='<div class="sante-card"><div class="sante-card-titre">'+e_(ex.icone)+' '+e_(ex.nom)+' <span style="font-size:12px;color:rgba(74,222,128,0.5);font-weight:400">('+e_(ex.duree)+')</span></div><div class="sante-card-texte">'+e_(ex.description)+'</div></div>';});}
+    if(data.habitudes_benefiques){html+='<div class="sante-card"><div class="sante-card-titre">✅ Habitudes bénéfiques</div><div class="sante-card-texte">';data.habitudes_benefiques.forEach(function(h){html+='• '+e_(h)+'<br>';});html+='</div></div>';}
   }else if(theme==='medicaments'){
-    if(data.conseils){data.conseils.forEach(function(c){html+='<div class="sante-card"><div class="sante-card-titre">'+c.icone+' '+c.titre+'</div><div class="sante-card-texte">'+c.conseil+'</div></div>';});}
-    if(data.astuces_pratiques){html+='<div class="sante-card"><div class="sante-card-titre">💡 Astuces pratiques</div><div class="sante-card-texte">';data.astuces_pratiques.forEach(function(a){html+='• '+a+'<br>';});html+='</div></div>';}
+    if(data.conseils){data.conseils.forEach(function(c){html+='<div class="sante-card"><div class="sante-card-titre">'+e_(c.icone)+' '+e_(c.titre)+'</div><div class="sante-card-texte">'+e_(c.conseil)+'</div></div>';});}
+    if(data.astuces_pratiques){html+='<div class="sante-card"><div class="sante-card-titre">💡 Astuces pratiques</div><div class="sante-card-texte">';data.astuces_pratiques.forEach(function(a){html+='• '+e_(a)+'<br>';});html+='</div></div>';}
   }
-  if(data.conseil_sofia)html+='<div class="sante-conseil-sofia">✨ '+data.conseil_sofia+'</div>';
+  if(data.conseil_sofia)html+='<div class="sante-conseil-sofia">✨ '+e_(data.conseil_sofia)+'</div>';
   document.getElementById('santeContenuInner').innerHTML=html;
   if(data.conseil_sofia)speakText(data.conseil_sofia);
 }
 function envoyerReponseSante(){
   var texte=document.getElementById('santeReponseInput').value.trim();if(!texte)return;
   document.getElementById('santeReponseInput').value='';
-  document.getElementById('santeContenuInner').innerHTML+='<div class="sante-card" style="background:rgba(74,222,128,0.04);margin-top:8px"><div style="font-size:14px;color:rgba(74,222,128,0.5);margin-bottom:4px">Vous :</div><div class="sante-card-texte">'+texte+'</div></div><div class="sante-loading" id="santeTyping">Sofia réfléchit... ✨</div>';
+  document.getElementById('santeContenuInner').innerHTML+='<div class="sante-card" style="background:rgba(74,222,128,0.04);margin-top:8px"><div style="font-size:14px;color:rgba(74,222,128,0.5);margin-bottom:4px">Vous :</div><div class="sante-card-texte">'+echapper(texte)+'</div></div><div class="sante-loading" id="santeTyping">Sofia réfléchit... ✨</div>';
   fetch('/.netlify/functions/sante',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:'general',question:texte,profil:profil})})
   .then(function(r){return r.json();}).then(function(d){
     if(document.getElementById('santeTyping'))document.getElementById('santeTyping').remove();
-    document.getElementById('santeContenuInner').innerHTML+='<div class="sante-card" style="margin-top:8px"><div style="font-size:14px;color:#4ade80;margin-bottom:4px">Sofia :</div><div class="sante-card-texte">'+(d.texte||'').replace(/\n/g,'<br>')+'</div></div>';
+    document.getElementById('santeContenuInner').innerHTML+='<div class="sante-card" style="margin-top:8px"><div style="font-size:14px;color:#4ade80;margin-bottom:4px">Sofia :</div><div class="sante-card-texte">'+echapper(d.texte||'').replace(/\n/g,'<br>')+'</div></div>';
     speakText(d.texte||'');
     var zone=document.getElementById('santeContenu');zone.scrollTop=zone.scrollHeight;
   }).catch(function(){if(document.getElementById('santeTyping'))document.getElementById('santeTyping').remove();});
@@ -2402,10 +2726,10 @@ function toggleMicroSante(){var btn=document.getElementById('santeMicroBtn');if(
 var contactsUrgence=JSON.parse(localStorage.getItem('sofia_contacts')||'[]');
 var relationSelectionnee='Enfant';
 
-function choisirRelation(rel){
+function choisirRelation(chip,rel){
   relationSelectionnee=rel;
   document.querySelectorAll('.relation-chip').forEach(function(c){c.classList.remove('selected');});
-  event.target.classList.add('selected');
+  chip.classList.add('selected');
   document.getElementById('contactRelation').value=rel;
 }
 function majSofia() {
@@ -2419,8 +2743,10 @@ function majSofia() {
       for (let name of names) caches.delete(name);
     });
   }
+  // On recharge le domaine courant, pas une adresse figée : l'app continue de
+  // se mettre à jour si elle déménage sur un autre nom de domaine.
   setTimeout(function() {
-    window.location.replace('https://fluffy-lollipop-4595b3.netlify.app/');
+    window.location.replace(window.location.origin + '/?maj=' + Date.now());
   }, 500);
 }
 function ouvrirUrgence(){document.getElementById('urgenceOverlay').style.display='flex';afficherContacts();if(profil.ville){chargerCLSC(profil.ville);}}
@@ -2461,7 +2787,7 @@ function afficherContacts(){
   contactsUrgence.forEach(function(c,index){
     var initiales=c.nom.split(' ').map(function(n){return n[0]||'';}).join('').slice(0,2).toUpperCase();
     var card=document.createElement('div');card.className='contact-card';
-    card.innerHTML='<div class="contact-avatar">'+initiales+'</div><div class="contact-info"><div class="contact-nom">'+c.nom+'</div><div class="contact-relation">'+(c.alerte?'⚡ ':'')+c.relation+'</div><div class="contact-tel">'+c.tel+'</div></div><div class="contact-actions"><button class="btn-appeler" onclick="appelerContact(\''+c.tel+'\')" title="Appeler">📞</button><button class="btn-sms" onclick="envoyerSMS(\''+c.tel+'\',\''+c.nom+'\')" title="SMS">💬</button><button class="btn-supprimer" onclick="supprimerContact('+index+')" title="Supprimer">🗑️</button></div>';
+    card.innerHTML='<div class="contact-avatar">'+echapper(initiales)+'</div><div class="contact-info"><div class="contact-nom">'+echapper(c.nom)+'</div><div class="contact-relation">'+(c.alerte?'⚡ ':'')+echapper(c.relation)+'</div><div class="contact-tel">'+echapper(c.tel)+'</div></div><div class="contact-actions"><button class="btn-appeler" data-tel="'+echapper(c.tel)+'" onclick="appelerContact(this.dataset.tel)" title="Appeler">📞</button><button class="btn-sms" data-tel="'+echapper(c.tel)+'" data-nom="'+echapper(c.nom)+'" onclick="envoyerSMS(this.dataset.tel,this.dataset.nom)" title="SMS">💬</button><button class="btn-supprimer" onclick="supprimerContact('+index+')" title="Supprimer">🗑️</button></div>';
     liste.appendChild(card);
   });
 }
@@ -2486,16 +2812,15 @@ function envoyerSMS(tel,nom){
   window.location.href='sms:'+tel+'?body='+encodeURIComponent(message);
 }
 
-function verifierEtEnvoyerAlertes(){
-  var today=new Date().toDateString();
-  var dernierBien=localStorage.getItem('sofia_bien_date');
-  var maintenant=new Date();
-  if(maintenant.getHours()>=12&&dernierBien!==today){
-    var contacts=contactsUrgence.filter(function(c){return c.alerte;});
-    contacts.forEach(function(c){console.log('Alerte à envoyer à '+c.nom+' ('+c.tel+')');});
+// Vérification toutes les 15 minutes : si l'app reste ouverte, l'alerte se
+// déclenche peu après midi au lieu d'attendre le prochain démarrage.
+setInterval(function() {
+  if (new Date().getHours() >= 12 && !bienEtreConfirmeAujourdhui()) {
+    if (document.getElementById('alerteOverlay').style.display !== 'flex') {
+      declencherAlerteBienEtre();
+    }
   }
-}
-setInterval(verifierEtEnvoyerAlertes,60*60*1000);
+}, 15 * 60 * 1000);
 
 // ============================================================
 // TÉLÉ CE SOIR
@@ -2553,6 +2878,31 @@ function demanderTout() {
 // ============================================================
 // UTILITAIRES
 // ============================================================
+/**
+ * Échappe une chaîne avant de l'insérer dans du HTML.
+ * Sans ça, un article « Pomme d'api » ou une destination « Côte d'Ivoire »
+ * casse le HTML généré, et un texte venant du serveur pourrait injecter du code.
+ */
+function echapper(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Date.now() seul donne deux fois le même identifiant si on ajoute deux
+// articles dans la même milliseconde.
+var compteurId = 0;
+function nouvelId() { return Date.now().toString(36) + '-' + (++compteurId); }
+
+/** N'accepte que http(s) : bloque les href du genre javascript:. */
+function urlSure(u) {
+  var s = String(u || '').trim();
+  return /^https?:\/\//i.test(s) ? s : '#';
+}
+
 function enregistrerActivite(type,detail) {
   if (!utilisateurId) return;
   fetch('/.netlify/functions/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'activite',data:{utilisateur_id:utilisateurId,type:type,detail:detail||''}})}).catch(function(){});
@@ -2563,7 +2913,7 @@ function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send
 
 function showUserMessage(t) {
   var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="user-bubble">'+t+'</div>';
+  z.innerHTML='<div class="user-bubble">'+echapper(t)+'</div>';
 }
 function showTyping() {
   var z=document.getElementById('responseZone');
@@ -2571,7 +2921,7 @@ function showTyping() {
 }
 function showResponse(t) {
   var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="response-bubble"><div class="response-label">Sofia</div>'+t.replace(/\n/g,'<br>')+'</div>';
+  z.innerHTML='<div class="response-bubble"><div class="response-label">Sofia</div>'+echapper(t).replace(/\n/g,'<br>')+'</div>';
   z.scrollTop=z.scrollHeight;
 }
 
@@ -2606,6 +2956,18 @@ window.addEventListener('beforeunload',function(){
 // ============================================================
 // INIT
 // ============================================================
+// Application en arrière-plan : on arrête d'analyser le micro et de parler
+// pour rien. Tout reprend au retour si l'écoute auto était active.
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    arreterVADLoop();
+    clearTimeout(autoRestartTimer);
+    if (isListening) { try { recognition.stop(); } catch(e) {} isListening=false; }
+  } else if (isEcouteActive && !isSpeaking) {
+    initVAD().then(function() { demarrerVADLoop(); });
+  }
+});
+
 initRecognition();
 verifierAccesAuDemarrage();
 if ('serviceWorker' in navigator) {

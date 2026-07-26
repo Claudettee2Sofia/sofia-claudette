@@ -4,6 +4,22 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const ADMIN_EMAIL = 'planeteforest@gmail.com';
 const MAX_INVITES_PAR_JOUR = 5;
 
+// Le code admin ne doit jamais se retrouver dans le JavaScript du navigateur.
+// Definir ADMIN_CODE dans les variables d'environnement Netlify ;
+// la valeur historique sert de repli pour ne rien casser au deploiement.
+const ADMIN_CODE = (process.env.ADMIN_CODE || 'SOFIA2025').toUpperCase();
+
+// Code du jour pour les invites, calcule sur l'heure du Quebec pour que le
+// serveur et l'administrateur voient toujours la meme valeur.
+function getCodeDuJour() {
+  const partiesQc = new Intl.DateTimeFormat('fr-CA', {
+    timeZone: 'America/Toronto', day: '2-digit', month: '2-digit'
+  }).formatToParts(new Date());
+  const jour = partiesQc.find(p => p.type === 'day').value;
+  const mois = partiesQc.find(p => p.type === 'month').value;
+  return 'SF' + jour + mois;
+}
+
 async function supabase(method, table, data, query) {
   var url = SUPABASE_URL + '/rest/v1/' + table;
   if (query) url += '?' + query;
@@ -82,8 +98,61 @@ exports.handler = async function(event) {
     var ip = event.headers['x-forwarded-for'] || 'inconnue';
     var maintenant = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });
 
+    // === VERIFIER LE CODE ADMIN (jamais expose au client) ===
+    if (action === 'verifier_admin') {
+      var codeAdmin = String((data && data.code) || '').trim().toUpperCase();
+      if (codeAdmin !== ADMIN_CODE) {
+        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
+      }
+      await envoyerCourriel(
+        '🔐 Sofia — Connexion administrateur',
+        '<h2>Connexion admin a Sofia</h2>' +
+        '<p><strong>Date et heure :</strong> ' + maintenant + '</p>' +
+        '<p><strong>IP :</strong> ' + ip + '</p>'
+      );
+      return { statusCode: 200, body: JSON.stringify({
+        valide: true,
+        code_du_jour: getCodeDuJour()
+      })};
+    }
+
+    // === ALERTE BIEN-ETRE : la personne n'a pas confirme avant midi ===
+    if (action === 'alerte_bienetre') {
+      var prenom = (data && data.prenom) || 'La personne';
+      var ville = (data && data.ville) ? ' (' + data.ville + ')' : '';
+      var contacts = (data && Array.isArray(data.contacts)) ? data.contacts : [];
+      var listeHtml = contacts.length
+        ? '<ul>' + contacts.map(function(c) {
+            return '<li>' + String(c.nom || '') + ' — ' + String(c.tel || '') +
+                   ' (' + String(c.relation || '') + ')</li>';
+          }).join('') + '</ul>'
+        : '<p><em>Aucun contact de confiance enregistre.</em></p>';
+      await envoyerCourriel(
+        '⚠️ Sofia — ' + prenom + " n'a pas confirme son bien-etre",
+        '<h2>' + prenom + ' n\'a pas appuye sur « Je vais bien » aujourd\'hui</h2>' +
+        '<p><strong>Date et heure :</strong> ' + maintenant + '</p>' +
+        '<p><strong>Personne :</strong> ' + prenom + ville + '</p>' +
+        '<h3>Contacts de confiance a prevenir</h3>' + listeHtml
+      );
+      if (data && data.utilisateur_id) {
+        try {
+          await supabase('POST', 'activites', {
+            utilisateur_id: data.utilisateur_id,
+            type: 'alerte_bienetre',
+            detail: 'Pas de confirmation avant midi'
+          });
+        } catch(e) {}
+      }
+      return { statusCode: 200, body: JSON.stringify({ succes: true }) };
+    }
+
     // === VERIFIER CODE INVITE DU JOUR ===
     if (action === 'verifier_invite') {
+      // Le code du jour est desormais verifie ici, plus dans le navigateur.
+      var codeInvite = String((data && data.code) || '').trim().toUpperCase();
+      if (codeInvite && codeInvite !== getCodeDuJour()) {
+        return { statusCode: 200, body: JSON.stringify({ valide: false }) };
+      }
       var nbInvites = await compterInvitesDuJour();
       if (nbInvites >= MAX_INVITES_PAR_JOUR) {
         return { statusCode: 200, body: JSON.stringify({
@@ -153,6 +222,9 @@ exports.handler = async function(event) {
 
     // === AJOUTER UTILISATEUR ===
     if (action === 'ajouter') {
+      if (String(data.code || '').trim().toUpperCase() === ADMIN_CODE) {
+        return { statusCode: 200, body: JSON.stringify({ succes: false, erreur: 'Ce mot de passe est reserve.' }) };
+      }
       var dejaPris = await supabase('GET', 'utilisateurs', null,
         'code_acces=ilike.' + encodeURIComponent(data.code) + '&select=id'
       );

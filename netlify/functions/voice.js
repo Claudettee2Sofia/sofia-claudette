@@ -18,7 +18,13 @@ exports.handler = async function(event) {
       .replace(/\s{2,}/g, ' ')
       .trim();
 
-    const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
+    // Endpoint /stream : ElevenLabs commence à encoder sans attendre la fin.
+    // mp3_22050_32 : ~4x plus léger que le 128 kbps par défaut, inaudible sur
+    // un haut-parleur de tablette, et le base64 de Netlify coûte 33% de plus.
+    const url = 'https://api.elevenlabs.io/v1/text-to-speech/' + voiceId
+              + '/stream?output_format=mp3_22050_32';
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
