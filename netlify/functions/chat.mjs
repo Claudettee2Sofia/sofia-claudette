@@ -2,6 +2,18 @@
 // Le flux permet à Sofia de commencer à parler avant que Claude ait fini d'écrire.
 // L'ancien format JSON est conservé : le client y revient si le flux échoue.
 
+/**
+ * Date du jour au Quebec, en toutes lettres.
+ * Sans elle, Claude repond depuis sa memoire d'entrainement et se trompe
+ * d'annee des qu'on lui parle d'actualite, de sport ou de saison en cours.
+ */
+function dateDuJourQuebec() {
+  return new Intl.DateTimeFormat('fr-CA', {
+    timeZone: 'America/Toronto',
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  }).format(new Date());
+}
+
 function construireSystemPrompt(profil) {
   let profilContexte = '';
   if (profil && profil.prenom) {
@@ -18,6 +30,11 @@ function construireSystemPrompt(profil) {
   }
 
   return `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
+
+DATE DU JOUR: nous sommes ${dateDuJourQuebec()}, heure du Québec.
+- C'est la date réelle d'aujourd'hui. Ta mémoire d'entraînement est plus ancienne : ne suppose jamais qu'on est encore dans une année antérieure.
+- Pour tout ce qui bouge dans le temps (sport, saison en cours, actualité, élections, sorties, événements), raisonne à partir de cette date.
+- Si tu as l'outil de recherche web, sers-t'en pour ces sujets plutôt que de répondre de mémoire.
 
 Tu as une excellente connaissance générale du monde, de l'actualité récente, des émissions de télévision québécoises et des films disponibles sur les plateformes canadiennes.
 
@@ -55,11 +72,45 @@ const MAX_TOKENS = {
   nouvelles: 1500,
   voyage:    900,
   meteo:     900,
+  f1:        900,
   ancetres:  800,
   activites: 900,
   tele:      900,
   films:     900
 };
+
+// Marqueurs qui trahissent une question ancree dans le present. Le client ne
+// peut pas les detecter de facon fiable : la reconnaissance vocale transcrit
+// « F1 » de dix facons, et une liste de mots-cles par sujet est sans fin.
+const MARQUEURS_TEMPORELS = [
+  "aujourd'hui", 'aujourdhui', 'ce matin', 'cet apres-midi', 'ce soir', 'cette nuit',
+  'hier', 'avant-hier', 'demain', 'apres-demain',
+  'cette semaine', 'cette fin de semaine', 'ce week-end', 'ce weekend',
+  'semaine prochaine', 'semaine derniere', 'semaine passee',
+  'ce mois', 'mois prochain', 'mois dernier', 'mois passe',
+  'cette annee', 'annee prochaine', 'annee derniere', 'an prochain', 'an dernier',
+  'en ce moment', 'actuellement', 'presentement', 'maintenant', 'en cours',
+  'recemment', 'recent', 'recente', 'derniers jours', 'ces jours-ci',
+  'prochain', 'prochaine', 'dernier', 'derniere',
+  'qui a gagne', 'qui gagne', 'resultat', 'classement', 'score',
+  'actualite', 'quoi de neuf', 'cette saison', 'saison en cours',
+  'calendrier', 'horaire', 'combien coute', 'meteo', 'temperature', 'prevision'
+];
+
+function sansAccents(s) {
+  return String(s == null ? '' : s).toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+/** La question porte-t-elle sur quelque chose qui bouge dans le temps ? */
+function questionSensibleAuTemps(messages) {
+  const derniers = (messages || []).slice(-2)
+    .filter(m => m && m.role === 'user' && typeof m.content === 'string');
+  if (!derniers.length) return false;
+  const texte = sansAccents(derniers.map(m => m.content).join(' '));
+  if (/\b(19|20)\d{2}\b/.test(texte)) return true;          // une annee est citee
+  return MARQUEURS_TEMPORELS.some(m => texte.indexOf(m) !== -1);
+}
 
 function jsonResponse(objet, statut) {
   return new Response(JSON.stringify(objet), {
@@ -93,12 +144,17 @@ export default async (req) => {
       });
     }
 
-    // Web search SEULEMENT pour la météo, la F1 et les nouvelles
-    const besoinWebSearch = (type === 'meteo') || (type === 'f1') || (type === 'nouvelles');
+    // Recherche web : soit le type l'exige, soit la question est ancree dans
+    // le present. Sans ca, Sofia repondait de memoire et se trompait d'annee.
+    const typeAvecRecherche = (type === 'meteo') || (type === 'f1') || (type === 'nouvelles');
+    const besoinWebSearch = typeAvecRecherche || questionSensibleAuTemps(messages);
+    if (besoinWebSearch && !typeAvecRecherche) {
+      console.log('Recherche web activee par detection temporelle');
+    }
 
     const requestBody = {
       model: 'claude-sonnet-4-6',
-      max_tokens: MAX_TOKENS[type] || 500,
+      max_tokens: MAX_TOKENS[type] || (besoinWebSearch ? 900 : 500),
       temperature: 0.7,
       system: construireSystemPrompt(profil),
       messages: (messages || []).slice(-20)
