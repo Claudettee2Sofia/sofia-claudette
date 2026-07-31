@@ -1560,8 +1560,10 @@ function fileAjouterPhrase(texte) {
 // indice partait dans la console que personne ne regarde.
 var voixSucces = 0, voixEchecs = 0, derniereErreurVoix = null;
 
-/** Affiche une panne de voix à l'écran, à côté de la réponse et non dedans. */
-function afficherAvertissementVoix(detail) {
+var voixSecoursUtilisee = false;
+
+/** Bandeau d'information sur la voix, à côté de la réponse et non dedans. */
+function banniereVoix(message, ton) {
   var z = document.getElementById('responseZone');
   if (!z || !z.parentNode) return;
   var d = document.getElementById('avertVoix');
@@ -1569,19 +1571,87 @@ function afficherAvertissementVoix(detail) {
     d = document.createElement('div');
     d.id = 'avertVoix';
     d.style.cssText = 'margin:8px auto;max-width:500px;padding:9px 13px;border-radius:10px;'
-      + 'font-size:13px;font-weight:700;line-height:1.35;background:rgba(239,68,68,0.12);'
-      + 'border:0.5px solid rgba(239,68,68,0.3);color:#fca5a5;text-align:left';
+      + 'font-size:13px;font-weight:700;line-height:1.35;border:0.5px solid;text-align:left';
     // Inséré APRÈS la zone de réponse : le flux de texte réécrit cette zone à
-    // chaque image, ce qui effacerait un avertissement placé dedans.
+    // chaque image, ce qui effacerait un bandeau placé dedans.
     z.parentNode.insertBefore(d, z.nextSibling);
   }
-  d.textContent = '🔇 La voix ne répond pas — ' + (detail || 'raison inconnue')
-    + '. Le texte reste lisible à l\'écran.';
+  var grave = (ton === 'grave');
+  d.style.background  = grave ? 'rgba(239,68,68,0.12)' : 'rgba(240,192,96,0.12)';
+  d.style.borderColor = grave ? 'rgba(239,68,68,0.30)' : 'rgba(240,192,96,0.30)';
+  d.style.color       = grave ? '#fca5a5' : '#f0c060';
+  d.textContent = message;
 }
 
 function effacerAvertissementVoix() {
   var d = document.getElementById('avertVoix');
   if (d && d.parentNode) d.parentNode.removeChild(d);
+}
+
+// ---------- Voix de secours : la synthèse intégrée à l'appareil ----------
+// Quand ElevenLabs refuse (quota épuisé, panne, réseau), l'application restait
+// complètement muette. La voix de l'appareil est moins chaleureuse, mais elle
+// est gratuite et toujours là. Dès qu'ElevenLabs répond de nouveau, c'est elle
+// qui reprend : ce secours ne sert qu'en cas d'échec.
+var voixNavigateurDispo = (typeof speechSynthesis !== 'undefined'
+                        && typeof SpeechSynthesisUtterance !== 'undefined');
+
+function choisirVoixFrancaise() {
+  try {
+    var dispo = speechSynthesis.getVoices() || [];
+    var prefs = ['fr-ca', 'fr_ca', 'fr-fr', 'fr_fr', 'fr'];
+    for (var p = 0; p < prefs.length; p++) {
+      for (var i = 0; i < dispo.length; i++) {
+        var lg = (dispo[i].lang || '').toLowerCase();
+        if (lg.indexOf(prefs[p]) === 0) return dispo[i];
+      }
+    }
+  } catch (e) {}
+  return null;   // le navigateur choisira d'après u.lang
+}
+
+/**
+ * Dit une phrase avec la voix de l'appareil.
+ * Rend true si la tentative a été lancée : dans ce cas c'est `fini` qui fera
+ * avancer la file, jamais l'appelant.
+ */
+function direAvecVoixAppareil(texte, jeton, fini) {
+  if (!voixNavigateurDispo) return false;
+  try {
+    var u = new SpeechSynthesisUtterance(texte);
+    var v = choisirVoixFrancaise();
+    if (v) u.voice = v;
+    u.lang = (v && v.lang) ? v.lang : 'fr-CA';
+    u.rate = 0.95;
+
+    // Filet de sécurité : si ni onend ni onerror ne se déclenche, la file
+    // resterait bloquée pour toujours, ce qui rendrait l'application muette —
+    // exactement ce qu'on cherche à éviter.
+    var minuterie = setTimeout(fini, Math.min(60000, 4000 + texte.length * 90));
+    var terminer = function() { clearTimeout(minuterie); fini(); };
+
+    u.onstart = function() {
+      voixSucces++;
+      voixSecoursUtilisee = true;
+      signalerVoixSecours();
+    };
+    u.onend = terminer;
+    u.onerror = function() {
+      if (voixSucces === 0) signalerPanneVoix();
+      terminer();
+    };
+
+    speechSynthesis.speak(u);
+    return true;
+  } catch (e) {
+    console.log('Voix de l\'appareil indisponible:', e && e.message);
+    return false;
+  }
+}
+
+function signalerVoixSecours() {
+  banniereVoix('🔈 ' + nomCompagnon() + ' parle avec la voix de l\'appareil : sa belle voix '
+    + 'habituelle est momentanément indisponible.', 'doux');
 }
 
 /** Coupe net la parole en cours et vide la file. */
@@ -1593,7 +1663,11 @@ function arreterParole() {
   voixSucces = 0;
   voixEchecs = 0;
   derniereErreurVoix = null;
+  voixSecoursUtilisee = false;
   effacerAvertissementVoix();
+  // La voix de l'appareil doit se taire elle aussi, sinon elle continuerait de
+  // parler par-dessus la réponse suivante.
+  if (voixNavigateurDispo) { try { speechSynthesis.cancel(); } catch (e) {} }
   tamponFlux = '';
   fluxTermine = true;
   premierePhraseEnvoyee = false;
@@ -1669,17 +1743,25 @@ function jouerFileAudio() {
     console.log('Voice fetch error:', err);
     voixEchecs++;
     derniereErreurVoix = (err && err.message) ? err.message : String(err);
-    // Tant qu'une seule phrase a été dite, on ne dérange pas. Si RIEN ne sort,
-    // il faut le dire : c'est exactement le cas « il écrit mais il ne parle plus ».
+
+    // Plutôt que de sauter la phrase en silence, on la fait dire par la voix
+    // de l'appareil. `suite` ne doit être appelée qu'une fois : la minuterie de
+    // sécurité et onend pourraient tous deux se déclencher.
+    var avance = false;
+    var unefois = function() { if (avance) return; avance = true; suite(); };
+    if (jeton === jetonParole && direAvecVoixAppareil(item.texte, jeton, unefois)) return;
+
+    // Aucune voix disponible du tout : là il faut vraiment le dire.
     if (voixSucces === 0) signalerPanneVoix();
     suite();
   });
 }
 
-/** Rend visible, à l'écran, le fait que la voix ne répond pas. */
+/** Rend visible, à l'écran, le fait qu'aucune voix ne répond. */
 function signalerPanneVoix() {
   setStatus('🔇 Voix indisponible — ' + (derniereErreurVoix || 'raison inconnue'));
-  afficherAvertissementVoix(derniereErreurVoix);
+  banniereVoix('🔇 Aucune voix ne répond — ' + (derniereErreurVoix || 'raison inconnue')
+    + '. Le texte reste lisible à l\'écran.', 'grave');
 }
 
 /**
