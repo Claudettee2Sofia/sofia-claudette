@@ -1525,7 +1525,17 @@ function prechargerAudio(item) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: item.texte, compagnon: compagnon })
   }).then(function(r) {
-    if (!r.ok) throw new Error('voix ' + r.status);
+    if (!r.ok) {
+      // voice.js renvoie déjà le message d'ElevenLabs dans son corps de réponse.
+      // Personne ne le lisait : on perdait la seule information qui dit POURQUOI
+      // la voix refuse (quota épuisé, clé invalide, voix inconnue...).
+      return r.text().then(function(corps) {
+        var detail = '';
+        try { detail = String(JSON.parse(corps).error || ''); }
+        catch (e) { detail = String(corps || ''); }
+        throw new Error('erreur ' + r.status + (detail ? ' — ' + detail.slice(0, 300) : ''));
+      });
+    }
     return r.blob();
   });
   return item.promesse;
@@ -1545,12 +1555,45 @@ function fileAjouterPhrase(texte) {
   jouerFileAudio();
 }
 
+// Bilan de la parole en cours. Sans ces compteurs, une panne du service de voix
+// était totalement invisible : le texte s'affichait, rien ne sortait, et le seul
+// indice partait dans la console que personne ne regarde.
+var voixSucces = 0, voixEchecs = 0, derniereErreurVoix = null;
+
+/** Affiche une panne de voix à l'écran, à côté de la réponse et non dedans. */
+function afficherAvertissementVoix(detail) {
+  var z = document.getElementById('responseZone');
+  if (!z || !z.parentNode) return;
+  var d = document.getElementById('avertVoix');
+  if (!d) {
+    d = document.createElement('div');
+    d.id = 'avertVoix';
+    d.style.cssText = 'margin:8px auto;max-width:500px;padding:9px 13px;border-radius:10px;'
+      + 'font-size:13px;font-weight:700;line-height:1.35;background:rgba(239,68,68,0.12);'
+      + 'border:0.5px solid rgba(239,68,68,0.3);color:#fca5a5;text-align:left';
+    // Inséré APRÈS la zone de réponse : le flux de texte réécrit cette zone à
+    // chaque image, ce qui effacerait un avertissement placé dedans.
+    z.parentNode.insertBefore(d, z.nextSibling);
+  }
+  d.textContent = '🔇 La voix ne répond pas — ' + (detail || 'raison inconnue')
+    + '. Le texte reste lisible à l\'écran.';
+}
+
+function effacerAvertissementVoix() {
+  var d = document.getElementById('avertVoix');
+  if (d && d.parentNode) d.parentNode.removeChild(d);
+}
+
 /** Coupe net la parole en cours et vide la file. */
 function arreterParole() {
   jetonParole++;
   audioQueue = [];
   isPlayingQueue = false;
   isSpeaking = false;
+  voixSucces = 0;
+  voixEchecs = 0;
+  derniereErreurVoix = null;
+  effacerAvertissementVoix();
   tamponFlux = '';
   fluxTermine = true;
   premierePhraseEnvoyee = false;
@@ -1594,11 +1637,22 @@ function jouerFileAudio() {
     a.src = url;
     a.onended = function() { URL.revokeObjectURL(url); suite(); };
     a.onerror = function() { URL.revokeObjectURL(url); suite(); };
-    a.play().catch(function(err) {
-      console.log('Audio play error:', err);
-      URL.revokeObjectURL(url);
-      suite();
-    });
+    // Les navigateurs anciens ne rendent pas de promesse pour play().
+    var lecture = a.play();
+    if (lecture && lecture.then) {
+      lecture.then(function() {
+        voixSucces++;               // la lecture a réellement démarré
+      }).catch(function(err) {
+        console.log('Audio play error:', err);
+        voixEchecs++;
+        derniereErreurVoix = 'lecture audio refusée par le navigateur';
+        if (voixSucces === 0) signalerPanneVoix();
+        URL.revokeObjectURL(url);
+        suite();
+      });
+    } else {
+      voixSucces++;
+    }
   }).catch(function(err) {
     // Sans reprise, une seule phrase perdue faisait taire le compagnon en
     // pleine nouvelle, sans le moindre signe. On remet la phrase en tête de
@@ -1613,8 +1667,19 @@ function jouerFileAudio() {
       return;
     }
     console.log('Voice fetch error:', err);
+    voixEchecs++;
+    derniereErreurVoix = (err && err.message) ? err.message : String(err);
+    // Tant qu'une seule phrase a été dite, on ne dérange pas. Si RIEN ne sort,
+    // il faut le dire : c'est exactement le cas « il écrit mais il ne parle plus ».
+    if (voixSucces === 0) signalerPanneVoix();
     suite();
   });
+}
+
+/** Rend visible, à l'écran, le fait que la voix ne répond pas. */
+function signalerPanneVoix() {
+  setStatus('🔇 Voix indisponible — ' + (derniereErreurVoix || 'raison inconnue'));
+  afficherAvertissementVoix(derniereErreurVoix);
 }
 
 /**
@@ -3196,7 +3261,9 @@ function showTyping() {
 }
 function showResponse(t) {
   var z=document.getElementById('responseZone');
-  z.innerHTML='<div class="response-bubble"><div class="response-label">Sofia</div>'+echapper(t).replace(/\n/g,'<br>')+'</div>';
+  // L'étiquette au-dessus de chaque réponse : elle disait « Sofia » même à
+  // quelqu'un qui avait choisi Léo.
+  z.innerHTML='<div class="response-bubble"><div class="response-label">'+echapper(nomCompagnon())+'</div>'+echapper(t).replace(/\n/g,'<br>')+'</div>';
   z.scrollTop=z.scrollHeight;
 }
 
