@@ -2589,7 +2589,13 @@ var listeEpicerie=JSON.parse(localStorage.getItem('sofia_liste_epicerie')||'[]')
 // Les articles ajoutés avant le classement par rayons portent d'anciens
 // libellés ('🍞 Boulangerie & grains') ou aucun libellé. On les reclasse une
 // seule fois, au chargement, sinon ils tomberaient tous dans « Autres ».
-(function reclasserAnciensArticles() {
+//
+// ATTENTION : cette fonction dépend de MOTS_RAYONS, qui est un « var » assigné
+// plus bas dans le fichier. L'appel se trouve donc APRÈS detecterCategorie, et
+// pas ici. Appelée ici, elle lisait MOTS_RAYONS encore undefined et levait une
+// TypeError qui interrompait tout le reste du script — dont initRecognition(),
+// ce qui tuait le micro sans aucun message visible.
+function reclasserAnciensArticles() {
   var change = false;
   listeEpicerie.forEach(function(a) {
     if (!a.categorie || RAYONS.indexOf(a.categorie) === -1) {
@@ -2598,7 +2604,7 @@ var listeEpicerie=JSON.parse(localStorage.getItem('sofia_liste_epicerie')||'[]')
     }
   });
   if (change) localStorage.setItem('sofia_liste_epicerie', JSON.stringify(listeEpicerie));
-})();
+}
 
 function sauvegarderListeEpicerie(liste) {
   listeEpicerie=liste;
@@ -2808,6 +2814,11 @@ function rayonDe(a) {
   if (a.categorie && RAYONS.indexOf(a.categorie) !== -1) return a.categorie;
   return detecterCategorie(a.nom || '');
 }
+
+// C'est seulement ici que MOTS_RAYONS a reçu sa valeur : le reclassement des
+// anciens articles ne peut pas être appelé plus haut. Par prudence, une erreur
+// de classement ne doit jamais empêcher le reste de la page de démarrer.
+try { reclasserAnciensArticles(); } catch (e) { console.log('Reclassement ignoré:', e.message); }
 
 function enteteRayon(nom, nombre) {
   return '<div class="epicerie-rayon">'+echapper(nom)
