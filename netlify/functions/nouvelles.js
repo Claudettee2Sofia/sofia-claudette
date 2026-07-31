@@ -112,7 +112,9 @@ function extraire(xml, source) {
 
 async function lireSource(source) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 6000);
+  // 4 s par fil : les fils répondent en 1 à 2 s, et une fonction Netlify est
+  // coupée à 10 s. Un fil lent ne doit pas emporter toute la réponse.
+  const timeout = setTimeout(() => controller.abort(), 4000);
   try {
     // Le paramètre anti-cache empêche un intermédiaire de resservir le fil d'hier.
     const separateur = source.url.indexOf('?') === -1 ? '?' : '&';

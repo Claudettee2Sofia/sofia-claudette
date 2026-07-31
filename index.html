@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -1443,6 +1443,9 @@ var autoRestartTimer = null;
 var modeAttente = null;
 var compagnon = localStorage.getItem('sofia_compagnon') || 'sofia';
 
+/** Le prénom du compagnon choisi, pour tous les textes affichés à l'écran. */
+function nomCompagnon() { return compagnon === 'leo' ? 'Léo' : 'Sofia'; }
+
 /** Appel unique vers users.js — aucun secret ne vit plus dans cette page. */
 function postUsers(action, data) {
   return fetch('/.netlify/functions/users', {
@@ -1575,7 +1578,7 @@ function jouerFileAudio() {
   document.getElementById('soleil').classList.add('speaking');
   document.getElementById('soleilIcone').textContent = '🔊';
   document.getElementById('soleilTexte').textContent = 'Parle...';
-  setStatus('Sofia vous parle...');
+  setStatus(nomCompagnon()+' vous parle...');
 
   var suite = function() {
     isPlayingQueue = false;
@@ -1597,6 +1600,18 @@ function jouerFileAudio() {
       suite();
     });
   }).catch(function(err) {
+    // Sans reprise, une seule phrase perdue faisait taire le compagnon en
+    // pleine nouvelle, sans le moindre signe. On remet la phrase en tête de
+    // file et on réessaie une fois avant d'abandonner.
+    if (!item.reessaye && jeton === jetonParole) {
+      item.reessaye = true;
+      item.promesse = null;
+      console.log('Voix en échec, seconde tentative:', err && err.message);
+      audioQueue.unshift(item);
+      isPlayingQueue = false;
+      jouerFileAudio();
+      return;
+    }
     console.log('Voice fetch error:', err);
     suite();
   });
@@ -1656,7 +1671,7 @@ function onSpeakEnd() {
     return;
   }
   if (isEcouteActive) {
-    setStatus('Sofia vous écoute... 👂');
+    setStatus((nomCompagnon()+' vous écoute... 👂'));
     clearTimeout(autoRestartTimer);
     autoRestartTimer = setTimeout(function() {
       if (isEcouteActive && !isListening && !isSpeaking && !modeAttente) {
@@ -1665,7 +1680,7 @@ function onSpeakEnd() {
       }
     }, 1000);
   } else {
-    setStatus('Appuyez sur Sofia ou posez votre question ✨');
+    setStatus(('Appuyez sur '+nomCompagnon()+' ou posez votre question ✨'));
   }
 }
 
@@ -1721,7 +1736,7 @@ function getSofiaReply(type) {
   document.getElementById('soleilIcone').textContent = '⏳';
   document.getElementById('soleilTexte').textContent = 'Attends...';
   document.getElementById('sendBtn').disabled = true;
-  setStatus('Sofia réfléchit...');
+  setStatus(nomCompagnon()+' réfléchit...');
   setSearching(true);
   carillon();
   showTyping();
@@ -1732,12 +1747,38 @@ function getSofiaReply(type) {
     type: type || 'conversation'
   };
 
-  demanderEnFlux(charge).catch(function(err) {
-    console.log('Flux indisponible, repli JSON:', err && err.message);
-    return demanderEnJson(charge);
+  // Pour les nouvelles, on va chercher les manchettes ICI, puis on les joint à
+  // la requête. Chaque fonction Netlify garde ainsi ses 10 secondes à elle.
+  // Quand c'était « chat » qui appelait « nouvelles » en série, le flux partait
+  // trop tard et la parole s'arrêtait net au milieu d'une phrase.
+  var pret = (charge.type === 'nouvelles')
+    ? recupererManchettes().then(function(d) { if (d) charge.nouvelles = d; })
+    : Promise.resolve();
+
+  pret.then(function() {
+    return demanderEnFlux(charge).catch(function(err) {
+      console.log('Flux indisponible, repli JSON:', err && err.message);
+      return demanderEnJson(charge);
+    });
   }).catch(function() {
-    reponseEchouee('Je suis désolée, réessayons !');
+    reponseEchouee('Je suis désolé' + (compagnon === 'leo' ? '' : 'e') + ', réessayons !');
   });
+}
+
+/** Manchettes du jour. Une panne ici ne doit jamais empêcher de répondre. */
+function recupererManchettes() {
+  var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var minuterie = setTimeout(function() { if (ctrl) { try { ctrl.abort(); } catch(e) {} } }, 8000);
+  return fetch('/.netlify/functions/nouvelles', ctrl ? { signal: ctrl.signal } : {})
+    .then(function(r) {
+      if (!r.ok) throw new Error('nouvelles ' + r.status);
+      return r.json();
+    })
+    .catch(function(e) {
+      console.log('Manchettes indisponibles:', e && e.message);
+      return null;      // le serveur retombera sur la recherche web
+    })
+    .then(function(d) { clearTimeout(minuterie); return d; });
 }
 
 // Le texte arrive token par token : on ne redessine qu'une fois par frame.
@@ -1962,7 +2003,8 @@ function confirmerChoix() {
   else {
     var nom = profil.prenom || 'vous';
     var nomC = compagnon === 'leo' ? 'Léo' : 'Sofia';
-    var msg = 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Comme je suis content de vous retrouver ! Comment allez-vous aujourd\'hui ?';
+    var accord = compagnon === 'leo' ? 'content' : 'contente';
+    var msg = 'Bonjour ' + nom + ' ! C\'est ' + nomC + '. Comme je suis ' + accord + ' de vous retrouver ! Comment allez-vous aujourd\'hui ?';
     showResponse(msg); speakText(msg);
   }
 }
@@ -1972,6 +2014,12 @@ function appliquerCompagnon(choix) {
   document.getElementById('sofiaNameLabel').textContent = nomC;
   document.getElementById('changerTexte').textContent = nomC;
   document.querySelector('#userInput').placeholder = 'Posez votre question à ' + nomC + '...';
+  // Ces deux-là étaient écrits en dur dans le HTML et affichaient « Sofia »
+  // même après avoir choisi Léo.
+  var qs = document.getElementById('santeQuestion');
+  if (qs) qs.placeholder = 'Posez votre question santé à ' + nomC + '...';
+  var rs = document.getElementById('santeReponseInput');
+  if (rs) rs.placeholder = 'Répondez à ' + nomC + ' ou posez une question santé...';
 }
 
 // ============================================================
@@ -2138,7 +2186,7 @@ function mettreAJourMemoire() {
 function setSearching(on) {
   var dot = document.getElementById('statutDot');
   var label = document.getElementById('statutLabel');
-  if (on) { dot.classList.add('searching'); label.textContent = 'Sofia cherche...'; }
+  if (on) { dot.classList.add('searching'); label.textContent = nomCompagnon()+' cherche...'; }
   else { dot.classList.remove('searching'); label.textContent = 'En ligne'; }
 }
 
@@ -2213,7 +2261,7 @@ function initRecognition() {
   recognition.onresult=function(e) {
     var t=e.results[0][0].transcript.trim();
     var confiance=e.results[0][0].confidence;
-    if (confiance<0.4&&confiance>0) { setStatus('Sofia vous écoute... 👂'); return; }
+    if (confiance<0.4&&confiance>0) { setStatus((nomCompagnon()+' vous écoute... 👂')); return; }
     isListening=false;
     document.getElementById('soleil').classList.remove('listening');
     document.getElementById('soleilIcone').textContent='🎙️';
@@ -2287,7 +2335,7 @@ function startListening() {
     document.getElementById('soleil').classList.add('listening');
     document.getElementById('soleilIcone').textContent='⏹️';
     document.getElementById('soleilTexte').textContent=(isEcouteActive||modeAttente)?'Auto':'Parlez...';
-    setStatus(modeAttente?'Dites le nom... 👂':'Sofia vous écoute... 👂');
+    setStatus(modeAttente?'Dites le nom... 👂':(nomCompagnon()+' vous écoute... 👂'));
     recognition.start();
   } catch(e) {
     isListening=false;
@@ -2302,7 +2350,7 @@ function stopListening() {
   document.getElementById('soleil').classList.remove('listening');
   document.getElementById('soleilIcone').textContent = '🎙️';
   document.getElementById('soleilTexte').textContent = 'Appuyez';
-  setStatus('Appuyez sur Sofia ou posez votre question ✨');
+  setStatus(('Appuyez sur '+nomCompagnon()+' ou posez votre question ✨'));
   try { recognition.stop(); } catch(e) {}
 }
 function toggleVoice() {
@@ -2318,7 +2366,7 @@ function toggleEcoute() {
   if (isEcouteActive) {
     btn.classList.add('active'); texte.textContent='Active';
     document.getElementById('soleilTexte').textContent='Auto';
-    setStatus('Sofia vous écoute... 👂');
+    setStatus((nomCompagnon()+' vous écoute... 👂'));
     initVAD().then(function() { demarrerVADLoop(); });
   } else {
     btn.classList.remove('active'); texte.textContent='Auto';
@@ -2339,7 +2387,7 @@ function obtenirMeteo(ville) {
   if (!ville || ville.trim().length < 2) return;
   modeAttente = null;
   showUserMessage(ville);
-  setStatus('Sofia cherche la météo...');
+  setStatus(nomCompagnon()+' cherche la météo...');
   setSearching(true);
   showTyping();
   var prompt = 'Donne-moi la météo actuelle et les prévisions pour les 3 prochains jours à ' + ville + '. Réponds de façon chaleureuse et donne des conseils pratiques vestimentaires. Dis aussi clairement si c\'est une belle journée pour sortir dehors ou s\'il vaut mieux rester au chaud à l\'intérieur, et suggère un bon moment de la journée pour prendre l\'air si c\'est possible.';
@@ -2366,7 +2414,7 @@ function demanderNouvelles() {
 function obtenirNouvelles(sujet) {
   modeAttente = null;
   showUserMessage(sujet);
-  setStatus('Sofia cherche les nouvelles...');
+  setStatus(nomCompagnon()+' cherche les nouvelles...');
   setSearching(true);
   showTyping();
   var prompt = 'Raconte-moi les nouvelles des dernières vingt-quatre heures sur le sujet suivant : ' + sujet + '. Ne me donne rien de plus vieux que ça. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
@@ -2393,7 +2441,7 @@ function fermerVoyage() { document.getElementById('voyageOverlay').style.display
 function obtenirVoyage(destination) {
   if (!destination||destination.trim().length<2) return;
   modeAttente=null; voyageDestinationActuelle=destination; showUserMessage(destination);
-  setStatus('Sofia cherche les infos voyage...'); setSearching(true); showTyping();
+  setStatus(nomCompagnon()+' cherche les infos voyage...'); setSearching(true); showTyping();
   fetch('/.netlify/functions/voyage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({destination:destination})})
   .then(function(r){return r.json();}).then(function(d){voyageDataActuelle=d;afficherVoyage(d,destination);setSearching(false);})
   .catch(function(){showResponse("Je n'arrive pas à trouver les infos voyage. Réessayons !");modeAttente=null;setSearching(false);});
@@ -2473,7 +2521,7 @@ function sofiaRaconteVillage() { if (!villageDescriptionTexte) return; speakText
 function demanderAncetres() { ouvrirGenealogie(); }
 function obtenirAncetres(nom) {
   if (!nom||nom.trim().length<2) return;
-  modeAttente=null;showUserMessage(nom);setStatus('Sofia cherche les ressources...');setSearching(true);showTyping();
+  modeAttente=null;showUserMessage(nom);setStatus(nomCompagnon()+' cherche les ressources...');setSearching(true);showTyping();
   fetch('/.netlify/functions/ancetres',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nom:nom})})
   .then(function(r){return r.json();}).then(function(d){
     var prompt='Tu es Sofia. La personne cherche ses ancêtres avec le nom '+nom+'. Voici les meilleures ressources québécoises: ';
@@ -2992,7 +3040,7 @@ function chargerCLSC(ville){
 function trouverCLSC(){
   var ville=profil.ville||'';
   if(!ville){ville=prompt('Entrez votre ville pour trouver votre CLSC :');if(!ville)return;}
-  showResponse('Sofia cherche votre CLSC à '+ville+'...');
+  showResponse(nomCompagnon()+' cherche votre CLSC à '+ville+'...');
   var prompt='Quel est le numéro de téléphone principal du CLSC le plus proche de '+ville+' au Québec ? Donne uniquement le nom du CLSC et son numéro de téléphone, en une phrase courte.';
   conversationHistory.push({role:'user',content:prompt});
   fermerUrgence();
@@ -3001,7 +3049,7 @@ function trouverCLSC(){
 function trouverPharmacie(){
   var ville=profil.ville||'';
   if(!ville){ville=prompt('Entrez votre ville pour trouver la pharmacie de garde :');if(!ville)return;}
-  showResponse('Sofia cherche la pharmacie de garde à '+ville+'...');
+  showResponse(nomCompagnon()+' cherche la pharmacie de garde à '+ville+'...');
   var prompt='Quelle est la pharmacie de garde ce soir à '+ville+' au Québec ? Donne le nom, l\'adresse et le numéro de téléphone si disponible.';
   conversationHistory.push({role:'user',content:prompt});
   fermerUrgence();

@@ -15,27 +15,18 @@ function dateDuJourQuebec() {
 }
 
 /**
- * Va chercher les manchettes du jour dans notre propre fonction « nouvelles »,
- * qui lit les fils de presse en direct.
+ * Met en forme les manchettes que le CLIENT a déjà récupérées.
  *
- * C'était le maillon manquant : la fonction « nouvelles » existait mais
- * personne ne l'appelait. Sofia racontait donc l'actualite de memoire, avec la
- * recherche web comme seul filet — d'ou des nouvelles vieilles ou vagues.
+ * Cette fonction ne fait AUCUN appel réseau, et c'est volontaire. La première
+ * version allait elle-même chercher /.netlify/functions/nouvelles avant
+ * d'appeler Anthropic. Or une fonction Netlify synchrone est coupée à 10 s :
+ * ce détour en série retardait le début du flux, et la parole s'arrêtait net
+ * au milieu d'une phrase. Le client fait maintenant les deux appels en
+ * parallèle et nous transmet le résultat.
  */
-async function manchettesDuJour(req) {
-  let origine = process.env.URL || process.env.DEPLOY_PRIME_URL || '';
-  try { if (!origine) origine = new URL(req.url).origin; } catch { /* garde '' */ }
-  if (!origine) return '';
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 7000);
+function formaterManchettes(data) {
   try {
-    const rep = await fetch(origine + '/.netlify/functions/nouvelles', {
-      headers: { 'Cache-Control': 'no-cache' },
-      signal: controller.signal
-    });
-    if (!rep.ok) throw new Error('HTTP ' + rep.status);
-    const data = await rep.json();
+    if (!data || typeof data !== 'object') return '';
 
     const sections = [
       ['QUÉBEC',      data.quebec,  6],
@@ -47,7 +38,11 @@ async function manchettesDuJour(req) {
 
     let bloc = '';
     for (const [titre, liste, max] of sections) {
-      const articles = (liste || []).slice(0, max);
+      // Un article sans titre n'a rien à faire dans le prompt : sans ce filtre,
+      // il y arrivait sous la forme « - undefined ».
+      const articles = (Array.isArray(liste) ? liste : [])
+        .filter(a => a && typeof a.titre === 'string' && a.titre.trim())
+        .slice(0, max);
       if (!articles.length) continue;
       bloc += `\n${titre}:\n`;
       for (const a of articles) {
@@ -63,14 +58,25 @@ async function manchettesDuJour(req) {
     console.log('Manchettes injectees:', data.total, 'articles, fenetre', data.fenetreHeures + 'h');
     return bloc;
   } catch (e) {
-    console.log('Manchettes indisponibles:', e.message);
+    console.log('Manchettes illisibles:', e.message);
     return '';   // on retombe sur la recherche web
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
+/**
+ * Qui parle. L'application laisse choisir entre Sofia et Léo, avec deux voix
+ * distinctes, mais le prompt disait « Tu es Sofia » en dur : Léo se présentait
+ * donc sous le nom de Sofia, avec les accords au féminin.
+ */
+function identiteCompagnon(profil) {
+  const estLeo = profil && profil.compagnon === 'leo';
+  return estLeo
+    ? { nom: 'Léo', role: 'un compagnon vocal chaleureux', accord: 'content', genre: 'masculin' }
+    : { nom: 'Sofia', role: 'une compagne vocale chaleureuse', accord: 'contente', genre: 'féminin' };
+}
+
 function construireSystemPrompt(profil, manchettes) {
+  const moi = identiteCompagnon(profil);
   let profilContexte = '';
   if (profil && profil.prenom) {
     profilContexte = '\n\nPROFIL:\n';
@@ -100,7 +106,11 @@ COMMENT T'EN SERVIR:
 - Ne nomme pas les médias ni les sources.`;
   }
 
-  return `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
+  return `Tu es ${moi.nom}, ${moi.role} pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
+
+TON IDENTITÉ:
+- Tu t'appelles ${moi.nom}. Si on te demande ton nom, réponds ${moi.nom}, jamais un autre nom.
+- Tu parles de toi au ${moi.genre} : par exemple « je suis ${moi.accord} ».
 
 DATE DU JOUR: nous sommes ${dateDuJourQuebec()}, heure du Québec.
 - C'est la date réelle d'aujourd'hui. Ta mémoire d'entraînement est plus ancienne : ne suppose jamais qu'on est encore dans une année antérieure.
@@ -197,7 +207,7 @@ export default async (req) => {
   }
 
   try {
-    const { messages, profil, type, introSeulement, stream } = await req.json();
+    const { messages, profil, type, introSeulement, stream, nouvelles } = await req.json();
 
     // MODE INTRO : phrase rapide sans recherche web
     if (introSeulement) {
@@ -216,17 +226,23 @@ export default async (req) => {
       });
     }
 
+    // Les manchettes arrivent déjà prêtes du client (voir formaterManchettes).
+    const manchettes = (type === 'nouvelles') ? formaterManchettes(nouvelles) : '';
+
     // Recherche web : soit le type l'exige, soit la question est ancree dans
-    // le present. Sans ca, Sofia repondait de memoire et se trompait d'annee.
-    const typeAvecRecherche = (type === 'meteo') || (type === 'f1') || (type === 'nouvelles');
+    // le present. Sans ca, le compagnon repondait de memoire.
+    //
+    // Quand on a de vraies manchettes datées, la recherche web n'apporte plus
+    // rien et coûte plusieurs secondes — assez pour dépasser la limite de 10 s
+    // de Netlify et couper la parole en pleine phrase. On la désactive donc.
+    const typeAvecRecherche = (type === 'meteo') || (type === 'f1')
+      || (type === 'nouvelles' && !manchettes);
     const besoinWebSearch = typeAvecRecherche || questionSensibleAuTemps(messages);
-    if (besoinWebSearch && !typeAvecRecherche) {
+    if (type === 'nouvelles' && manchettes) {
+      console.log('Manchettes fournies : recherche web desactivee');
+    } else if (besoinWebSearch && !typeAvecRecherche) {
       console.log('Recherche web activee par detection temporelle');
     }
-
-    // Pour les nouvelles, on ancre Sofia dans de vraies manchettes datées
-    // avant même de parler à Claude. La recherche web reste active en appui.
-    const manchettes = (type === 'nouvelles') ? await manchettesDuJour(req) : '';
 
     const requestBody = {
       model: 'claude-sonnet-4-6',
