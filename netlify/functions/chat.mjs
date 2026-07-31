@@ -14,7 +14,63 @@ function dateDuJourQuebec() {
   }).format(new Date());
 }
 
-function construireSystemPrompt(profil) {
+/**
+ * Va chercher les manchettes du jour dans notre propre fonction « nouvelles »,
+ * qui lit les fils de presse en direct.
+ *
+ * C'était le maillon manquant : la fonction « nouvelles » existait mais
+ * personne ne l'appelait. Sofia racontait donc l'actualite de memoire, avec la
+ * recherche web comme seul filet — d'ou des nouvelles vieilles ou vagues.
+ */
+async function manchettesDuJour(req) {
+  let origine = process.env.URL || process.env.DEPLOY_PRIME_URL || '';
+  try { if (!origine) origine = new URL(req.url).origin; } catch { /* garde '' */ }
+  if (!origine) return '';
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 7000);
+  try {
+    const rep = await fetch(origine + '/.netlify/functions/nouvelles', {
+      headers: { 'Cache-Control': 'no-cache' },
+      signal: controller.signal
+    });
+    if (!rep.ok) throw new Error('HTTP ' + rep.status);
+    const data = await rep.json();
+
+    const sections = [
+      ['QUÉBEC',      data.quebec,  6],
+      ['CANADA',      data.canada,  5],
+      ['ÉTATS-UNIS',  data.usa,     6],
+      ['MONDE',       data.monde,   5],
+      ['CULTURE',     data.culture, 3]
+    ];
+
+    let bloc = '';
+    for (const [titre, liste, max] of sections) {
+      const articles = (liste || []).slice(0, max);
+      if (!articles.length) continue;
+      bloc += `\n${titre}:\n`;
+      for (const a of articles) {
+        const age = a.ageHeures === null ? ''
+          : a.ageHeures < 1 ? ' (à l\'instant)'
+          : ` (il y a ${a.ageHeures} h)`;
+        const langue = a.langue === 'en' ? ' [en anglais, à traduire]' : '';
+        bloc += `- ${a.titre}${age}${langue}\n`;
+        if (a.description) bloc += `  ${a.description}\n`;
+      }
+    }
+    if (!bloc) return '';
+    console.log('Manchettes injectees:', data.total, 'articles, fenetre', data.fenetreHeures + 'h');
+    return bloc;
+  } catch (e) {
+    console.log('Manchettes indisponibles:', e.message);
+    return '';   // on retombe sur la recherche web
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function construireSystemPrompt(profil, manchettes) {
   let profilContexte = '';
   if (profil && profil.prenom) {
     profilContexte = '\n\nPROFIL:\n';
@@ -27,6 +83,21 @@ function construireSystemPrompt(profil) {
     if (profil.famille)  profilContexte += `- Famille: ${profil.famille}\n`;
     if (profil.memoire)  profilContexte += `- Mémoire: ${profil.memoire}\n`;
     profilContexte += `Appelle la personne par son prénom, avec chaleur et naturel.`;
+  }
+
+  let manchettesContexte = '';
+  if (manchettes) {
+    manchettesContexte = `
+
+MANCHETTES RÉELLES, RÉCUPÉRÉES À L'INSTANT DANS LES FILS DE PRESSE:
+${manchettes}
+COMMENT T'EN SERVIR:
+- Ces manchettes sont ta SEULE source pour les nouvelles. Elles datent de moins de 24 heures.
+- N'invente JAMAIS une nouvelle absente de cette liste, et ne raconte rien de mémoire.
+- Raconte-les dans tes propres mots, simplement, comme à une amie.
+- Traduis en français celles marquées « en anglais ». Ne lis jamais un titre en anglais.
+- Ordre à suivre: d'abord le Québec, puis le Canada, puis les États-Unis, puis le reste du monde.
+- Ne nomme pas les médias ni les sources.`;
   }
 
   return `Tu es Sofia, une compagne vocale chaleureuse pour les personnes âgées du Québec. Tout ce que tu dis sera LU À VOIX HAUTE par une synthèse vocale.
@@ -65,7 +136,8 @@ MÉTÉO:
 LIMITES:
 - Aucun conseil médical — suggère toujours un médecin
 - En cas d'urgence: rappelle le 911 ou la famille
-- INTERDIT ABSOLU: Ne jamais dire que tu n'as pas accès aux nouvelles. Ne jamais mentionner Radio-Canada. Ne jamais t'excuser sur tes limites. Tu DOIS donner des nouvelles concrètes sur l'Europe, le monde, le Canada — même si elles datent de quelques heures. Des nouvelles imparfaites valent mieux que le silence.${profilContexte}`;
+- INTERDIT ABSOLU: Ne jamais dire que tu n'as pas accès aux nouvelles. Ne jamais nommer les médias d'où viennent les nouvelles. Ne jamais t'excuser sur tes limites. Tu DOIS donner des nouvelles concrètes et datées du jour, sur le Québec, le Canada, les États-Unis et le monde.
+- Ne raconte jamais une nouvelle de plusieurs jours ou de plusieurs mois comme si elle était fraîche. Si tu n'es pas certain qu'une nouvelle est d'aujourd'hui, ne la raconte pas.${manchettesContexte}${profilContexte}`;
 }
 
 const MAX_TOKENS = {
@@ -152,11 +224,15 @@ export default async (req) => {
       console.log('Recherche web activee par detection temporelle');
     }
 
+    // Pour les nouvelles, on ancre Sofia dans de vraies manchettes datées
+    // avant même de parler à Claude. La recherche web reste active en appui.
+    const manchettes = (type === 'nouvelles') ? await manchettesDuJour(req) : '';
+
     const requestBody = {
       model: 'claude-sonnet-4-6',
       max_tokens: MAX_TOKENS[type] || (besoinWebSearch ? 900 : 500),
       temperature: 0.7,
-      system: construireSystemPrompt(profil),
+      system: construireSystemPrompt(profil, manchettes),
       messages: (messages || []).slice(-20)
     };
     if (stream) requestBody.stream = true;

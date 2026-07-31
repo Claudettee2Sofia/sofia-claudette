@@ -928,6 +928,20 @@
     color:rgba(200,216,240,0.2);padding:4px;flex-shrink:0;
   }
   .epicerie-suppr:hover{color:rgba(239,68,68,0.6);}
+  /* En-tête de département : sépare les fruits, les légumes, le cannage, etc. */
+  .epicerie-rayon {
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:800;color:var(--bleu-pale);
+    text-transform:uppercase;letter-spacing:1.2px;
+    padding:14px 4px 2px;
+  }
+  .epicerie-rayon:first-child{padding-top:2px;}
+  .epicerie-rayon-trait {
+    flex:1;height:0.5px;background:rgba(61,124,240,0.25);
+  }
+  .epicerie-rayon-compte {
+    font-size:11px;font-weight:700;color:var(--texte-muted);letter-spacing:0.5px;
+  }
 
   @media(min-width:768px){.avatar-outer-ring{width:140px;height:140px}}
   @media(max-height:600px){.avatar-outer-ring{width:90px;height:90px}.response-zone{max-height:14vh}.modules-grid{gap:5px}}
@@ -2343,8 +2357,8 @@ function demanderNouvelles() {
   arreterParole();
   showUserMessage('Nouvelles 📰');
   var prenom = profil.prenom || '';
-  var sujetParDefaut = 'Québec, Canada, Europe, Chine et monde';
-  var prompt = 'Fais-moi un résumé des principales nouvelles d\'aujourd\'hui dans le monde : commence par une nouvelle du Québec ou du Canada, puis donne 2 ou 3 nouvelles de l\'Europe et du reste du monde. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
+  var sujetParDefaut = 'Québec, Canada, États-Unis et monde';
+  var prompt = 'Raconte-moi les nouvelles d\'aujourd\'hui, seulement celles des dernières vingt-quatre heures. Donne d\'abord deux nouvelles du Québec, puis deux nouvelles du Canada, puis deux nouvelles des États-Unis, puis une ou deux du reste du monde. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
   conversationHistory.push({role: 'user', content: prompt});
   enregistrerActivite('nouvelles', sujetParDefaut);
   getSofiaReply('nouvelles');
@@ -2355,7 +2369,7 @@ function obtenirNouvelles(sujet) {
   setStatus('Sofia cherche les nouvelles...');
   setSearching(true);
   showTyping();
-  var prompt = 'Fais-moi un résumé chaleureux des principales nouvelles d\'aujourd\'hui sur le sujet suivant : ' + sujet + '. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
+  var prompt = 'Raconte-moi les nouvelles des dernières vingt-quatre heures sur le sujet suivant : ' + sujet + '. Ne me donne rien de plus vieux que ça. Explique chaque nouvelle en 2 phrases simples et accessibles. Parle comme si tu racontais à une amie.';
   conversationHistory.push({role: 'user', content: prompt});
   enregistrerActivite('nouvelles', sujet);
   getSofiaReply('nouvelles');
@@ -2548,7 +2562,43 @@ function demanderActivites() {
 // ============================================================
 // ÉPICERIE
 // ============================================================
+// Les rayons dans l'ordre où on les traverse à l'épicerie : les fruits
+// ensemble, les légumes ensemble, le cannage ensemble, la viande ensemble.
+// C'est cet ordre-là qui détermine l'affichage ET la lecture à voix haute.
+var RAYONS = [
+  '🍎 Fruits',
+  '🥦 Légumes',
+  '🍞 Boulangerie',
+  '🥩 Viandes',
+  '🐟 Poissons et fruits de mer',
+  '🥛 Produits laitiers et œufs',
+  '❄️ Surgelés',
+  '🥫 Conserves et cannage',
+  '🌾 Pâtes, riz et céréales',
+  '🧂 Condiments et épices',
+  '🍪 Collations',
+  '🥤 Boissons',
+  '🧴 Hygiène',
+  '🧹 Ménage',
+  '🐾 Animaux',
+  '🛒 Autres'
+];
+
 var listeEpicerie=JSON.parse(localStorage.getItem('sofia_liste_epicerie')||'[]');
+
+// Les articles ajoutés avant le classement par rayons portent d'anciens
+// libellés ('🍞 Boulangerie & grains') ou aucun libellé. On les reclasse une
+// seule fois, au chargement, sinon ils tomberaient tous dans « Autres ».
+(function reclasserAnciensArticles() {
+  var change = false;
+  listeEpicerie.forEach(function(a) {
+    if (!a.categorie || RAYONS.indexOf(a.categorie) === -1) {
+      a.categorie = detecterCategorie(a.nom || '');
+      change = true;
+    }
+  });
+  if (change) localStorage.setItem('sofia_liste_epicerie', JSON.stringify(listeEpicerie));
+})();
 
 function sauvegarderListeEpicerie(liste) {
   listeEpicerie=liste;
@@ -2572,40 +2622,206 @@ function afficherListeEpicerie() {
   var total=listeEpicerie.length;
   var coches=listeEpicerie.filter(function(a){return a.coche;}).length;
   compteur.textContent=total+' article'+(total>1?'s':'')+' — '+coches+' coché'+(coches>1?'s':'');
-  var nonCoches=listeEpicerie.filter(function(a){return !a.coche;});
-  var coches2=listeEpicerie.filter(function(a){return a.coche;});
-  var ordonnes=nonCoches.concat(coches2);
-  var html='';
-  ordonnes.forEach(function(a){
-    html+='<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+echapper(a.id)+'">'
-      +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" data-id="'+echapper(a.id)+'" onclick="cocherArticle(this.dataset.id)">'+(a.coche?'✓':'')+'</div>'
-      +'<div style="flex:1">'
-      +'<div class="epicerie-article-nom">'+echapper(a.nom)+'</div>'
-      +(a.categorie?'<div class="epicerie-article-cat">'+echapper(a.categorie)+'</div>':'')
-      +'</div>'
-      +'<button class="epicerie-suppr" data-id="'+echapper(a.id)+'" onclick="supprimerArticle(this.dataset.id)">✕</button>'
-      +'</div>';
-  });
-  if (ordonnes.length===0) {
-    html='<div style="text-align:center;padding:30px 0;color:var(--texte-muted);font-size:14px">Votre liste est vide.<br>Dites un article à la fois à Sofia !</div>';
+
+  if (total===0) {
+    liste.innerHTML='<div style="text-align:center;padding:30px 0;color:var(--texte-muted);font-size:14px">Votre liste est vide.<br>Dites un article à la fois à Sofia !</div>';
+    return;
   }
+
+  // Les articles arrivent dans n'importe quel ordre ; on les regroupe par
+  // rayon et on suit l'ordre du parcours en magasin.
+  var groupes={};
+  listeEpicerie.filter(function(a){return !a.coche;}).forEach(function(a){
+    var r=rayonDe(a);
+    if(!groupes[r]) groupes[r]=[];
+    groupes[r].push(a);
+  });
+
+  var html='';
+  RAYONS.forEach(function(r){
+    if(!groupes[r]||!groupes[r].length) return;
+    html+=enteteRayon(r,groupes[r].length);
+    groupes[r].forEach(function(a){ html+=ligneArticle(a); });
+    delete groupes[r];
+  });
+  // Filet de sécurité : un rayon inconnu ne doit jamais faire disparaître un article.
+  Object.keys(groupes).forEach(function(r){
+    html+=enteteRayon(r,groupes[r].length);
+    groupes[r].forEach(function(a){ html+=ligneArticle(a); });
+  });
+
+  // Ce qui est déjà dans le panier va tout en bas.
+  var dejaPris=listeEpicerie.filter(function(a){return a.coche;});
+  if(dejaPris.length){
+    html+=enteteRayon('✓ Dans le panier',dejaPris.length);
+    dejaPris.forEach(function(a){ html+=ligneArticle(a); });
+  }
+
   liste.innerHTML=html;
 }
 
+// Comment chaque rayon s'annonce à voix haute. Un libellé écrit ne se lit pas
+// tel quel : « dans boulangerie » sonne faux, et l'émoji ne doit jamais être lu.
+var RAYON_VOIX = {
+  '🍎 Fruits':                      'dans les fruits',
+  '🥦 Légumes':                     'dans les légumes',
+  '🍞 Boulangerie':                 'à la boulangerie',
+  '🥩 Viandes':                     'dans les viandes',
+  '🐟 Poissons et fruits de mer':   'dans les poissons et fruits de mer',
+  '🥛 Produits laitiers et œufs':   'dans les produits laitiers et les œufs',
+  '❄️ Surgelés':                    'dans les surgelés',
+  '🥫 Conserves et cannage':        'dans le cannage',
+  '🌾 Pâtes, riz et céréales':      'dans les pâtes, le riz et les céréales',
+  '🧂 Condiments et épices':        'dans les condiments et les épices',
+  '🍪 Collations':                  'dans les collations',
+  '🥤 Boissons':                    'dans les boissons',
+  '🧴 Hygiène':                     'dans la pharmacie',
+  '🧹 Ménage':                      'dans les produits ménagers',
+  '🐾 Animaux':                     'pour les animaux',
+  '🛒 Autres':                      'et pour finir'
+};
+
+/** Relit la liste à voix haute, rayon par rayon, dans l'ordre du magasin. */
+function resumeParleListe() {
+  var restants=listeEpicerie.filter(function(a){return !a.coche;});
+  if(!restants.length) return 'Votre liste est vide pour le moment.';
+
+  var groupes={};
+  restants.forEach(function(a){
+    var r=rayonDe(a);
+    if(!groupes[r]) groupes[r]=[];
+    groupes[r].push(a.nom);
+  });
+
+  var morceaux=[];
+  RAYONS.concat(Object.keys(groupes)).forEach(function(r){
+    if(!groupes[r]) return;
+    var noms=groupes[r];
+    delete groupes[r];
+    // Sans libellé parlé connu, on retire l'émoji du nom écrit.
+    var intro=RAYON_VOIX[r] || ('dans '+r.replace(/[^\wÀ-ÿŒœÆæ' -]/g,'').trim().toLowerCase());
+    var liste=noms.length===1 ? noms[0]
+      : noms.slice(0,-1).join(', ')+' et '+noms[noms.length-1];
+    morceaux.push(intro+', '+liste);
+  });
+
+  return 'Votre liste est prête, avec '+restants.length+' article'
+    +(restants.length>1?'s':'')+'. '+morceaux.join('. ')+'.';
+}
+
+// Comment un article est classé.
+//
+// On compare des MOTS ENTIERS, jamais des morceaux de mots. La recherche par
+// sous-chaîne se trompait de façon invisible : « sel » se trouve dans
+// « vaisselle », « vin » dans « vinaigre », « eau » dans « gâteau ».
+// L'ordre des rayons compte aussi : « tomates en conserve » doit tomber dans
+// le cannage, pas dans les légumes.
+var MOTS_RAYONS = [
+  // Ceux-ci passent avant tout : ils décident du rayon peu importe l'aliment.
+  ['🥫 Conserves et cannage', ['en conserve','conserve','cannage','canne','boîte de','boite de','soupe']],
+  ['❄️ Surgelés',             ['surgelé','surgelée','congelé','congelée','crème glacée','popsicle']],
+  ['🥤 Boissons',             ['jus','boisson','breuvage','café','thé','tisane','eau','eau minérale',
+                               'eau pétillante','vin','bière','cidre','limonade','liqueur',
+                               'boisson gazeuse','coke','pepsi','perrier']],
+
+  // Exceptions à placer juste avant leur rayon voisin.
+  ['🥦 Légumes',              ['pomme de terre','patate','patate douce']],
+  ['🧂 Condiments et épices', ["beurre d'arachide",'beurre de peanut']],
+  ['🧹 Ménage',               ['savon à vaisselle','savon a vaisselle','savon à lessive']],
+
+  // Les rayons courants.
+  ['🍎 Fruits',   ['pomme','poire','banane','raisin','fraise','bleuet','framboise','mûre','melon',
+                   'cantaloup','pastèque','mangue','orange','clémentine','mandarine','citron','lime',
+                   'pamplemousse','cerise','kiwi','ananas','pêche','prune','nectarine','abricot',
+                   'avocat','grenade','papaye','fruit']],
+  ['🥦 Légumes',  ['carotte','brocoli','chou','laitue','salade','tomate','concombre','poivron',
+                   'oignon','échalote','ail','céleri','épinard','maïs',"blé d'inde",'asperge',
+                   'champignon','courgette','zucchini','aubergine','navet','betterave','radis',
+                   'haricot','fève','poireau','courge','citrouille','persil','coriandre','basilic',
+                   'gingembre','légume']],
+  ['🥩 Viandes',  ['poulet','bœuf','boeuf','porc','agneau','veau','dinde','saucisse','jambon',
+                   'bacon','steak','côtelette','rôti','haché','charcuterie','pepperoni','salami',
+                   'viande','tofu']],
+  ['🐟 Poissons et fruits de mer',
+                  ['saumon','thon','crevette','morue','tilapia','truite','sole','aiglefin','sardine',
+                   'pétoncle','homard','crabe','moule','huître','calmar','poisson','fruits de mer']],
+  ['🥛 Produits laitiers et œufs',
+                  ['lait','fromage','beurre','yogourt','yaourt','crème','œuf','oeuf','margarine',
+                   'cottage','kéfir','feta','mozzarella','cheddar']],
+  ['🍞 Boulangerie',
+                  ['pain','baguette','croissant','muffin','gâteau','tortilla','bagel','brioche',
+                   'pita','biscotte','tarte','beigne','pâtisserie','brownie']],
+  ['🌾 Pâtes, riz et céréales',
+                  ['riz','pâte','spaghetti','macaroni','penne','lasagne','nouille','vermicelle',
+                   'couscous','quinoa','orge','farine','céréale','gruau','avoine','granola',
+                   'lentille','pois','pois chiche']],
+  ['🧂 Condiments et épices',
+                  ['sucre','cassonade','sel','poivre','épice','assaisonnement','sauce','huile',
+                   'vinaigre','moutarde','ketchup','mayonnaise','relish','miel','sirop','confiture',
+                   'tartinade','nutella','bouillon','levure','bicarbonate','vanille','cannelle']],
+  ['🍪 Collations',
+                  ['biscuit','chips','croustille','chocolat','bonbon','noix','arachide','amande',
+                   'craquelin','barre tendre','maïs éclaté','popcorn','bretzel','friandise','collation']],
+  ['🧴 Hygiène',  ['shampoo','shampoing','shampooing','revitalisant','dentifrice','brosse à dents',
+                   'soie dentaire','déodorant','rasoir','papier toilette','papier hygiénique',
+                   'mouchoir','crème solaire','couche','serviette hygiénique','tampon','lotion',
+                   'hygiène','savon']],
+  ['🧹 Ménage',   ['détergent','détersif','savon à vaisselle','nettoyant','éponge','sac poubelle',
+                   'sac à ordures','pellicule','papier aluminium','essuie-tout','javel',
+                   'assouplisseur','ampoule','pile','balai','vadrouille','ménage']],
+  ['🐾 Animaux',  ['litière','croquette','pour chat','pour chien','gâterie pour']]
+];
+
+/**
+ * Réduit un mot à sa forme comparable : minuscules, sans pluriel.
+ * On ne touche pas aux mots de trois lettres ou moins, sinon « jus » devient
+ * « ju » et « riz » perd son sens.
+ */
+function motSimple(mot) {
+  return (mot.length > 3 && /[sx]$/.test(mot)) ? mot.slice(0, -1) : mot;
+}
+
+/** Le texte, ramené à une suite de mots entiers séparés par des espaces. */
+function normaliserPourRayon(texte) {
+  return ' ' + texte.toLowerCase()
+    .replace(/['’]/g, "'")
+    .split(/[^a-zà-öø-ÿœæ0-9']+/)     // œ et æ doivent rester des lettres
+    .filter(Boolean)
+    .map(motSimple)
+    .join(' ') + ' ';
+}
+
 function detecterCategorie(texte) {
-  var t=texte.toLowerCase();
-  if(/pomme|poire|banane|raisin|fraise|bleuet|framboise|melon|mangue|orange|citron|pamplemousse|cerise|kiwi|ananas|fruit/.test(t)) return '🍎 Fruits';
-  if(/carotte|brocoli|chou|laitue|tomate|concombre|poivron|oignon|ail|patate|pomme de terre|céleri|épinard|maïs|asperge|champignon|légume/.test(t)) return '🥦 Légumes';
-  if(/lait|fromage|beurre|yogourt|crème|œuf|oeuf/.test(t)) return '🥛 Produits laitiers';
-  if(/poulet|bœuf|boeuf|porc|agneau|veau|dinde|saucisse|jambon|bacon|viande/.test(t)) return '🥩 Viandes';
-  if(/saumon|thon|crevette|morue|tilapia|poisson|fruits de mer/.test(t)) return '🐟 Poissons';
-  if(/pain|baguette|croissant|muffin|gâteau|biscuit|farine|céréale|riz|pâte|spaghetti|macaroni/.test(t)) return '🍞 Boulangerie & grains';
-  if(/jus|eau|café|thé|boisson|vin|bière|sirop/.test(t)) return '🥤 Boissons';
-  if(/shampoo|savon|dentifrice|déodorant|rasoir|papier toilette|mouchoir/.test(t)) return '🧴 Hygiène';
-  if(/détergent|nettoyant|éponge|sac poubelle|pellicule/.test(t)) return '🧹 Ménage';
-  if(/sucre|sel|poivre|épice|sauce|huile|vinaigre|moutarde|ketchup|mayonnaise/.test(t)) return '🧂 Condiments';
-  if(/surgelé|congelé/.test(t)) return '❄️ Surgelés';
+  var t = normaliserPourRayon(texte || '');
+  for (var i = 0; i < MOTS_RAYONS.length; i++) {
+    var rayon = MOTS_RAYONS[i][0], cles = MOTS_RAYONS[i][1];
+    for (var j = 0; j < cles.length; j++) {
+      // Le mot-clé est normalisé pareil, et encadré d'espaces : mot entier.
+      if (t.indexOf(normaliserPourRayon(cles[j])) !== -1) return rayon;
+    }
+  }
   return '🛒 Autres';
+}
+
+/** Rayon d'un article, en réparant au besoin un libellé périmé. */
+function rayonDe(a) {
+  if (a.categorie && RAYONS.indexOf(a.categorie) !== -1) return a.categorie;
+  return detecterCategorie(a.nom || '');
+}
+
+function enteteRayon(nom, nombre) {
+  return '<div class="epicerie-rayon">'+echapper(nom)
+    +'<div class="epicerie-rayon-trait"></div>'
+    +'<div class="epicerie-rayon-compte">'+nombre+'</div>'
+    +'</div>';
+}
+
+function ligneArticle(a) {
+  return '<div class="epicerie-article'+(a.coche?' coche':'')+'" id="art-'+echapper(a.id)+'">'
+    +'<div class="epicerie-checkbox'+(a.coche?' coche':'')+'" data-id="'+echapper(a.id)+'" onclick="cocherArticle(this.dataset.id)">'+(a.coche?'✓':'')+'</div>'
+    +'<div class="epicerie-article-nom">'+echapper(a.nom)+'</div>'
+    +'<button class="epicerie-suppr" data-id="'+echapper(a.id)+'" onclick="supprimerArticle(this.dataset.id)">✕</button>'
+    +'</div>';
 }
 
 function ajouterArticleEpicerie() {
@@ -2652,8 +2868,8 @@ function ajouterArticleParVoix(texte) {
     epicerieMicroActif=false;
     var btn=document.getElementById('epicerieMicroBtn');btn.classList.remove('active');btn.textContent='🎙️';
     modeAttente=null;
-    var msg='Parfait ! Votre liste est prête, avec '+listeEpicerie.filter(function(a){return !a.coche;}).length+' articles.';
-    speakText(msg);return;
+    // On relit la liste regroupée par rayons, pas seulement le total.
+    speakText('Parfait ! '+resumeParleListe());return;
   }
   var article={id:nouvelId(),nom:texte.charAt(0).toUpperCase()+texte.slice(1),categorie:detecterCategorie(texte),coche:false};
   listeEpicerie.push(article);sauvegarderListeEpicerie(listeEpicerie);afficherListeEpicerie();
